@@ -5,6 +5,8 @@ on:
   #Runs at 01:01 UTC
   schedule:
     - cron: "1 1 * * *"
+  pull_request:
+    branches: [master]
 
 concurrency:
   group: "master-branch"

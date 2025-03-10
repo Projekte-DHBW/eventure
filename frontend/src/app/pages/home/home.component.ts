@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { EventDiscoveryComponent } from "../../components/event-discovery/event-discovery.component";
+import { EventDiscoveryComponent } from '../../components/event-discovery/event-discovery.component';
 
 @Component({
   selector: 'app-home',

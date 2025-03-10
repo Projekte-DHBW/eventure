@@ -10,56 +10,71 @@ import { MatIconModule } from '@angular/material/icon';
   selector: 'app-event-discovery',
   standalone: true,
   imports: [
-    MatButtonModule, 
-    MatSelectModule, 
-    MatFormFieldModule, 
+    MatButtonModule,
+    MatSelectModule,
+    MatFormFieldModule,
     MatIconModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
   ],
   templateUrl: './event-discovery.component.html',
-  styleUrl: './event-discovery.component.css'
+  styleUrl: './event-discovery.component.css',
 })
 export class EventDiscoveryComponent implements OnInit {
-  @Input() type = ['Konzert', 'Festival', 'Theater', 'Sport', 'Kunst', 'Kultur'];
+  @Input() type = [
+    'Konzert',
+    'Festival',
+    'Theater',
+    'Sport',
+    'Kunst',
+    'Kultur',
+  ];
   @Input() location = ['Berlin', 'München', 'Heidenheim', 'Köln'];
-  @Input() date = ['Heute', 'Morgen', 'Diese Woche', 'Diesen Monat', 'Dieses Jahr'];
-  
+  @Input() date = [
+    'Heute',
+    'Morgen',
+    'Diese Woche',
+    'Diesen Monat',
+    'Dieses Jahr',
+  ];
+
   eventSearchForm: FormGroup;
-  
-  constructor(private fb: FormBuilder, private router: Router) {
+
+  constructor(
+    private fb: FormBuilder,
+    private router: Router,
+  ) {
     this.eventSearchForm = this.fb.group({
       eventType: [''],
       location: [''],
-      date: ['']
+      date: [''],
     });
   }
-  
-  ngOnInit(): void {
-  }
-  
+
+  ngOnInit(): void {}
+
   searchEvents(): void {
     if (this.eventSearchForm.valid) {
       const formValues = this.eventSearchForm.value;
-      
+
       // Create query parameters object
       const queryParams: any = {};
-      
+
       // Only add parameters that have values
       if (formValues.eventType) {
         queryParams.type = formValues.eventType;
       }
-      
+
       if (formValues.location) {
         queryParams.location = formValues.location;
       }
-      
+
       if (formValues.date) {
         queryParams.date = formValues.date;
       }
-      
+
       // Navigate to search page with query parameters
-      this.router.navigate(['/search'], { 
-        queryParams: queryParams 
+      this.router.navigate(['/search'], {
+        queryParams: queryParams,
       });
     }
   }

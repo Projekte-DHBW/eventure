@@ -1,80 +1,80 @@
 .example-form {
-    width: 100%;
+  width: 100%;
 }
 
 .full-width {
-    width: 100%;
+  width: 100%;
 }
 
 h1 {
-    text-align: center;
-    font-size: 2rem;
-    color: var(--mat-sys-primary);
-    margin-bottom: 0.5rem;
+  text-align: center;
+  font-size: 2rem;
+  color: var(--mat-sys-primary);
+  margin-bottom: 0.5rem;
 }
 
 .register {
-    width: 100%;
-    max-width: 500px;
-    background-color: var(--background);
+  width: 100%;
+  max-width: 500px;
+  background-color: var(--background);
 }
 
 .login-button {
-    font-size: 0.875rem;
-    margin-left: 0.5rem;
-    min-width: 7.5rem;
-    background-color: var(--primary);
+  font-size: 0.875rem;
+  margin-left: 0.5rem;
+  min-width: 7.5rem;
+  background-color: var(--primary);
 }
 
 mat-flat-button {
-    background-color: var(--primary);
+  background-color: var(--primary);
 }
 
 .login-button-row {
-    margin-bottom: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 
 .error-message {
-    color: #f44336;
-    font-size: 0.75rem;
-    margin: 0.625rem 0;
-    padding: 0.625rem;
-    background-color: rgba(244, 67, 54, 0.1);
-    border-radius: 4px;
+  color: #f44336;
+  font-size: 0.75rem;
+  margin: 0.625rem 0;
+  padding: 0.625rem;
+  background-color: rgba(244, 67, 54, 0.1);
+  border-radius: 4px;
 }
 
 .success-message {
-    color: #4caf50;
-    font-size: 0.75rem;
-    margin: 0.625rem 0;
-    padding: 0.625rem;
-    background-color: rgba(76, 175, 80, 0.1);
-    border-radius: 4px;
+  color: #4caf50;
+  font-size: 0.75rem;
+  margin: 0.625rem 0;
+  padding: 0.625rem;
+  background-color: rgba(76, 175, 80, 0.1);
+  border-radius: 4px;
 }
 
 .mat-mdc-form-field {
-    margin-bottom: 1rem;
+  margin-bottom: 1rem;
 }
 
 .register-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    padding: 1rem;
-    box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 1rem;
+  box-sizing: border-box;
 }
 
 @media (max-width: 600px) {
-    .register {
-        max-width: 100%;
-    }
+  .register {
+    max-width: 100%;
+  }
 
-    h1 {
-        font-size: 1.5rem;
-    }
+  h1 {
+    font-size: 1.5rem;
+  }
 
-    mat-card-content {
-        padding: 1rem;
-    }
+  mat-card-content {
+    padding: 1rem;
+  }
 }

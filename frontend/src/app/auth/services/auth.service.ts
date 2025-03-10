@@ -54,7 +54,7 @@ export class AuthService {
       .post<LoginResponse>(`${this.apiUrl}/login`, { email, password })
       .pipe(
         tap((response) => this.setSession(response)),
-        catchError((error) => this.handleError(error))
+        catchError((error) => this.handleError(error)),
       );
   }
 
@@ -62,7 +62,7 @@ export class AuthService {
     firstName: string,
     lastName: string,
     email: string,
-    password: string
+    password: string,
   ): Observable<{ success: boolean }> {
     return this.http
       .post<{ success: boolean }>(`${this.apiUrl}/register`, {
@@ -82,7 +82,7 @@ export class AuthService {
         this.clearSession();
         this.router.navigate(['/login']);
       }),
-      catchError((error) => this.handleError(error))
+      catchError((error) => this.handleError(error)),
     );
   }
 
@@ -107,7 +107,7 @@ export class AuthService {
             this.clearSession();
           }
         }),
-        catchError((error) => this.handleError(error))
+        catchError((error) => this.handleError(error)),
       );
   }
 

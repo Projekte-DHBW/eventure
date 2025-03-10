@@ -18,7 +18,7 @@
         <mat-form-field appearance="outline">
           <mat-select formControlName="eventType" placeholder="Wähle Event Typ">
             @for (event of type; track event) {
-              <mat-option [value]="event.toLowerCase()">{{event}}</mat-option>
+              <mat-option [value]="event.toLowerCase()">{{ event }}</mat-option>
             }
           </mat-select>
           <div matSuffix class="dropdown-icon">
@@ -30,9 +30,14 @@
       <div class="search-field">
         <label>Standort</label>
         <mat-form-field appearance="outline">
-          <mat-select formControlName="location" placeholder="Wähle einen standort">
+          <mat-select
+            formControlName="location"
+            placeholder="Wähle einen standort"
+          >
             @for (standort of location; track standort) {
-              <mat-option [value]="standort.toLowerCase()">{{standort}}</mat-option>
+              <mat-option [value]="standort.toLowerCase()">{{
+                standort
+              }}</mat-option>
             }
           </mat-select>
           <div matSuffix class="dropdown-icon">
@@ -46,7 +51,7 @@
         <mat-form-field appearance="outline">
           <mat-select formControlName="date" placeholder="Wähle Datum und Zeit">
             @for (datum of date; track datum) {
-              <mat-option [value]="datum.toLowerCase()">{{datum}}</mat-option>
+              <mat-option [value]="datum.toLowerCase()">{{ datum }}</mat-option>
             }
           </mat-select>
           <div matSuffix class="dropdown-icon">

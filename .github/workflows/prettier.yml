@@ -1,0 +1,70 @@
+name: Format Files
+
+on:
+  workflow_dispatch:
+  #Runs at 01:01 UTC
+  schedule:
+    - cron: "1 1 * * *"
+
+concurrency:
+  group: "master-branch"
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    name: Format Files
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "18.x"
+          cache: "npm"
+
+      # Install dependencies for backend
+      - name: Install backend dependencies
+        run: |
+          cd backend
+          npm ci
+
+      # Run Prettier for backend
+      - name: Format backend files
+        run: |
+          cd backend
+          npm run format
+
+      # Install dependencies for frontend
+      - name: Install frontend dependencies
+        run: |
+          cd frontend
+          npm ci
+
+      # Run Prettier for frontend
+      - name: Format frontend files
+        run: |
+          cd frontend
+          npm run format
+          
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        id: format-files
+        with:
+          commit_message: "chore(style): format files"
+          skip_checkout: true
+          branch: "formatting-${{ github.sha }}"
+          create_branch: true
+
+      # create PR using GitHub CLI if files were formatted
+      - name: create PR with formatted files
+        if: steps.format-files.outputs.changes_detected == 'true'
+        id: create-pr
+        run: git checkout formatting-${{ github.sha }} && gh pr create --base master --head formatting-${{ github.sha }} --title 'Merge formatting into master' --body 'Created by Github action'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # merge PR using GitHub CLI
+      - name: merge PR with adjusted formatting
+        if: steps.format-files.outputs.changes_detected == 'true'
+        id: merge-pr
+        run: gh pr merge --admin --merge --subject 'Merge formatting' --delete-branch
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

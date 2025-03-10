@@ -72,7 +72,10 @@ export class SearchComponent implements OnInit {
   events: any[] = [];
   hasSearchParams = false;
 
-  constructor(private route: ActivatedRoute, private router: Router) {}
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+  ) {}
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
@@ -219,24 +222,24 @@ export class SearchComponent implements OnInit {
             break;
           case 'diese woche':
             queryParams['startDate'] = this.formatDate(
-              this.getStartOfWeek(today)
+              this.getStartOfWeek(today),
             );
             queryParams['endDate'] = this.formatDate(this.getEndOfWeek(today));
             break;
           case 'diesen monat':
             queryParams['startDate'] = this.formatDate(
-              new Date(today.getFullYear(), today.getMonth(), 1)
+              new Date(today.getFullYear(), today.getMonth(), 1),
             );
             queryParams['endDate'] = this.formatDate(
-              new Date(today.getFullYear(), today.getMonth() + 1, 0)
+              new Date(today.getFullYear(), today.getMonth() + 1, 0),
             );
             break;
           case 'dieses jahr':
             queryParams['startDate'] = this.formatDate(
-              new Date(today.getFullYear(), 0, 1)
+              new Date(today.getFullYear(), 0, 1),
             );
             queryParams['endDate'] = this.formatDate(
-              new Date(today.getFullYear(), 11, 31)
+              new Date(today.getFullYear(), 11, 31),
             );
             break;
         }
@@ -250,7 +253,7 @@ export class SearchComponent implements OnInit {
 
   removeFilter(
     filterType: 'types' | 'locations' | 'date',
-    value?: string
+    value?: string,
   ): void {
     const queryParams = { ...this.route.snapshot.queryParams };
 
@@ -475,8 +478,8 @@ export class SearchComponent implements OnInit {
     if (params.types && params.types.length > 0) {
       mockEvents = mockEvents.filter((event) =>
         params.types.some(
-          (type: string) => event.type.toLowerCase() === type.toLowerCase()
-        )
+          (type: string) => event.type.toLowerCase() === type.toLowerCase(),
+        ),
       );
     }
 
@@ -485,8 +488,8 @@ export class SearchComponent implements OnInit {
       mockEvents = mockEvents.filter((event) =>
         params.locations.some(
           (location: string) =>
-            event.location.toLowerCase() === location.toLowerCase()
-        )
+            event.location.toLowerCase() === location.toLowerCase(),
+        ),
       );
     }
 
@@ -512,8 +515,8 @@ export class SearchComponent implements OnInit {
           event.title.toLowerCase().includes(lowercaseQuery) ||
           event.description.toLowerCase().includes(lowercaseQuery) ||
           event.tags.some((tag: string) =>
-            tag.toLowerCase().includes(lowercaseQuery)
-          )
+            tag.toLowerCase().includes(lowercaseQuery),
+          ),
       );
     }
 

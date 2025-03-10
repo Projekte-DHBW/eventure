@@ -1,63 +1,100 @@
 <div class="register-container">
-    <mat-card class="register" appearance="outlined">
-        <mat-card-content>
-            <h1>Registrieren</h1>
-            <form class="example-form" [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+  <mat-card class="register" appearance="outlined">
+    <mat-card-content>
+      <h1>Registrieren</h1>
+      <form
+        class="example-form"
+        [formGroup]="registerForm"
+        (ngSubmit)="onSubmit()"
+      >
+        <mat-form-field class="full-width">
+          <mat-label>Vorname</mat-label>
+          <input matInput formControlName="firstName" placeholder="Vorname" />
+          <mat-error
+            *ngIf="
+              registerForm.get('firstName')?.invalid &&
+              (registerForm.get('firstName')?.dirty ||
+                registerForm.get('firstName')?.touched)
+            "
+          >
+            Vorname wird benötigt
+          </mat-error>
+        </mat-form-field>
 
-                <mat-form-field class="full-width">
-                    <mat-label>Vorname</mat-label>
-                    <input matInput formControlName="firstName" placeholder="Vorname">
-                    <mat-error
-                        *ngIf="registerForm.get('firstName')?.invalid && (registerForm.get('firstName')?.dirty || registerForm.get('firstName')?.touched)">
-                        Vorname wird benötigt
-                    </mat-error>
-                </mat-form-field>
+        <mat-form-field class="full-width">
+          <mat-label>Nachname</mat-label>
+          <input matInput formControlName="lastName" placeholder="Nachname" />
+          <mat-error
+            *ngIf="
+              registerForm.get('lastName')?.invalid &&
+              (registerForm.get('lastName')?.dirty ||
+                registerForm.get('lastName')?.touched)
+            "
+          >
+            Nachname wird benötigt
+          </mat-error>
+        </mat-form-field>
 
-                <mat-form-field class="full-width">
-                    <mat-label>Nachname</mat-label>
-                    <input matInput formControlName="lastName" placeholder="Nachname">
-                    <mat-error
-                        *ngIf="registerForm.get('lastName')?.invalid && (registerForm.get('lastName')?.dirty || registerForm.get('lastName')?.touched)">
-                        Nachname wird benötigt
-                    </mat-error>
-                </mat-form-field>
+        <mat-form-field class="full-width">
+          <mat-label>E-Mail Adresse</mat-label>
+          <input
+            matInput
+            formControlName="email"
+            type="email"
+            placeholder="email@example.com"
+          />
+          <mat-error
+            *ngIf="
+              registerForm.get('email')?.invalid &&
+              (registerForm.get('email')?.dirty ||
+                registerForm.get('email')?.touched)
+            "
+          >
+            Bitte geben Sie eine gültige E-Mail-Adresse ein
+          </mat-error>
+        </mat-form-field>
 
-                <mat-form-field class="full-width">
-                    <mat-label>E-Mail Adresse</mat-label>
-                    <input matInput formControlName="email" type="email" placeholder="email@example.com">
-                    <mat-error
-                        *ngIf="registerForm.get('email')?.invalid && (registerForm.get('email')?.dirty || registerForm.get('email')?.touched)">
-                        Bitte geben Sie eine gültige E-Mail-Adresse ein
-                    </mat-error>
-                </mat-form-field>
+        <mat-form-field class="full-width">
+          <mat-label>Passwort</mat-label>
+          <input
+            matInput
+            formControlName="password"
+            type="password"
+            placeholder="Passwort"
+          />
+          <mat-error
+            *ngIf="
+              registerForm.get('password')?.invalid &&
+              (registerForm.get('password')?.dirty ||
+                registerForm.get('password')?.touched)
+            "
+          >
+            Passwort muss mindestens 6 Zeichen lang sein
+          </mat-error>
+        </mat-form-field>
 
-                <mat-form-field class="full-width">
-                    <mat-label>Passwort</mat-label>
-                    <input matInput formControlName="password" type="password" placeholder="Passwort">
-                    <mat-error
-                        *ngIf="registerForm.get('password')?.invalid && (registerForm.get('password')?.dirty || registerForm.get('password')?.touched)">
-                        Passwort muss mindestens 6 Zeichen lang sein
-                    </mat-error>
-                </mat-form-field>
+        <section>
+          <div *ngIf="errorMessage" class="error-message">
+            {{ errorMessage }}
+          </div>
+          <div *ngIf="successMessage" class="success-message">
+            {{ successMessage }}
+          </div>
+          <div class="login-button-row">
+            <button
+              mat-flat-button
+              color="primary"
+              class="full-width"
+              type="submit"
+              [disabled]="registerForm.invalid || isLoading"
+            >
+              {{ isLoading ? "Wird registriert..." : "Registrieren" }}
+            </button>
+          </div>
+        </section>
 
-                <section>
-                    <div *ngIf="errorMessage" class="error-message">
-                        {{ errorMessage }}
-                    </div>
-                    <div *ngIf="successMessage" class="success-message">
-                        {{ successMessage }}
-                    </div>
-                    <div class="login-button-row">
-                        <button mat-flat-button color="primary" class="full-width" type="submit"
-                            [disabled]="registerForm.invalid || isLoading">
-                            {{ isLoading ? 'Wird registriert...' : 'Registrieren' }}
-                        </button>
-                    </div>
-                </section>
-
-                <p>Bereits registriert? <a routerLink="/login">Zurück zum Login.</a></p>
-
-            </form>
-        </mat-card-content>
-    </mat-card>
+        <p>Bereits registriert? <a routerLink="/login">Zurück zum Login.</a></p>
+      </form>
+    </mat-card-content>
+  </mat-card>
 </div>

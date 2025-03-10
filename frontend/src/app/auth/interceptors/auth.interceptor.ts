@@ -21,7 +21,7 @@ export class AuthInterceptor implements HttpInterceptor {
 
   intercept(
     request: HttpRequest<unknown>,
-    next: HttpHandler
+    next: HttpHandler,
   ): Observable<HttpEvent<unknown>> {
     // Skip adding auth header for public endpoints
     if (this.isPublicEndpoint(request.url)) {
@@ -39,13 +39,13 @@ export class AuthInterceptor implements HttpInterceptor {
           return this.handle401Error(request, next);
         }
         return throwError(() => error);
-      })
+      }),
     );
   }
 
   private addAuthHeader(
     request: HttpRequest<any>,
-    token: string
+    token: string,
   ): HttpRequest<any> {
     return request.clone({
       setHeaders: {
@@ -64,7 +64,7 @@ export class AuthInterceptor implements HttpInterceptor {
 
   private handle401Error(
     request: HttpRequest<any>,
-    next: HttpHandler
+    next: HttpHandler,
   ): Observable<HttpEvent<any>> {
     if (!this.isRefreshing) {
       this.isRefreshing = true;
@@ -83,13 +83,13 @@ export class AuthInterceptor implements HttpInterceptor {
         }),
         finalize(() => {
           this.isRefreshing = false;
-        })
+        }),
       );
     } else {
       return this.refreshTokenSubject.pipe(
         filter((token) => token !== null),
         take(1),
-        switchMap((token) => next.handle(this.addAuthHeader(request, token!)))
+        switchMap((token) => next.handle(this.addAuthHeader(request, token!))),
       );
     }
   }

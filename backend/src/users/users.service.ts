@@ -14,7 +14,12 @@ export class UsersService {
     return await this.userRepository.findOne({ where: { email } });
   }
 
-  async createUser(firstName: string, lastName: string,email: string, passwordHash: string) {
+  async createUser(
+    firstName: string,
+    lastName: string,
+    email: string,
+    passwordHash: string,
+  ) {
     const userByEmail = await this.findOneByEmail(email);
     if (userByEmail) throw new UnauthorizedException('Email already exists');
 

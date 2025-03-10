@@ -1,40 +1,66 @@
 <div class="login-container">
-    <mat-card class="login" appearance="outlined">
-        <mat-card-content>
-            <h1>Anmelden</h1>
-            <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-                <mat-form-field class="full-width">
-                    <mat-label>E-Mail</mat-label>
-                    <input matInput formControlName="email" type="email" placeholder="Email">
-                    <mat-error
-                        *ngIf="loginForm.get('email')?.invalid && (loginForm.get('email')?.dirty || loginForm.get('email')?.touched)">
-                        Bitte geben Sie eine gültige E-Mail-Adresse ein
-                    </mat-error>
-                </mat-form-field>
+  <mat-card class="login" appearance="outlined">
+    <mat-card-content>
+      <h1>Anmelden</h1>
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <mat-form-field class="full-width">
+          <mat-label>E-Mail</mat-label>
+          <input
+            matInput
+            formControlName="email"
+            type="email"
+            placeholder="Email"
+          />
+          <mat-error
+            *ngIf="
+              loginForm.get('email')?.invalid &&
+              (loginForm.get('email')?.dirty || loginForm.get('email')?.touched)
+            "
+          >
+            Bitte geben Sie eine gültige E-Mail-Adresse ein
+          </mat-error>
+        </mat-form-field>
 
-                <mat-form-field class="full-width">
-                    <mat-label>Passwort</mat-label>
-                    <input matInput formControlName="password" type="password" placeholder="Passwort">
-                    <mat-error
-                        *ngIf="loginForm.get('password')?.invalid && (loginForm.get('password')?.dirty || loginForm.get('password')?.touched)">
-                        Passwort wird benötigt
-                    </mat-error>
-                </mat-form-field>
+        <mat-form-field class="full-width">
+          <mat-label>Passwort</mat-label>
+          <input
+            matInput
+            formControlName="password"
+            type="password"
+            placeholder="Passwort"
+          />
+          <mat-error
+            *ngIf="
+              loginForm.get('password')?.invalid &&
+              (loginForm.get('password')?.dirty ||
+                loginForm.get('password')?.touched)
+            "
+          >
+            Passwort wird benötigt
+          </mat-error>
+        </mat-form-field>
 
-                <section>
-                    <div *ngIf="errorMessage" class="error-message">
-                        {{ errorMessage }}
-                    </div>
-                    <div class="example-button-row">
-                        <button mat-flat-button color="primary" class="full-width" type="submit"
-                            [disabled]="loginForm.invalid || isLoading">
-                            {{ isLoading ? 'Wird angemeldet...' : 'Login' }}
-                        </button>
-                    </div>
-                </section>
+        <section>
+          <div *ngIf="errorMessage" class="error-message">
+            {{ errorMessage }}
+          </div>
+          <div class="example-button-row">
+            <button
+              mat-flat-button
+              color="primary"
+              class="full-width"
+              type="submit"
+              [disabled]="loginForm.invalid || isLoading"
+            >
+              {{ isLoading ? "Wird angemeldet..." : "Login" }}
+            </button>
+          </div>
+        </section>
 
-                <p>Noch nicht angemeldet? <a routerLink="/register">Zum Registrieren.</a></p>
-            </form>
-        </mat-card-content>
-    </mat-card>
+        <p>
+          Noch nicht angemeldet? <a routerLink="/register">Zum Registrieren.</a>
+        </p>
+      </form>
+    </mat-card-content>
+  </mat-card>
 </div>

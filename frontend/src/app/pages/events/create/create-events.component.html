@@ -1,0 +1,69 @@
+  <div class="event-creation-page">
+    <h1>Neues Event erstellen</h1>
+  
+    <form [formGroup]="eventForm" (ngSubmit)="onSubmit()" class="event-form">
+      <mat-form-field appearance="outline" class="event-form-field form-field-full-width">
+        <mat-label>Titel</mat-label>
+        <input matInput formControlName="title" placeholder="Titel">
+        <mat-error *ngIf="title.invalid">
+          {{ getTitleErrorMessage() }}
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="event-form-field form-field-full-width description-field">
+        <mat-label>Beschreibung</mat-label>
+        <textarea matInput formControlName="description" rows="5" placeholder="Beschreibung"></textarea>
+        <mat-error *ngIf="description.invalid">
+          {{ getDescriptionErrorMessage() }}
+        </mat-error>
+      </mat-form-field>
+  
+      <mat-form-field appearance="outline" class="event-form-field">
+        <mat-label>Sichtbarkeit</mat-label>
+        <mat-select formControlName="visibility">
+          <mat-option value="public">Öffentlich</mat-option>
+          <mat-option value="private">Privat</mat-option>
+          <mat-option value="unlisted">Nicht gelistet</mat-option>
+        </mat-select>
+        <mat-error *ngIf="visibility.invalid">
+          Sichtbarkeit ist erforderlich
+        </mat-error>
+      </mat-form-field>
+  
+      <mat-form-field appearance="outline" class="event-form-field">
+        <mat-label>Kategorie</mat-label>
+        <mat-select formControlName="category">
+          <mat-option value="music">Musik</mat-option>
+          <mat-option value="sports">Sport</mat-option>
+          <mat-option value="culture">Kultur</mat-option>
+          <mat-option value="other">Sonstiges</mat-option>
+        </mat-select>
+        <mat-error *ngIf="category.invalid">
+          Kategorie ist erforderlich
+        </mat-error>
+      </mat-form-field>
+  
+      <mat-form-field appearance="outline" class="event-form-field">
+        <mat-label>Cover-Bild URL (optional)</mat-label>
+        <input matInput formControlName="coverImageUrl" placeholder="URL eingeben">
+      </mat-form-field>
+  
+      <mat-form-field appearance="outline" class="event-form-field">
+        <mat-label>Maximale Teilnehmerzahl (optional)</mat-label>
+        <input matInput type="number" formControlName="maxParticipants" min="1" placeholder="Anzahl eingeben">
+        <mat-error *ngIf="maxParticipants.invalid">
+          {{ getMaxParticipantsErrorMessage() }}
+        </mat-error>
+      </mat-form-field>
+  
+      <div class="cover-image-preview" *ngIf="coverImageUrl.value">
+        <h3 class="preview-heading">Bildvorschau:</h3>
+        <img [src]="coverImageUrl.value" alt="Cover-Bildvorschau" class="preview-image">
+      </div>
+  
+      <div class="form-actions">
+        <button mat-button type="button" (click)="resetForm()" class="reset-button">Zurücksetzen</button>
+        <button mat-raised-button color="primary" type="submit" [disabled]="eventForm.invalid" class="submit-button">Event erstellen</button>
+      </div>
+    </form>
+  </div>

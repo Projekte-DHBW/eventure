@@ -1,9 +1,10 @@
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
-import { GetUser } from './jwtData.decorator';
 import { RegisterParamsDto } from './entity/RegisterParams';
 import { LoginParamsDto } from './entity/LoginParams';
+import { GetUser } from './jwtData.decorator';
+import { User } from 'src/entity/User';
 
 @Controller('auth')
 export class AuthController {
@@ -27,9 +28,9 @@ export class AuthController {
   @Post('logout')
   @UseGuards(AuthGuard('jwt'))
   async logout(
-    @GetUser('sub') userId: string,
+    @GetUser() user: User,
     @Body('refreshToken') refreshToken?: string,
   ) {
-    return this.authService.logout(userId, refreshToken);
+    return this.authService.logout(user, refreshToken);
   }
 }

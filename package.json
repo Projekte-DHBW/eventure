@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "description": "1. Im Backend Ordner (`cd backend`): `npm install` um die Dependencies zu installieren\r 2. Zum Testen `npm run start:dev` ausführen und schauen ob es geht. Danach ctrl + c drücken\r 3. In den Frontend Ordner rein (`cd ../frontend`): `npm install` \r 4. Zum Testen `npm run start -- -n` dann ctrl + c",
   "main": "index.js",
-    "scripts": {
-      "dev:angular": "cd frontend && npm run start",
-      "dev:nest": "cd backend && npm run start:dev",
-      "dev": "concurrently --names \"0,angular\" -c \"bgMagenta.bold,bgBlue.bold\" \"npm run dev:nest\" \"npm run dev:angular\""
-    },
+  "scripts": {
+    "dev:angular": "cd frontend && npm run start",
+    "dev:nest": "cd backend && npm run start:dev",
+    "dev": "concurrently --names \"0,angular\" -c \"bgMagenta.bold,bgBlue.bold\" \"npm run dev:nest\" \"npm run dev:angular\""
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Projekte-DHBW/eventure.git"

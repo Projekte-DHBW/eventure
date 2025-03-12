@@ -118,11 +118,11 @@ export class AuthService {
     return { accessToken: newAccessToken };
   }
 
-  async logout(userId: string, refreshToken?: string) {
+  async logout(user: User, refreshToken?: string) {
     if (refreshToken) {
       // Logout from specific session
       const tokens = await this.refreshTokenRepo.find({
-        where: { user: { id: userId } },
+        where: { user: { id: user.id } },
       });
 
       for (const token of tokens) {
@@ -132,7 +132,7 @@ export class AuthService {
         }
       }
     } else {
-      await this.refreshTokenRepo.delete({ user: { id: userId } });
+      await this.refreshTokenRepo.delete({ user: { id: user.id } });
     }
   }
 }

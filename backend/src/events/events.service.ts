@@ -6,10 +6,10 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Event } from '../entity/Event';
-import { User } from '../entity/User';
 import { CreateEventDto } from './dto/CreateEvent';
 import { EventFiltersDto } from './dto/EventFilters';
 import { UpdateEventDto } from './dto/UpdateEvent';
+import { User } from 'src/entity/User';
 
 @Injectable()
 export class EventsService {
@@ -21,7 +21,7 @@ export class EventsService {
   async create(createEventDto: CreateEventDto, user: User): Promise<Event> {
     const event = this.eventRepository.create({
       ...createEventDto,
-      creator: user,
+      creator: user.id,
     });
 
     return this.eventRepository.save(event);
@@ -32,7 +32,6 @@ export class EventsService {
 
     const query = this.eventRepository
       .createQueryBuilder('event')
-      .leftJoinAndSelect('event.creator', 'creator')
       .where('event.visibility = :visibility', { visibility: 'public' });
 
     if (search) {
@@ -67,7 +66,6 @@ export class EventsService {
   async findOneById(id: string): Promise<Event> {
     const event = await this.eventRepository.findOne({
       where: { id },
-      relations: ['creator'],
     });
 
     if (!event) {
@@ -79,8 +77,7 @@ export class EventsService {
 
   async findByUser(userId: string): Promise<Event[]> {
     return this.eventRepository.find({
-      where: { creator: { id: userId } },
-      relations: ['creator'],
+      where: { creator: userId },
     });
   }
 
@@ -92,7 +89,7 @@ export class EventsService {
     const event = await this.findOneById(id);
 
     // Check if the user has permission to update this event
-    if (event.creator.id !== userId) {
+    if (event.creator !== userId) {
       throw new UnauthorizedException(
         'You do not have permission to update this event',
       );
@@ -106,7 +103,7 @@ export class EventsService {
     const event = await this.findOneById(id);
 
     // Check if the user has permission to delete this event
-    if (event.creator.id !== userId) {
+    if (event.creator !== userId) {
       throw new UnauthorizedException(
         'You do not have permission to delete this event',
       );
@@ -118,7 +115,6 @@ export class EventsService {
   async getLatestEvents(limit: number = 5): Promise<Event[]> {
     return this.eventRepository.find({
       where: { visibility: 'public' },
-      relations: ['creator'],
       order: { createdAt: 'DESC' },
       take: limit,
     });
@@ -127,7 +123,6 @@ export class EventsService {
   async getPopularEvents(limit: number = 5): Promise<Event[]> {
     return this.eventRepository.find({
       where: { visibility: 'public' },
-      relations: ['creator'],
       order: { maxParticipants: 'DESC' },
       take: limit,
     });
@@ -142,7 +137,6 @@ export class EventsService {
         visibility: 'public',
         category: category as 'music' | 'sports' | 'culture' | 'other',
       },
-      relations: ['creator'],
       order: { createdAt: 'DESC' },
       take: limit,
     });

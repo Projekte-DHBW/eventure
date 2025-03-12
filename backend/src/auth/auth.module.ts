@@ -8,6 +8,7 @@ import { JwtStrategy } from './jwt.strategy';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { RefreshToken } from 'src/entity/RefreshToken';
 import { ConfigModule } from '@nestjs/config';
+import { AuthGuard } from './auth.guard';
 
 @Module({
   imports: [
@@ -19,8 +20,8 @@ import { ConfigModule } from '@nestjs/config';
     }),
     ConfigModule.forRoot(),
   ],
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService, JwtStrategy, AuthGuard],
   controllers: [AuthController],
-  exports: [AuthService],
+  exports: [AuthService, AuthGuard],
 })
 export class AuthModule {}

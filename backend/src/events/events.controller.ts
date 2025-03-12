@@ -11,19 +11,21 @@ import {
   Request,
 } from '@nestjs/common';
 import { EventsService } from './events.service';
-import { AuthGuard } from '@nestjs/passport';
 import { EventFiltersDto } from './dto/EventFilters';
 import { CreateEventDto } from './dto/CreateEvent';
 import { UpdateEventDto } from './dto/UpdateEvent';
+import { GetUser } from 'src/auth/jwtData.decorator';
+import { User } from 'src/entity/User';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 @Controller('events')
 export class EventsController {
   constructor(private readonly eventsService: EventsService) {}
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard)
   @Post()
-  create(@Body() createEventDto: CreateEventDto, @Request() req) {
-    return this.eventsService.create(createEventDto, req.user);
+  create(@Body() createEventDto: CreateEventDto, @GetUser() user: User) {
+    return this.eventsService.create(createEventDto, user);
   }
 
   @Get()
@@ -49,7 +51,7 @@ export class EventsController {
     return this.eventsService.getEventsByCategory(category, limit);
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard)
   @Get('my')
   findMyEvents(@Request() req) {
     return this.eventsService.findByUser(req.user.id);
@@ -60,7 +62,7 @@ export class EventsController {
     return this.eventsService.findOneById(id);
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard)
   @Patch(':id')
   update(
     @Param('id') id: string,
@@ -70,7 +72,7 @@ export class EventsController {
     return this.eventsService.update(id, updateEventDto, req.user.id);
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard)
   @Delete(':id')
   remove(@Param('id') id: string, @Request() req) {
     return this.eventsService.remove(id, req.user.id);

@@ -1,4 +1,4 @@
-type CreateEvent = {
+export type CreateEvent = {
     title: string;
     description: string;
     visibility: "public" | "private" | "unlisted";
@@ -7,4 +7,4 @@ type CreateEvent = {
     maxParticipants?: number;
 }
 
-type UpdateEvent = Partial<CreateEvent>
+export type UpdateEvent = Partial<CreateEvent>

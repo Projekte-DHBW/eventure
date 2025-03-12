@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { CreateEvent, UpdateEvent } from '../types/events';
 
 @Injectable({
   providedIn: 'root'

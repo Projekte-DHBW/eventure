@@ -1,0 +1,124 @@
+/* create-event.component.css */
+body {
+    background-color: #f3f4f9;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  }
+  
+  .event-creation-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  h1 {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 24px;
+    margin-top: 30px;
+  }
+  
+  .event-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 20px;
+  }
+  
+  .form-field-full-width {
+    grid-column: span 2;
+  }
+  
+  .event-form-field {
+    width: 100%;
+    margin-bottom: 0;
+  }
+  
+  /* Anpassungen für Angular Material */
+  ::ng-deep .mat-form-field-wrapper {
+    padding-bottom: 0.5em;
+  }
+  
+  ::ng-deep .mat-form-field-appearance-outline .mat-form-field-infix {
+    padding: 0.5em 0;
+  }
+  
+  ::ng-deep .mat-form-field-label-wrapper {
+    top: -1.2em;
+  }
+  
+  ::ng-deep .mat-form-field-appearance-outline .mat-form-field-flex {
+    padding: 0 0.75em 0 0.75em;
+    margin-top: 0.5em;
+    height: 40px;
+  }
+  
+  /* Textarea höher machen */
+  ::ng-deep textarea.mat-input-element {
+    padding: 8px 0;
+  }
+  
+  ::ng-deep .mat-form-field-appearance-outline.description-field .mat-form-field-flex {
+    height: auto;
+    min-height: 120px;
+  }
+  
+  /* Button-Container */
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 20px;
+    grid-column: span 2;
+  }
+  
+  .reset-button {
+    color: #1976d2;
+  }
+  
+  .submit-button {
+    background-color: #e0e0e0;
+    color: #424242;
+    border-radius: 20px;
+    font-weight: 600;
+  }
+  
+  .submit-button:not([disabled]) {
+    background-color: #1976d2;
+    color: white;
+  }
+  
+  /* Cover-Bild Vorschau */
+  .cover-image-preview {
+    margin-top: 20px;
+    grid-column: span 2;
+  }
+  
+  .preview-heading {
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 10px;
+  }
+  
+  .preview-image {
+    max-width: 300px;
+    max-height: 200px;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+  }
+  
+  /* Responsive Anpassungen */
+  @media (max-width: 768px) {
+    .event-form {
+      grid-template-columns: 1fr;
+    }
+    
+    .form-field-full-width,
+    .form-actions,
+    .cover-image-preview {
+      grid-column: span 1;
+    }
+
+    
+    .search-field {
+      width: 100%;
+    }
+  }

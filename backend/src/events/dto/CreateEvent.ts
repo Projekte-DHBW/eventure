@@ -1,5 +1,7 @@
 import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
 
+export type ICreateEvent = Omit<CreateEventDto, never>;
+
 export class CreateEventDto {
   @IsString()
   title: string;

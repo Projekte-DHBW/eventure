@@ -16,7 +16,7 @@ h1 {
 .register {
   width: 100%;
   max-width: 500px;
-  background-color: var(--background);
+  background-color: white;
 }
 
 .login-button {

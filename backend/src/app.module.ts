@@ -14,6 +14,7 @@ import { User } from './entity/User';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import * as path from 'path';
+import { EventsModule } from './events/events.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import * as path from 'path';
     ]),
     AuthModule,
     UsersModule,
+    EventsModule,
   ],
   controllers: [],
   providers: [AppService],

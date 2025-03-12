@@ -8,7 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
 // @ts-ignore
-import { ICreateEvent } from '../../../../../../backend/src/events/dto/CreateEvent';
+import type { ICreateEvent } from '../../../../../../backend/src/events/dto/CreateEvent';
 
 @Component({
   selector: 'app-create-events',

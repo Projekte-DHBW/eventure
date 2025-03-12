@@ -7,8 +7,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
-// @ts-ignore
-import type { ICreateEvent } from '../../../../../../backend/src/events/dto/CreateEvent';
 
 @Component({
   selector: 'app-create-events',
@@ -75,7 +73,7 @@ export class CreateEventsComponent implements OnInit {
 
   onSubmit(): void {
     if (this.eventForm.valid) {
-      const newEvent: ICreateEvent = this.eventForm.value;
+      const newEvent: CreateEvent = this.eventForm.value;
       
             console.log('Event erstellt:', newEvent);
       

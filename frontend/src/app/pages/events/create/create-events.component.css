@@ -1,26 +1,25 @@
-/* create-event.component.css */
 body {
     background-color: #f3f4f9;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   }
   
   .event-creation-page {
-    max-width: 1200px;
+    max-width: 90%;
     margin: 0 auto;
-    padding: 20px;
+    padding: 1.25rem;
   }
   
   h1 {
-    font-size: 24px;
+    font-size: 1.5rem;
     font-weight: 600;
-    margin-bottom: 24px;
-    margin-top: 30px;
+    margin-bottom: 1.5rem;
+    margin-top: 1.875rem;
   }
   
   .event-form {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    grid-gap: 20px;
+    grid-gap: 1.25rem;
   }
   
   .form-field-full-width {
@@ -32,7 +31,6 @@ body {
     margin-bottom: 0;
   }
   
-  /* Anpassungen für Angular Material */
   ::ng-deep .mat-form-field-wrapper {
     padding-bottom: 0.5em;
   }
@@ -48,25 +46,23 @@ body {
   ::ng-deep .mat-form-field-appearance-outline .mat-form-field-flex {
     padding: 0 0.75em 0 0.75em;
     margin-top: 0.5em;
-    height: 40px;
+    height: 2.5rem;
   }
   
-  /* Textarea höher machen */
   ::ng-deep textarea.mat-input-element {
-    padding: 8px 0;
+    padding: 0.5rem 0;
   }
   
   ::ng-deep .mat-form-field-appearance-outline.description-field .mat-form-field-flex {
     height: auto;
-    min-height: 120px;
+    min-height: 7.5rem;
   }
   
-  /* Button-Container */
   .form-actions {
     display: flex;
     justify-content: flex-end;
-    gap: 12px;
-    margin-top: 20px;
+    gap: 0.75rem;
+    margin-top: 1.25rem;
     grid-column: span 2;
   }
   
@@ -77,7 +73,7 @@ body {
   .submit-button {
     background-color: #e0e0e0;
     color: #424242;
-    border-radius: 20px;
+    border-radius: 1.25rem;
     font-weight: 600;
   }
   
@@ -86,26 +82,76 @@ body {
     color: white;
   }
   
-  /* Cover-Bild Vorschau */
   .cover-image-preview {
-    margin-top: 20px;
+    margin-top: 1.25rem;
     grid-column: span 2;
   }
   
   .preview-heading {
-    font-size: 16px;
+    font-size: 1rem;
     font-weight: 500;
-    margin-bottom: 10px;
+    margin-bottom: 0.625rem;
   }
   
   .preview-image {
-    max-width: 300px;
-    max-height: 200px;
-    border-radius: 8px;
+    max-width: 100%;
+    height: auto;
+    max-height: 12.5rem;
+    border-radius: 0.5rem;
     border: 1px solid #e0e0e0;
   }
   
-  /* Responsive Anpassungen */
+  .app-header {
+    background-color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.625rem 1.25rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.05);
+    margin-bottom: 1.875rem;
+  }
+  
+  .app-logo {
+    color: #1976d2;
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-decoration: none;
+  }
+  
+  .app-logo span {
+    color: #000;
+    font-weight: 900;
+  }
+  
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+  }
+  
+  .search-field {
+    width: 15.625rem;
+  }
+  
+  .user-info {
+    display: flex;
+    align-items: center;
+    background-color: #f0f5ff;
+    padding: 0.375rem 0.75rem;
+    border-radius: 1.25rem;
+    font-size: 0.875rem;
+    color: #1976d2;
+    font-weight: 500;
+  }
+  
+  .app-footer {
+    text-align: center;
+    padding: 1.25rem;
+    margin-top: 2.5rem;
+    color: #666;
+    font-size: 0.875rem;
+  }
+  
   @media (max-width: 768px) {
     .event-form {
       grid-template-columns: 1fr;
@@ -116,7 +162,11 @@ body {
     .cover-image-preview {
       grid-column: span 1;
     }
-
+    
+    .header-actions {
+      flex-direction: column;
+      align-items: flex-end;
+    }
     
     .search-field {
       width: 100%;

@@ -1,6 +1,6 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, throwError, interval, Subscription } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { jwtDecode } from 'jwt-decode';
 import { Router } from '@angular/router';
@@ -26,7 +26,7 @@ interface JwtPayload {
 @Injectable({
   providedIn: 'root',
 })
-export class AuthService {
+export class AuthService implements OnDestroy {
   getEmail() {
     throw new Error('Method not implemented.');
   }
@@ -37,8 +37,15 @@ export class AuthService {
   private http = inject(HttpClient);
   private router = inject(Router);
 
+  private tokenCheckInterval: Subscription | null = null;
+  private readonly TOKEN_CHECK_INTERVAL = 60000; // Check every minute
+
   constructor() {
     this.loadTokens();
+  }
+
+  ngOnDestroy() {
+    this.stopTokenCheck();
   }
 
   private loadTokens(): void {
@@ -53,7 +60,10 @@ export class AuthService {
     return this.http
       .post<LoginResponse>(`${this.apiUrl}/login`, { email, password })
       .pipe(
-        tap((response) => this.setSession(response)),
+        tap((response) => {
+          this.setSession(response);
+          // The setSession will now handle starting token check
+        }),
         catchError((error) => this.handleError(error)),
       );
   }
@@ -118,6 +128,8 @@ export class AuthService {
     try {
       const decodedToken = jwtDecode<JwtPayload>(authResult.accessToken);
       this.currentUserSubject.next(decodedToken);
+      // Start token refresh checker when user logs in
+      this.startTokenCheck();
     } catch (error) {
       console.error('Failed to decode JWT token', error);
       this.clearSession();
@@ -128,6 +140,64 @@ export class AuthService {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
     this.currentUserSubject.next(null);
+    this.stopTokenCheck();
+  }
+
+  // Start checking token expiration periodically
+  private startTokenCheck(): void {
+    this.stopTokenCheck();
+    this.tokenCheckInterval = interval(this.TOKEN_CHECK_INTERVAL).subscribe(() => {
+      this.checkAndRefreshToken();
+    });
+  }
+
+  // Stop checking token expiration
+  private stopTokenCheck(): void {
+    if (this.tokenCheckInterval) {
+      this.tokenCheckInterval.unsubscribe();
+      this.tokenCheckInterval = null;
+    }
+  }
+
+  // Check if token needs refreshing and refresh if needed
+  private checkAndRefreshToken(): void {
+    const accessToken = localStorage.getItem('accessToken');
+    if (!accessToken) return;
+
+    try {
+      const decoded = jwtDecode<JwtPayload>(accessToken);
+      const expiresIn = decoded.exp * 1000 - Date.now();
+      
+      // If token will expire in the next 5 minutes, refresh it
+      if (expiresIn < 300000) {
+        this.refreshToken().subscribe({
+          next: () => console.log('Token refreshed proactively'),
+          error: (error) => console.error('Failed to refresh token:', error)
+        });
+      }
+    } catch (error) {
+      console.error('Error checking token expiration:', error);
+    }
+  }
+
+  // Add a method to initialize auth state on app startup
+  initAuth(): void {
+    const accessToken = localStorage.getItem('accessToken');
+    if (accessToken) {
+      try {
+        const decoded = jwtDecode<JwtPayload>(accessToken);
+        this.currentUserSubject.next(decoded);
+        
+        // Start the token check mechanism
+        this.startTokenCheck();
+        
+        // Immediately check if we need to refresh on startup
+        this.checkAndRefreshToken();
+      } catch (error) {
+        console.error('Failed to decode JWT token on init', error);
+        this.clearSession();
+      }
+    }
   }
 
   isAuthenticated(): boolean {

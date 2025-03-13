@@ -2,34 +2,22 @@ import { Injectable } from '@angular/core';
 import { CreateEvent, UpdateEvent } from '../types/events';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
-
 export class EventsService {
+  constructor() {}
 
-  constructor() { }
+  getEvents() {}
 
-  getEvents() {
+  getEventById(id: string) {}
 
-  }
+  createEvent(data: CreateEvent) {}
 
-  getEventById(id: string) {
+  updateEvent(id: string, data: UpdateEvent) {}
 
-  }
+  deleteEvent(id: string) {}
 
-  createEvent(data: CreateEvent) {
+  joinEvent(id: string) {}
 
-  }
-
-  updateEvent(id: string, data: UpdateEvent) {
-  }
-
-  deleteEvent(id: string) {
-  }
-
-  joinEvent(id: string) {
-  }
-
-  leaveEvent(id: string) {
-  }
+  leaveEvent(id: string) {}
 }

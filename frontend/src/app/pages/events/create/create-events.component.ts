@@ -1,6 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  FormControl,
+  Validators,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -11,20 +17,22 @@ import { CreateEvent } from '../../../types/events';
 
 @Component({
   selector: 'app-create-events',
-  imports: [CommonModule,
+  imports: [
+    CommonModule,
     ReactiveFormsModule,
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
     MatButtonModule,
-    MatCardModule],
+    MatCardModule,
+  ],
   templateUrl: './create-events.component.html',
-  styleUrls: ['./create-events.component.css']
+  styleUrls: ['./create-events.component.css'],
 })
 export class CreateEventsComponent implements OnInit {
   eventForm!: FormGroup;
 
-    title = new FormControl('', [Validators.required]);
+  title = new FormControl('', [Validators.required]);
   description = new FormControl('', [Validators.required]);
   visibility = new FormControl('public', [Validators.required]);
   category = new FormControl('', [Validators.required]);
@@ -33,8 +41,8 @@ export class CreateEventsComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private snackBar: MatSnackBar
-  ) { }
+    private snackBar: MatSnackBar,
+  ) {}
 
   ngOnInit(): void {
     this.initForm();
@@ -47,11 +55,11 @@ export class CreateEventsComponent implements OnInit {
       visibility: this.visibility,
       category: this.category,
       coverImageUrl: this.coverImageUrl,
-      maxParticipants: this.maxParticipants
+      maxParticipants: this.maxParticipants,
     });
   }
 
-    getTitleErrorMessage(): string {
+  getTitleErrorMessage(): string {
     if (this.title.hasError('required')) {
       return 'Titel ist erforderlich';
     }
@@ -75,34 +83,39 @@ export class CreateEventsComponent implements OnInit {
   onSubmit(): void {
     if (this.eventForm.valid) {
       const newEvent: CreateEvent = this.eventForm.value;
-      
-            console.log('Event erstellt:', newEvent);
-      
-            this.snackBar.open('Event wurde erfolgreich erstellt!', 'Schließen', {
+
+      console.log('Event erstellt:', newEvent);
+
+      this.snackBar.open('Event wurde erfolgreich erstellt!', 'Schließen', {
         duration: 3000,
         horizontalPosition: 'center',
         verticalPosition: 'bottom',
       });
-      
-            this.resetForm();
+
+      this.resetForm();
     } else {
-            this.snackBar.open('Bitte alle erforderlichen Felder ausfüllen!', 'Schließen', {
-        duration: 3000,
-        horizontalPosition: 'center',
-        verticalPosition: 'bottom',
-      });
-      
-            this.markFormGroupTouched(this.eventForm);
+      this.snackBar.open(
+        'Bitte alle erforderlichen Felder ausfüllen!',
+        'Schließen',
+        {
+          duration: 3000,
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+        },
+      );
+
+      this.markFormGroupTouched(this.eventForm);
     }
   }
 
   resetForm(): void {
     this.eventForm.reset({
-      visibility: 'public'     });
+      visibility: 'public',
+    });
   }
 
-    private markFormGroupTouched(formGroup: FormGroup): void {
-    Object.values(formGroup.controls).forEach(control => {
+  private markFormGroupTouched(formGroup: FormGroup): void {
+    Object.values(formGroup.controls).forEach((control) => {
       control.markAsTouched();
       if ((control as any).controls) {
         this.markFormGroupTouched(control as FormGroup);

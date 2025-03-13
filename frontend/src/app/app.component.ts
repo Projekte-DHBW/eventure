@@ -9,7 +9,7 @@ import { AuthService } from './auth/services/auth.service';
   standalone: true,
   imports: [RouterOutlet, NavbarComponent, FooterComponent],
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.css'],
 })
 export class AppComponent implements OnInit {
   constructor(private authService: AuthService) {}

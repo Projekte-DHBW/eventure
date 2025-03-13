@@ -6,7 +6,7 @@
 
 .loading-indicator mat-icon {
   animation: spin 1s infinite linear;
-  margin-right: 8px;
+  margin-right: 0.5rem;
 }
 
 @keyframes spin {

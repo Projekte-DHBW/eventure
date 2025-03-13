@@ -6,32 +6,30 @@
     <a class="nav-link" routerLink="/search">Suche</a>
   </div>
   @if (!auth.isAuthenticated()) {
-    <div class="auth-buttons">
-      <a mat-button class="login-button" routerLink="/login">Anmelden</a>
-      <a mat-flat-button class="register-button" routerLink="/register"
-        >Registrieren</a
-      >
-    </div>
+  <div class="auth-buttons">
+    <a mat-button class="login-button" routerLink="/login">Anmelden</a>
+    <a mat-flat-button class="register-button" routerLink="/register">Registrieren</a>
+  </div>
   } @else {
-    <button mat-button [matMenuTriggerFor]="userMenu" class="name">
-      {{ fullName }}
-    </button>
+  <button mat-button [matMenuTriggerFor]="userMenu" class="name">
+    {{ fullName }}
+  </button>
 
-    <mat-menu #userMenu="matMenu" xPosition="before">
-      <a mat-menu-item routerLink="/profile">
-        <mat-icon>person</mat-icon>
-        Profile
-      </a>
-      <a mat-menu-item routerLink="/dashboard">
-        <mat-icon>dashboard</mat-icon>
-        Dashboard
-      </a>
-      <mat-divider></mat-divider>
-      <button mat-menu-item routerLink="/logout">
-        <mat-icon>exit_to_app</mat-icon>
-        Logout
-      </button>
-    </mat-menu>
+  <mat-menu #userMenu="matMenu" xPosition="before">
+    <a mat-menu-item routerLink="/profile">
+      <mat-icon>person</mat-icon>
+      Profile
+    </a>
+    <a mat-menu-item routerLink="/dashboard">
+      <mat-icon>dashboard</mat-icon>
+      Dashboard
+    </a>
+    <mat-divider></mat-divider>
+    <button mat-menu-item (click)="logout()">
+      <mat-icon>exit_to_app</mat-icon>
+      Logout
+    </button>
+  </mat-menu>
   }
   <div class="hamburger" (click)="toggleMobileMenu()">
     <span></span>
@@ -42,34 +40,19 @@
 
 <div class="mobile-menu" [class.active]="mobileMenuOpen">
   <div class="mobile-links">
-    <a class="mobile-link" routerLink="/search" (click)="closeMobileMenu()"
-      >Suche</a
-    >
+    <a class="mobile-link" routerLink="/search" (click)="closeMobileMenu()">Suche</a>
   </div>
   @if (!auth.isAuthenticated()) {
-    <div class="mobile-auth">
-      <a class="mobile-link" routerLink="/login" (click)="closeMobileMenu()"
-        >Anmelden</a
-      >
-      <a
-        class="mobile-link highlight"
-        routerLink="/register"
-        (click)="closeMobileMenu()"
-        >Registrieren</a
-      >
-    </div>
+  <div class="mobile-auth">
+    <a class="mobile-link" routerLink="/login" (click)="closeMobileMenu()">Anmelden</a>
+    <a class="mobile-link highlight" routerLink="/register" (click)="closeMobileMenu()">Registrieren</a>
+  </div>
   } @else {
-    <div class="mobile-user">
-      <p class="user-name">{{ fullName }}</p>
-      <a class="mobile-link" routerLink="/profile" (click)="closeMobileMenu()"
-        >Profile</a
-      >
-      <a class="mobile-link" routerLink="/dashboard" (click)="closeMobileMenu()"
-        >Dashboard</a
-      >
-      <a class="mobile-link" routerLink="/logout" (click)="closeMobileMenu()"
-        >Logout</a
-      >
-    </div>
+  <div class="mobile-user">
+    <p class="user-name">{{ fullName }}</p>
+    <a class="mobile-link" routerLink="/profile" (click)="closeMobileMenu()">Profile</a>
+    <a class="mobile-link" routerLink="/dashboard" (click)="closeMobileMenu()">Dashboard</a>
+    <a class="mobile-link" (click)="logout(); closeMobileMenu()">Logout</a>
+  </div>
   }
 </div>

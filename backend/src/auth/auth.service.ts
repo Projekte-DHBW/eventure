@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
@@ -69,7 +68,6 @@ export class AuthService {
 
     const payload: JwtPayload = {
       sub: user.id,
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       firstName: user.firstName,
       lastName: user.lastName,
     };

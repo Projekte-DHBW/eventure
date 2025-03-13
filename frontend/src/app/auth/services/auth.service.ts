@@ -1,6 +1,12 @@
 import { Injectable, inject, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, throwError, interval, Subscription } from 'rxjs';
+import {
+  BehaviorSubject,
+  Observable,
+  throwError,
+  interval,
+  Subscription,
+} from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { jwtDecode } from 'jwt-decode';
 import { Router } from '@angular/router';
@@ -146,9 +152,11 @@ export class AuthService implements OnDestroy {
   // Start checking token expiration periodically
   private startTokenCheck(): void {
     this.stopTokenCheck();
-    this.tokenCheckInterval = interval(this.TOKEN_CHECK_INTERVAL).subscribe(() => {
-      this.checkAndRefreshToken();
-    });
+    this.tokenCheckInterval = interval(this.TOKEN_CHECK_INTERVAL).subscribe(
+      () => {
+        this.checkAndRefreshToken();
+      },
+    );
   }
 
   // Stop checking token expiration
@@ -167,12 +175,12 @@ export class AuthService implements OnDestroy {
     try {
       const decoded = jwtDecode<JwtPayload>(accessToken);
       const expiresIn = decoded.exp * 1000 - Date.now();
-      
+
       // If token will expire in the next 5 minutes, refresh it
       if (expiresIn < 300000) {
         this.refreshToken().subscribe({
           next: () => console.log('Token refreshed proactively'),
-          error: (error) => console.error('Failed to refresh token:', error)
+          error: (error) => console.error('Failed to refresh token:', error),
         });
       }
     } catch (error) {
@@ -187,10 +195,10 @@ export class AuthService implements OnDestroy {
       try {
         const decoded = jwtDecode<JwtPayload>(accessToken);
         this.currentUserSubject.next(decoded);
-        
+
         // Start the token check mechanism
         this.startTokenCheck();
-        
+
         // Immediately check if we need to refresh on startup
         this.checkAndRefreshToken();
       } catch (error) {

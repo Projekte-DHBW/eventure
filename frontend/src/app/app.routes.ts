@@ -18,5 +18,5 @@ export const routes: Routes = [
     component: DashboardComponent,
     canActivate: [authGuard],
   },
-  { path: "events/create", component: CreateEventsComponent },
+  { path: 'events/create', component: CreateEventsComponent },
 ];

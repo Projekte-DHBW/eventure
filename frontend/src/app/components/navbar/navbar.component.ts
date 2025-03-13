@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { AuthService } from '../../auth/services/auth.service';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIcon } from '@angular/material/icon';
@@ -24,6 +24,10 @@ export class NavbarComponent {
   protected isLoggedIn = this.auth.isAuthenticated();
 
   protected fullName: string | null = null;
+
+  constructor(
+    private router: Router
+  ) {}
 
   ngOnInit() {
     this.fullName = this.auth.getFullName();
@@ -48,5 +52,26 @@ export class NavbarComponent {
     const hamburger = document.querySelector('.hamburger');
     document.body.style.overflow = 'auto';
     hamburger?.classList.remove('active');
+  }
+
+  logout(): void {
+    const refreshToken = localStorage.getItem('refreshToken');
+
+    if (!refreshToken) {
+      console.error('No refresh token found');
+      return;
+    }
+    
+    this.auth.logout(refreshToken).subscribe({
+      next: () => {
+        this.router.navigate(['/']);
+      },
+      error: (error) => {
+        console.error('Error logging out:', error);
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        this.router.navigate(['/']);
+      }
+    });
   }
 }

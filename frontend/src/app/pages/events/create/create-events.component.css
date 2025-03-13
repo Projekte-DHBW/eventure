@@ -302,4 +302,21 @@ h4 {
   mat-card {
     border-radius: 0 !important;
   }
+  
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1em;
+  }
+  
+  .mode-toggle {
+    width: 100%;
+    justify-content: flex-start;
+  }
+  
+  .mode-toggle button {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+  }
 }

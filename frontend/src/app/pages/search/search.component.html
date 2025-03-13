@@ -24,7 +24,7 @@
             <h3>Event-Typ</h3>
             <div class="filter-options">
               <div
-                *ngFor="let type of type"
+                *ngFor="let type of types"
                 class="filter-chip"
                 [class.active]="searchParams.types?.includes(type)"
                 (click)="applyFilter('types', type)"
@@ -68,7 +68,7 @@
             <h3>Zeitraum</h3>
             <div class="filter-options">
               <div
-                *ngFor="let date of date"
+                *ngFor="let date of dates"
                 class="filter-chip"
                 [class.active]="
                   searchParams.date?.toLowerCase() === date.toLowerCase()

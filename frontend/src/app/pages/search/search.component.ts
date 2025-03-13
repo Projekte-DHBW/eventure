@@ -50,7 +50,7 @@ export class SearchComponent implements OnInit {
     endDate?: string;
   } = {};
 
-  @Input() type = [
+  @Input() types = [
     'Konzert',
     'Festival',
     'Theater',
@@ -59,14 +59,14 @@ export class SearchComponent implements OnInit {
     'Kultur',
   ];
   
-  @Input() location = [
+  @Input() locations = [
     'Berlin', 'München', 'Heidenheim', 'Köln', 'Hamburg', 'Frankfurt', 
     'Stuttgart', 'Düsseldorf', 'Dresden', 'Leipzig', 'Nürnberg',
     'Hannover', 'Bremen', 'Essen', 'Dortmund', 'Bonn', 'Mannheim',
     'Freiburg', 'Heidelberg', 'Augsburg'
   ];
   
-  @Input() date = [
+  @Input() dates = [
     'Heute',
     'Morgen',
     'Diese Woche',
@@ -90,7 +90,7 @@ export class SearchComponent implements OnInit {
 
   // New getter for displayed locations
   get displayedLocations(): string[] {
-    return this.showAllLocations ? this.location : this.location.slice(0, this.initialLocationCount);
+    return this.showAllLocations ? this.locations : this.locations.slice(0, this.initialLocationCount);
   }
 
   // New method to toggle location visibility

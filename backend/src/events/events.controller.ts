@@ -9,6 +9,8 @@ import {
   Query,
   UseGuards,
   Request,
+  ValidationPipe,
+  UsePipes,
 } from '@nestjs/common';
 import { EventsService } from './events.service';
 import { EventFiltersDto } from './dto/EventFilters';
@@ -25,8 +27,9 @@ export class EventsController {
 
   @UseGuards(AuthGuard)
   @Post()
-  create(@Body() createEventDto: CreateEventDto, @GetUser() user: User) {
-    return this.eventsService.create(createEventDto, user);
+  @UsePipes(new ValidationPipe({ transform: true }))
+  async create(@Body() createEventDto: CreateEventDto, @GetUser() user: User) {
+    return this.eventsService.createEvent(createEventDto, user);
   }
 
   @Get()
@@ -60,7 +63,7 @@ export class EventsController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.eventsService.findOneById(id);
+    return this.eventsService.findOne(id);
   }
 
   @UseGuards(AuthGuard)

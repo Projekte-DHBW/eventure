@@ -1,109 +1,283 @@
 <div class="event-creation-page">
   <h1>Neues Event erstellen</h1>
 
-  <form [formGroup]="eventForm" (ngSubmit)="onSubmit()" class="event-form">
-    <mat-form-field
-      appearance="outline"
-      class="event-form-field form-field-full-width"
-    >
-      <mat-label>Titel</mat-label>
-      <input matInput formControlName="title" placeholder="Titel" />
-      <mat-error *ngIf="title.invalid">
-        {{ getTitleErrorMessage() }}
-      </mat-error>
-    </mat-form-field>
+  <mat-card>
+    <mat-card-content>
+      <div class="mode-toggle">
+        <button mat-button type="button" (click)="toggleAdvancedMode()">
+          {{ advancedMode ? 'Einfacher Modus' : 'Erweiterter Modus' }}
+        </button>
+      </div>
 
-    <mat-form-field
-      appearance="outline"
-      class="event-form-field form-field-full-width description-field"
-    >
-      <mat-label>Beschreibung</mat-label>
-      <textarea
-        matInput
-        formControlName="description"
-        rows="5"
-        placeholder="Beschreibung"
-      ></textarea>
-      <mat-error *ngIf="description.invalid">
-        {{ getDescriptionErrorMessage() }}
-      </mat-error>
-    </mat-form-field>
+      <form [formGroup]="eventForm" (ngSubmit)="onSubmit()" class="event-form">
+        <mat-tab-group>
+          <!-- Basic Info Tab -->
+          <mat-tab label="Grundinformationen">
+            <div class="tab-content">
+              <mat-form-field appearance="outline" class="form-field-full-width">
+                <mat-label>Titel</mat-label>
+                <input matInput formControlName="title" placeholder="Titel" required>
+                <mat-error *ngIf="title.invalid">{{ getTitleErrorMessage() }}</mat-error>
+              </mat-form-field>
 
-    <mat-form-field appearance="outline" class="event-form-field">
-      <mat-label>Sichtbarkeit</mat-label>
-      <mat-select formControlName="visibility">
-        <mat-option value="public">Öffentlich</mat-option>
-        <mat-option value="private">Privat</mat-option>
-        <mat-option value="unlisted">Nicht gelistet</mat-option>
-      </mat-select>
-      <mat-error *ngIf="visibility.invalid">
-        Sichtbarkeit ist erforderlich
-      </mat-error>
-    </mat-form-field>
+              <mat-form-field appearance="outline" class="form-field-full-width">
+                <mat-label>Beschreibung</mat-label>
+                <textarea matInput formControlName="description" rows="5" placeholder="Beschreibung"
+                  required></textarea>
+                <mat-error *ngIf="description.invalid">{{ getDescriptionErrorMessage() }}</mat-error>
+              </mat-form-field>
 
-    <mat-form-field appearance="outline" class="event-form-field">
-      <mat-label>Kategorie</mat-label>
-      <mat-select formControlName="category">
-        <mat-option value="music">Musik</mat-option>
-        <mat-option value="sports">Sport</mat-option>
-        <mat-option value="culture">Kultur</mat-option>
-        <mat-option value="other">Sonstiges</mat-option>
-      </mat-select>
-      <mat-error *ngIf="category.invalid">
-        Kategorie ist erforderlich
-      </mat-error>
-    </mat-form-field>
+              <div class="form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Sichtbarkeit</mat-label>
+                  <mat-select formControlName="visibility" required>
+                    <mat-option value="public">Öffentlich</mat-option>
+                    <mat-option value="private">Privat</mat-option>
+                    <mat-option value="unlisted">Nicht gelistet</mat-option>
+                  </mat-select>
+                </mat-form-field>
 
-    <mat-form-field appearance="outline" class="event-form-field">
-      <mat-label>Cover-Bild URL (optional)</mat-label>
-      <input
-        matInput
-        formControlName="coverImageUrl"
-        placeholder="URL eingeben"
-      />
-    </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Kategorie</mat-label>
+                  <mat-select formControlName="category" required>
+                    <mat-option value="music">Musik</mat-option>
+                    <mat-option value="sports">Sport</mat-option>
+                    <mat-option value="culture">Kultur</mat-option>
+                    <mat-option value="other">Sonstiges</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
 
-    <mat-form-field appearance="outline" class="event-form-field">
-      <mat-label>Maximale Teilnehmerzahl (optional)</mat-label>
-      <input
-        matInput
-        type="number"
-        formControlName="maxParticipants"
-        min="1"
-        placeholder="Anzahl eingeben"
-      />
-      <mat-error *ngIf="maxParticipants.invalid">
-        {{ getMaxParticipantsErrorMessage() }}
-      </mat-error>
-    </mat-form-field>
+              <div class="form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Cover-Bild URL (optional)</mat-label>
+                  <input matInput formControlName="coverImageUrl" placeholder="URL eingeben">
+                </mat-form-field>
 
-    <div class="cover-image-preview" *ngIf="coverImageUrl.value">
-      <h3 class="preview-heading">Bildvorschau:</h3>
-      <img
-        [src]="coverImageUrl.value"
-        alt="Cover-Bildvorschau"
-        class="preview-image"
-      />
-    </div>
+                <mat-form-field appearance="outline">
+                  <mat-label>Maximale Teilnehmerzahl (optional)</mat-label>
+                  <input matInput type="number" formControlName="maxParticipants" min="1" placeholder="Anzahl eingeben">
+                  <mat-error *ngIf="maxParticipants.invalid">{{ getMaxParticipantsErrorMessage() }}</mat-error>
+                </mat-form-field>
+              </div>
 
-    <div class="form-actions">
-      <button
-        mat-button
-        type="button"
-        (click)="resetForm()"
-        class="reset-button"
-      >
-        Zurücksetzen
-      </button>
-      <button
-        mat-raised-button
-        color="primary"
-        type="submit"
-        [disabled]="eventForm.invalid"
-        class="submit-button"
-      >
-        Event erstellen
-      </button>
-    </div>
-  </form>
+              <div class="cover-image-preview" *ngIf="coverImageUrl.value">
+                <h3 class="preview-heading">Bildvorschau:</h3>
+                <img [src]="coverImageUrl.value" alt="Cover-Bildvorschau" class="preview-image">
+              </div>
+            </div>
+          </mat-tab>
+
+          <!-- Location & Time Tab - Basic -->
+          <mat-tab label="Ort & Zeit">
+            <div class="tab-content">
+              <div class="online-event-section">
+                <mat-checkbox formControlName="isOnline">Online-Event</mat-checkbox>
+
+                <mat-form-field appearance="outline" class="meeting-link" *ngIf="isOnline.value">
+                  <mat-label>Meeting-Link</mat-label>
+                  <input matInput formControlName="meetingLink" placeholder="z.B. Zoom-Link" required>
+                  <mat-error *ngIf="eventForm.get('meetingLink')?.hasError('required')">
+                    Meeting-Link ist für Online-Events erforderlich
+                  </mat-error>
+                </mat-form-field>
+              </div>
+
+              <div *ngIf="!isOnline.value">
+                <!-- Simple location fields (shown in basic mode) -->
+                <div *ngIf="!advancedMode">
+                  <div class="form-row">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Ort</mat-label>
+                      <input matInput formControlName="location" placeholder="z.B. Berlin, Alexanderplatz">
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                      <mat-label>Datum & Uhrzeit</mat-label>
+                      <input matInput [matDatepicker]="picker" formControlName="eventDate">
+                      <mat-hint>TT.MM.JJJJ</mat-hint>
+                      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                      <mat-datepicker #picker></mat-datepicker>
+                    </mat-form-field>
+                  </div>
+                </div>
+
+                <!-- Advanced occurrences section (shown in advanced mode) -->
+                <div *ngIf="advancedMode">
+                  <div class="section-title">
+                    <h3>Veranstaltungstermine</h3>
+                    <button mat-button type="button" color="primary" (click)="addOccurrence()">
+                      <mat-icon>add</mat-icon> Termin hinzufügen
+                    </button>
+                  </div>
+
+                  <div formArrayName="occurrences">
+                    <mat-expansion-panel *ngFor="let occurrenceForm of occurrences.controls; let i = index"
+                      class="occurrence-panel">
+                      <mat-expansion-panel-header>
+                        <mat-panel-title>
+                          Termin {{ i + 1 }}
+                        </mat-panel-title>
+                      </mat-expansion-panel-header>
+
+                      <div [formGroupName]="i">
+                        <div class="form-row">
+                          <mat-form-field appearance="outline">
+                            <mat-label>Startdatum & Zeit</mat-label>
+                            <input matInput [matDatepicker]="startPicker" formControlName="startDate" required>
+                            <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+                            <mat-datepicker #startPicker></mat-datepicker>
+                          </mat-form-field>
+
+                          <mat-form-field appearance="outline">
+                            <mat-label>Enddatum & Zeit (optional)</mat-label>
+                            <input matInput [matDatepicker]="endPicker" formControlName="endDate">
+                            <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+                            <mat-datepicker #endPicker></mat-datepicker>
+                          </mat-form-field>
+                        </div>
+
+                        <div formGroupName="location">
+                          <h4>Veranstaltungsort</h4>
+                          <div class="form-row">
+                            <mat-form-field appearance="outline">
+                              <mat-label>Adresse</mat-label>
+                              <input matInput formControlName="address" placeholder="Straße, Hausnummer" required>
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline">
+                              <mat-label>Stadt</mat-label>
+                              <input matInput formControlName="city" placeholder="z.B. Berlin" required>
+                            </mat-form-field>
+                          </div>
+
+                          <div class="form-row">
+                            <mat-form-field appearance="outline">
+                              <mat-label>Bundesland</mat-label>
+                              <input matInput formControlName="state" placeholder="z.B. Brandenburg" required>
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline">
+                              <mat-label>Land</mat-label>
+                              <input matInput formControlName="country" placeholder="z.B. Deutschland" required>
+                            </mat-form-field>
+                          </div>
+
+                          <div class="form-row">
+                            <mat-form-field appearance="outline">
+                              <mat-label>PLZ (optional)</mat-label>
+                              <input matInput formControlName="postalCode" placeholder="z.B. 10115">
+                            </mat-form-field>
+                          </div>
+
+                          <div class="form-row">
+                            <mat-form-field appearance="outline">
+                              <mat-label>Breitengrad (optional)</mat-label>
+                              <input matInput type="number" formControlName="latitude" placeholder="z.B. 52.5200">
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline">
+                              <mat-label>Längengrad (optional)</mat-label>
+                              <input matInput type="number" formControlName="longitude" placeholder="z.B. 13.4050">
+                            </mat-form-field>
+                          </div>
+                        </div>
+
+                        <div class="form-actions">
+                          <button mat-button type="button" color="warn" (click)="removeOccurrence(i)">
+                            <mat-icon>delete</mat-icon> Termin entfernen
+                          </button>
+                        </div>
+                      </div>
+                    </mat-expansion-panel>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </mat-tab>
+
+          <!-- Managers Tab - Only in Advanced Mode -->
+          <mat-tab label="Event-Manager" *ngIf="advancedMode">
+            <div class="tab-content">
+              <div class="section-title">
+                <h3>Event-Manager</h3>
+                <button mat-button type="button" color="primary" (click)="addManager()">
+                  <mat-icon>add</mat-icon> Manager hinzufügen
+                </button>
+              </div>
+
+              <div formArrayName="managers">
+                <div *ngFor="let managerForm of managers.controls; let i = index" [formGroupName]="i"
+                  class="manager-item">
+                  <app-user-search [searchType]="'email'" label="Manager einladen"
+                    placeholder="Email-Adresse eingeben..." (userSelected)="onManagerSelected($event, i)">
+                  </app-user-search>
+
+                  <input type="hidden" formControlName="userId">
+
+                  <button mat-icon-button type="button" color="warn" (click)="removeManager(i)">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </mat-tab>
+
+          <!-- Invitations Tab - Only in Advanced Mode -->
+          <mat-tab label="Einladungen" *ngIf="advancedMode">
+            <div class="tab-content">
+              <div class="section-title">
+                <h3>Einladungen</h3>
+                <button mat-button type="button" color="primary" (click)="addInvitation()">
+                  <mat-icon>add</mat-icon> Einladung hinzufügen
+                </button>
+              </div>
+
+              <div formArrayName="invitations">
+                <div *ngFor="let invitationForm of invitations.controls; let i = index" [formGroupName]="i"
+                  class="invitation-item">
+                  <div class="form-row">
+                    <mat-form-field appearance="outline">
+                      <mat-label>E-Mail</mat-label>
+                      <input matInput formControlName="email" placeholder="beispiel@email.com" required>
+                      <mat-error *ngIf="invitationForm.get('email')?.hasError('email')">
+                        Bitte gültige E-Mail-Adresse eingeben
+                      </mat-error>
+                    </mat-form-field>
+                  </div>
+
+                  <div class="form-row">
+                    <mat-form-field appearance="outline" class="form-field-full-width">
+                      <mat-label>Nachricht (optional)</mat-label>
+                      <textarea matInput formControlName="message" rows="3"
+                        placeholder="Persönliche Nachricht..."></textarea>
+                    </mat-form-field>
+                  </div>
+
+                  <button mat-button type="button" color="warn" (click)="removeInvitation(i)">
+                    <mat-icon>delete</mat-icon> Einladung entfernen
+                  </button>
+
+                  <mat-divider *ngIf="i < invitations.length - 1"></mat-divider>
+                </div>
+              </div>
+            </div>
+          </mat-tab>
+        </mat-tab-group>
+
+        <div class="form-actions">
+          <button mat-button type="button" (click)="resetForm()" [disabled]="isLoading">
+            Zurücksetzen
+          </button>
+          <button mat-raised-button color="primary" type="submit" [disabled]="eventForm.invalid || isLoading">
+            <span *ngIf="isLoading">
+              <mat-icon class="spinner">sync</mat-icon>
+              Wird erstellt...
+            </span>
+            <span *ngIf="!isLoading">Event erstellen</span>
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
 </div>

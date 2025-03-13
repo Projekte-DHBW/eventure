@@ -18,6 +18,36 @@ h1 {
   margin-top: 1.875rem;
 }
 
+mat-card {
+  margin-bottom: 2rem;
+}
+
+.mode-toggle {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1rem;
+}
+
+.tab-content {
+  padding: 1.25rem 0;
+}
+
+.form-row {
+  display: flex;
+  gap: 1.25rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.form-row mat-form-field {
+  flex: 1;
+  min-width: 200px;
+}
+
+.form-field-full-width {
+  width: 100%;
+}
+
 .event-form {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -55,9 +85,7 @@ h1 {
   padding: 0.5rem 0;
 }
 
-::ng-deep
-  .mat-form-field-appearance-outline.description-field
-  .mat-form-field-flex {
+::ng-deep .mat-form-field-appearance-outline.description-field .mat-form-field-flex {
   height: auto;
   min-height: 7.5rem;
 }
@@ -65,8 +93,8 @@ h1 {
 .form-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 0.75rem;
-  margin-top: 1.25rem;
+  gap: 1rem;
+  margin-top: 1.5rem;
   grid-column: span 2;
 }
 
@@ -87,21 +115,21 @@ h1 {
 }
 
 .cover-image-preview {
-  margin-top: 1.25rem;
+  margin: 1rem 0;
   grid-column: span 2;
 }
 
 .preview-heading {
   font-size: 1rem;
   font-weight: 500;
-  margin-bottom: 0.625rem;
+  margin-bottom: 0.5rem;
 }
 
 .preview-image {
   max-width: 100%;
   height: auto;
-  max-height: 12.5rem;
-  border-radius: 0.5rem;
+  max-height: 300px;
+  border-radius: 4px;
   border: 1px solid #e0e0e0;
 }
 
@@ -154,6 +182,62 @@ h1 {
   margin-top: 2.5rem;
   color: #666;
   font-size: 0.875rem;
+}
+
+.section-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.section-title h3 {
+  margin: 0;
+}
+
+.occurrence-panel {
+  margin-bottom: 1rem;
+}
+
+.manager-item,
+.invitation-item {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+}
+
+mat-divider {
+  margin: 1.5rem 0;
+}
+
+.online-event-section {
+  margin-bottom: 1.5rem;
+}
+
+.meeting-link {
+  display: block;
+  margin-top: 0.5rem;
+}
+
+h4 {
+  margin: 1rem 0;
+}
+
+/* Spinner animation */
+.spinner {
+  animation: spin 1s infinite linear;
+  margin-right: 0.5rem;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @media (max-width: 768px) {

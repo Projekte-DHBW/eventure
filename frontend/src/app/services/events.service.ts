@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { CreateEvent, UpdateEvent } from '../types/events';
+import { CreateEvent, UpdateEvent, Event } from '../types/events';
 import { HttpClientService } from './httpClient.service';
 import { Observable } from 'rxjs';
 
@@ -13,7 +13,9 @@ export class EventsService {
 
   getEventById(id: string) {}
 
-  createEvent(data: CreateEvent) {}
+  createEvent(data: CreateEvent): Observable<Event> {
+    return this.http.post<Event>('events', data);
+  }
 
   updateEvent(id: string, data: UpdateEvent) {}
 

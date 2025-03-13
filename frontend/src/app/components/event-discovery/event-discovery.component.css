@@ -1,3 +1,24 @@
+.loading-indicator {
+  display: flex;
+  align-items: center;
+  color: #666;
+}
+
+.loading-indicator mat-icon {
+  animation: spin 1s infinite linear;
+  margin-right: 8px;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .main-content {
   display: flex;
   position: relative;
@@ -125,7 +146,8 @@ mat-form-field {
   margin-top: 1rem;
   height: 3.125rem;
   border-radius: 0.25rem;
-  background-color: var(--secondary); /* Pink button */
+  background-color: var(--secondary);
+  /* Pink button */
   color: white;
   font-weight: 500;
   font-size: 1rem;

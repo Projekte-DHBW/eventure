@@ -1,19 +1,28 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
+import { FormBuilder, FormGroup, FormControl, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { FormGroup, FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { CommonModule } from '@angular/common';
+import { Observable, of } from 'rxjs';
+import { debounceTime, distinctUntilChanged, switchMap, tap, catchError, startWith, filter, map } from 'rxjs/operators';
+import { EventsService } from '../../services/events.service';
 
 @Component({
   selector: 'app-event-discovery',
   standalone: true,
   imports: [
+    CommonModule,
     MatButtonModule,
     MatSelectModule,
     MatFormFieldModule,
     MatIconModule,
+    MatInputModule,
+    MatAutocompleteModule,
     ReactiveFormsModule,
   ],
   templateUrl: './event-discovery.component.html',
@@ -28,7 +37,10 @@ export class EventDiscoveryComponent implements OnInit {
     'Kunst',
     'Kultur',
   ];
+  
+  // Keep a static list as fallback, but we'll replace with API data
   @Input() location = ['Berlin', 'München', 'Heidenheim', 'Köln'];
+  
   @Input() date = [
     'Heute',
     'Morgen',
@@ -38,24 +50,52 @@ export class EventDiscoveryComponent implements OnInit {
   ];
 
   eventSearchForm: FormGroup;
+  locationControl = new FormControl('');
+  filteredCities: Observable<string[]> | undefined;
+  isLoading = false;
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
+    private eventsService: EventsService
   ) {
     this.eventSearchForm = this.fb.group({
       eventType: [''],
-      location: [''],
+      location: this.locationControl,
       date: [''],
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    // Initialize city autocomplete
+    this.filteredCities = this.locationControl.valueChanges.pipe(
+      startWith(''),
+      debounceTime(50),
+      distinctUntilChanged(),
+      filter(query => typeof query === 'string'),
+      tap(() => this.isLoading = true),
+      switchMap(query => {
+        if (!query || query.length < 2) {
+          return of(this.location); // Return default locations for empty query
+        }
+        
+        return this.eventsService.searchCities(query).pipe(
+          tap(res => console.log('Cities API response:', res)),
+          map(response => response.cities),
+          catchError(() => {
+            console.error('Error fetching cities');
+            return of(this.location); // Fallback to static list on error
+          })
+        );
+      }),
+      tap(() => this.isLoading = false)
+    );
+  }
 
   searchEvents(): void {
     if (this.eventSearchForm.valid) {
       const formValues = this.eventSearchForm.value;
-
+      
       // Create query parameters object
       const queryParams: any = {};
 
@@ -77,5 +117,10 @@ export class EventDiscoveryComponent implements OnInit {
         queryParams: queryParams,
       });
     }
+  }
+  
+  // Helper method for the template
+  displayCity(city: string): string {
+    return city ? city : '';
   }
 }

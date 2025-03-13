@@ -24,7 +24,7 @@
             <h3>Event-Typ</h3>
             <div class="filter-options">
               <div
-                *ngFor="let type of eventTypes"
+                *ngFor="let type of type"
                 class="filter-chip"
                 [class.active]="searchParams.types?.includes(type)"
                 (click)="applyFilter('types', type)"
@@ -40,11 +40,11 @@
             </div>
           </div>
 
-          <div class="filter-group">
+          <div class="filter-group location-filter">
             <h3>Standort</h3>
-            <div class="filter-options">
+            <div class="filter-options" [class.expanded]="showAllLocations">
               <div
-                *ngFor="let location of locations"
+                *ngFor="let location of displayedLocations"
                 class="filter-chip"
                 [class.active]="searchParams.locations?.includes(location)"
                 (click)="applyFilter('locations', location)"
@@ -58,13 +58,17 @@
                 {{ location }}
               </div>
             </div>
+            <button class="show-more-btn" (click)="toggleLocationVisibility()">
+              {{ showAllLocations ? 'Weniger anzeigen' : 'Mehr anzeigen' }}
+              <mat-icon>{{ showAllLocations ? 'expand_less' : 'expand_more' }}</mat-icon>
+            </button>
           </div>
 
           <div class="filter-group">
             <h3>Zeitraum</h3>
             <div class="filter-options">
               <div
-                *ngFor="let date of dates"
+                *ngFor="let date of date"
                 class="filter-chip"
                 [class.active]="
                   searchParams.date?.toLowerCase() === date.toLowerCase()

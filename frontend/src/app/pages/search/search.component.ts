@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
@@ -50,22 +50,33 @@ export class SearchComponent implements OnInit {
     endDate?: string;
   } = {};
 
-  eventTypes: string[] = [
-    'Festival',
+  @Input() type = [
     'Konzert',
+    'Festival',
     'Theater',
     'Sport',
     'Kunst',
     'Kultur',
   ];
-  locations: string[] = ['Berlin', 'München', 'Köln', 'Hamburg', 'Heidenheim'];
-  dates: string[] = [
+  
+  @Input() location = [
+    'Berlin', 'München', 'Heidenheim', 'Köln', 'Hamburg', 'Frankfurt', 
+    'Stuttgart', 'Düsseldorf', 'Dresden', 'Leipzig', 'Nürnberg',
+    'Hannover', 'Bremen', 'Essen', 'Dortmund', 'Bonn', 'Mannheim',
+    'Freiburg', 'Heidelberg', 'Augsburg'
+  ];
+  
+  @Input() date = [
     'Heute',
     'Morgen',
     'Diese Woche',
     'Diesen Monat',
     'Dieses Jahr',
   ];
+
+  // New properties for location filter
+  showAllLocations = false;
+  initialLocationCount = 6;
 
   searchInput = new FormControl('');
   loading = true;
@@ -76,6 +87,16 @@ export class SearchComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
   ) {}
+
+  // New getter for displayed locations
+  get displayedLocations(): string[] {
+    return this.showAllLocations ? this.location : this.location.slice(0, this.initialLocationCount);
+  }
+
+  // New method to toggle location visibility
+  toggleLocationVisibility() {
+    this.showAllLocations = !this.showAllLocations;
+  }
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {

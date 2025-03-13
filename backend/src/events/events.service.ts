@@ -6,6 +6,8 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Event } from '../entity/Event';
+import { EventLocation } from '../entity/EventLocation';
+import { EventOccurrence } from '../entity/EventOccurrence';
 import { CreateEventDto } from './dto/CreateEvent';
 import { EventFiltersDto } from './dto/EventFilters';
 import { UpdateEventDto } from './dto/UpdateEvent';
@@ -140,5 +142,34 @@ export class EventsService {
       order: { createdAt: 'DESC' },
       take: limit,
     });
+  }
+
+  /**
+   * Search for cities matching the provided query using Event location field
+   * @param query Search string for city name
+   * @param limit Maximum number of results to return
+   * @returns List of unique cities matching the query
+   */
+  async searchCities(query: string, limit: number = 10): Promise<string[]> {
+    // Query the location field directly from the Event table
+    const results = await this.eventRepository
+      .createQueryBuilder('event')
+      .where('LOWER(event.location) LIKE LOWER(:query)', {
+        query: `%${query}%`,
+      })
+      .select('event.location', 'location')
+      .distinct(true)
+      .limit(limit)
+      .getRawMany();
+
+    // Extract the location values from the results
+    const locations = results
+      .map((result) => result.location)
+      .filter(
+        (location) =>
+          location !== null && location !== undefined && location.trim() !== '',
+      );
+
+    return locations;
   }
 }

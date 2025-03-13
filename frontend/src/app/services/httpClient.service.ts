@@ -1,10 +1,9 @@
-import { Injectable, Inject, Optional } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
+import { AuthService } from '../auth/services/auth.service';
 import { environment } from '../../environments/environment';
-import { TokenService } from '../auth/services/token.service';
-import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -12,8 +11,7 @@ import { Router } from '@angular/router';
 export class HttpClientService {
   constructor(
     private http: HttpClient,
-    private tokenService: TokenService,
-    private router: Router
+    private authService: AuthService
   ) {}
 
   /**
@@ -157,7 +155,7 @@ export class HttpClientService {
   }
 
   private addAuthHeader(headers: any): HttpHeaders {
-    const token = this.tokenService.getAccessToken();
+    const token = localStorage.getItem('accessToken');
     let httpHeaders = new HttpHeaders(headers);
     
     if (token) {
@@ -168,25 +166,9 @@ export class HttpClientService {
   }
 
   private handleUnauthorizedError<T>(method: string, url: string, options: any): Observable<T> {
-    // Get refresh token from TokenService
-    const refreshToken = this.tokenService.getRefreshToken();
-    
-    if (!refreshToken) {
-      // No refresh token available, redirect to login
-      this.tokenService.clearTokens();
-      this.router.navigate(['/login']);
-      return throwError(() => new Error('Authentication required'));
-    }
-    
-    // Call the token refresh endpoint directly
-    return this.http.post<{accessToken: string}>(
-      `${environment.apiUrl}/auth/refresh-token`, 
-      { refreshToken }
-    ).pipe(
+    //@ts-ignore
+    return this.authService.refreshToken().pipe(
       switchMap(response => {
-        // Store the new access token
-        this.tokenService.setAccessToken(response.accessToken);
-        
         // Update the auth header with new token
         const headers = new HttpHeaders(options.headers);
         const updatedHeaders = headers.set('Authorization', `Bearer ${response.accessToken}`);
@@ -199,10 +181,9 @@ export class HttpClientService {
         return this.http.request<T>(method, url, updatedOptions);
       }),
       catchError(error => {
-        // If token refresh fails, redirect to login
-        this.tokenService.clearTokens();
-        this.router.navigate(['/login']);
-        return throwError(() => new Error('Session expired. Please log in again.'));
+        // If token refresh fails, log out the user
+        this.authService.logout();
+        return this.handleError(error);
       })
     );
   }

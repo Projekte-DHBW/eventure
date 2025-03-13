@@ -29,7 +29,7 @@ import { EventsService } from '../../services/events.service';
   styleUrl: './event-discovery.component.css',
 })
 export class EventDiscoveryComponent implements OnInit {
-  @Input() type = [
+  @Input() types = [
     'Konzert',
     'Festival',
     'Theater',
@@ -39,9 +39,9 @@ export class EventDiscoveryComponent implements OnInit {
   ];
   
   // Keep a static list as fallback, but we'll replace with API data
-  @Input() location = ['Berlin', 'München', 'Heidenheim', 'Köln'];
+  @Input() locations = ['Berlin', 'München', 'Heidenheim', 'Köln'];
   
-  @Input() date = [
+  @Input() dates = [
     'Heute',
     'Morgen',
     'Diese Woche',
@@ -76,7 +76,7 @@ export class EventDiscoveryComponent implements OnInit {
       tap(() => this.isLoading = true),
       switchMap(query => {
         if (!query || query.length < 2) {
-          return of(this.location); // Return default locations for empty query
+          return of(this.locations); // Return default locations for empty query
         }
         
         return this.eventsService.searchCities(query).pipe(
@@ -84,7 +84,7 @@ export class EventDiscoveryComponent implements OnInit {
           map(response => response.cities),
           catchError(() => {
             console.error('Error fetching cities');
-            return of(this.location); // Fallback to static list on error
+            return of(this.locations); // Fallback to static list on error
           })
         );
       }),

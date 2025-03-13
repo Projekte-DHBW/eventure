@@ -151,13 +151,11 @@ export class EventsService {
    * @returns List of unique cities matching the query
    */
   async searchCities(query: string, limit: number = 10): Promise<string[]> {
-    const lowercaseQuery = query.toLowerCase();
-
     // Query the location field directly from the Event table
     const results = await this.eventRepository
       .createQueryBuilder('event')
       .where('LOWER(event.location) LIKE LOWER(:query)', {
-        query: `%${lowercaseQuery}%`,
+        query: `%${query}%`,
       })
       .select('event.location', 'location')
       .distinct(true)

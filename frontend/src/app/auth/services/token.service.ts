@@ -10,30 +10,30 @@ export interface JwtPayload {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class TokenService {
   getAccessToken(): string | null {
     return localStorage.getItem('accessToken');
   }
-  
+
   getRefreshToken(): string | null {
     return localStorage.getItem('refreshToken');
   }
-  
+
   setAccessToken(token: string): void {
     localStorage.setItem('accessToken', token);
   }
-  
+
   setRefreshToken(token: string): void {
     localStorage.setItem('refreshToken', token);
   }
-  
+
   clearTokens(): void {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
   }
-  
+
   isTokenExpired(token: string): boolean {
     try {
       const decoded = jwtDecode<JwtPayload>(token);
@@ -42,7 +42,7 @@ export class TokenService {
       return true;
     }
   }
-  
+
   decodeToken(token: string): JwtPayload | null {
     try {
       return jwtDecode<JwtPayload>(token);
@@ -50,7 +50,7 @@ export class TokenService {
       return null;
     }
   }
-  
+
   hasValidAccessToken(): boolean {
     const token = this.getAccessToken();
     return !!token && !this.isTokenExpired(token);

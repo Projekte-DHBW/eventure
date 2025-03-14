@@ -7,7 +7,13 @@ import { MatOptionModule } from '@angular/material/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
-import { debounceTime, distinctUntilChanged, switchMap, tap, catchError } from 'rxjs/operators';
+import {
+  debounceTime,
+  distinctUntilChanged,
+  switchMap,
+  tap,
+  catchError,
+} from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
 import { UserService, UserSearchResult } from '../../services/user.service';
 
@@ -22,24 +28,32 @@ import { UserService, UserSearchResult } from '../../services/user.service';
     MatAutocompleteModule,
     MatOptionModule,
     MatButtonModule,
-    MatIconModule
+    MatIconModule,
   ],
   template: `
     <div class="user-search">
       <mat-form-field appearance="outline" class="search-field">
         <mat-label>{{ label }}</mat-label>
-        <input 
+        <input
           type="text"
           matInput
           [formControl]="searchControl"
           [placeholder]="placeholder"
           [matAutocomplete]="auto"
           (blur)="onBlur()"
+        />
+        <mat-hint *ngIf="searchType === 'email'"
+          >Geben Sie die vollständige E-Mail-Adresse ein</mat-hint
         >
-        <mat-hint *ngIf="searchType === 'email'">Geben Sie die vollständige E-Mail-Adresse ein</mat-hint>
-        <mat-hint *ngIf="searchType === 'name'">Mindestens 3 Zeichen eingeben</mat-hint>
+        <mat-hint *ngIf="searchType === 'name'"
+          >Mindestens 3 Zeichen eingeben</mat-hint
+        >
         <mat-icon matSuffix>{{ isLoading ? 'sync' : 'search' }}</mat-icon>
-        <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="onOptionSelected($event)">
+        <mat-autocomplete
+          #auto="matAutocomplete"
+          [displayWith]="displayFn"
+          (optionSelected)="onOptionSelected($event)"
+        >
           <mat-option *ngIf="isLoading" disabled>
             <span>Suche...</span>
           </mat-option>
@@ -55,44 +69,52 @@ import { UserService, UserSearchResult } from '../../services/user.service';
       </mat-form-field>
 
       <div *ngIf="selectedUser" class="selected-user">
-        <span class="user-name">{{ selectedUser.firstName }} {{ selectedUser.lastName }}</span>
+        <span class="user-name"
+          >{{ selectedUser.firstName }} {{ selectedUser.lastName }}</span
+        >
         <button mat-icon-button (click)="clearSelection()">
           <mat-icon>close</mat-icon>
         </button>
       </div>
     </div>
   `,
-  styles: [`
-    .user-search {
-      display: flex;
-      flex-direction: column;
-    }
-    .search-field {
-      width: 100%;
-    }
-    .selected-user {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 8px 16px;
-      background-color: #e3f2fd;
-      border-radius: 4px;
-      margin-top: 8px;
-    }
-    .user-name {
-      font-weight: 500;
-    }
-    mat-icon {
-      animation: none;
-    }
-    mat-icon.spinning {
-      animation: spin 1s infinite linear;
-    }
-    @keyframes spin {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
-  `]
+  styles: [
+    `
+      .user-search {
+        display: flex;
+        flex-direction: column;
+      }
+      .search-field {
+        width: 100%;
+      }
+      .selected-user {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 16px;
+        background-color: #e3f2fd;
+        border-radius: 4px;
+        margin-top: 8px;
+      }
+      .user-name {
+        font-weight: 500;
+      }
+      mat-icon {
+        animation: none;
+      }
+      mat-icon.spinning {
+        animation: spin 1s infinite linear;
+      }
+      @keyframes spin {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    `,
+  ],
 })
 export class UserSearchComponent implements OnInit {
   @Input() searchType: 'email' | 'name' = 'email';
@@ -108,35 +130,39 @@ export class UserSearchComponent implements OnInit {
   constructor(private userService: UserService) {}
 
   ngOnInit(): void {
-    this.searchControl.valueChanges.pipe(
-      debounceTime(300),
-      distinctUntilChanged(),
-      tap(() => this.isLoading = true),
-      switchMap(value => {
-        // Don't search if value is an object (selected from dropdown) or too short
-        if (typeof value !== 'string') {
-          this.isLoading = false;
-          return of([]);
-        }
-
-        if (!value || 
-            (this.searchType === 'name' && value.trim().length < 3) ||
-            (this.searchType === 'email' && !value.includes('@'))) {
-          this.isLoading = false;
-          return of([]);
-        }
-
-        return this.userService.searchUsers(value, this.searchType).pipe(
-          catchError(() => {
+    this.searchControl.valueChanges
+      .pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        tap(() => (this.isLoading = true)),
+        switchMap((value) => {
+          // Don't search if value is an object (selected from dropdown) or too short
+          if (typeof value !== 'string') {
             this.isLoading = false;
             return of([]);
-          })
-        );
-      }),
-    ).subscribe(results => {
-      this.results = results;
-      this.isLoading = false;
-    });
+          }
+
+          if (
+            !value ||
+            (this.searchType === 'name' && value.trim().length < 3) ||
+            (this.searchType === 'email' && !value.includes('@'))
+          ) {
+            this.isLoading = false;
+            return of([]);
+          }
+
+          return this.userService.searchUsers(value, this.searchType).pipe(
+            catchError(() => {
+              this.isLoading = false;
+              return of([]);
+            }),
+          );
+        }),
+      )
+      .subscribe((results) => {
+        this.results = results;
+        this.isLoading = false;
+      });
   }
 
   displayFn(user: UserSearchResult): string {

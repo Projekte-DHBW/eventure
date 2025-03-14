@@ -3,7 +3,7 @@
     <h1>Neues Event erstellen</h1>
     <div class="mode-toggle">
       <button mat-button type="button" (click)="toggleAdvancedMode()">
-        {{ advancedMode ? 'Einfacher Modus' : 'Erweiterter Modus' }}
+        {{ advancedMode ? "Einfacher Modus" : "Erweiterter Modus" }}
       </button>
     </div>
   </div>
@@ -18,8 +18,15 @@
               <div class="form-row">
                 <mat-form-field appearance="outline">
                   <mat-label>Titel</mat-label>
-                  <input matInput formControlName="title" placeholder="Titel" required>
-                  <mat-error *ngIf="title.invalid">{{ getTitleErrorMessage() }}</mat-error>
+                  <input
+                    matInput
+                    formControlName="title"
+                    placeholder="Titel"
+                    required
+                  />
+                  <mat-error *ngIf="title.invalid">{{
+                    getTitleErrorMessage()
+                  }}</mat-error>
                 </mat-form-field>
 
                 <mat-form-field appearance="outline">
@@ -34,10 +41,21 @@
               </div>
 
               <div class="form-row">
-                <mat-form-field appearance="outline" class="form-field-full-width">
+                <mat-form-field
+                  appearance="outline"
+                  class="form-field-full-width"
+                >
                   <mat-label>Beschreibung</mat-label>
-                  <textarea matInput formControlName="description" rows="5" placeholder="Beschreibung" required></textarea>
-                  <mat-error *ngIf="description.invalid">{{ getDescriptionErrorMessage() }}</mat-error>
+                  <textarea
+                    matInput
+                    formControlName="description"
+                    rows="5"
+                    placeholder="Beschreibung"
+                    required
+                  ></textarea>
+                  <mat-error *ngIf="description.invalid">{{
+                    getDescriptionErrorMessage()
+                  }}</mat-error>
                 </mat-form-field>
               </div>
 
@@ -53,22 +71,41 @@
 
                 <mat-form-field appearance="outline">
                   <mat-label>Maximale Teilnehmerzahl (optional)</mat-label>
-                  <input matInput type="number" formControlName="maxParticipants" min="1" placeholder="Anzahl eingeben">
-                  <mat-error *ngIf="maxParticipants.invalid">{{ getMaxParticipantsErrorMessage() }}</mat-error>
+                  <input
+                    matInput
+                    type="number"
+                    formControlName="maxParticipants"
+                    min="1"
+                    placeholder="Anzahl eingeben"
+                  />
+                  <mat-error *ngIf="maxParticipants.invalid">{{
+                    getMaxParticipantsErrorMessage()
+                  }}</mat-error>
                 </mat-form-field>
               </div>
 
               <div class="form-row">
-                <mat-form-field appearance="outline" class="form-field-full-width">
+                <mat-form-field
+                  appearance="outline"
+                  class="form-field-full-width"
+                >
                   <mat-label>Cover-Bild URL (optional)</mat-label>
-                  <input matInput formControlName="coverImageUrl" placeholder="URL eingeben">
+                  <input
+                    matInput
+                    formControlName="coverImageUrl"
+                    placeholder="URL eingeben"
+                  />
                 </mat-form-field>
               </div>
 
               @if (coverImageUrl.value) {
                 <div class="cover-image-preview">
                   <h3 class="preview-heading">Bildvorschau:</h3>
-                  <img [src]="coverImageUrl.value" alt="Cover-Bildvorschau" class="preview-image">
+                  <img
+                    [src]="coverImageUrl.value"
+                    alt="Cover-Bildvorschau"
+                    class="preview-image"
+                  />
                 </div>
               }
             </div>
@@ -78,13 +115,22 @@
           <mat-tab label="Ort & Zeit">
             <div class="tab-content">
               <div class="online-event-section">
-                <mat-checkbox formControlName="isOnline">Online-Event</mat-checkbox>
+                <mat-checkbox formControlName="isOnline"
+                  >Online-Event</mat-checkbox
+                >
 
                 @if (isOnline.value) {
                   <mat-form-field appearance="outline" class="meeting-link">
                     <mat-label>Meeting-Link</mat-label>
-                    <input matInput formControlName="meetingLink" placeholder="z.B. Zoom-Link" required>
-                    <mat-error *ngIf="eventForm.get('meetingLink')?.hasError('required')">
+                    <input
+                      matInput
+                      formControlName="meetingLink"
+                      placeholder="z.B. Zoom-Link"
+                      required
+                    />
+                    <mat-error
+                      *ngIf="eventForm.get('meetingLink')?.hasError('required')"
+                    >
                       Meeting-Link ist für Online-Events erforderlich
                     </mat-error>
                   </mat-form-field>
@@ -97,14 +143,25 @@
                   <div class="form-row">
                     <mat-form-field appearance="outline">
                       <mat-label>Ort</mat-label>
-                      <input matInput formControlName="location" placeholder="z.B. Berlin, Alexanderplatz">
+                      <input
+                        matInput
+                        formControlName="location"
+                        placeholder="z.B. Berlin, Alexanderplatz"
+                      />
                     </mat-form-field>
 
                     <mat-form-field appearance="outline">
                       <mat-label>Datum & Uhrzeit</mat-label>
-                      <input matInput [matDatepicker]="picker" formControlName="eventDate">
+                      <input
+                        matInput
+                        [matDatepicker]="picker"
+                        formControlName="eventDate"
+                      />
                       <mat-hint>TT.MM.JJJJ</mat-hint>
-                      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                      <mat-datepicker-toggle
+                        matSuffix
+                        [for]="picker"
+                      ></mat-datepicker-toggle>
                       <mat-datepicker #picker></mat-datepicker>
                     </mat-form-field>
                   </div>
@@ -114,13 +171,21 @@
                 @if (advancedMode) {
                   <div class="section-title">
                     <h3>Veranstaltungstermine</h3>
-                    <button mat-button type="button" color="primary" (click)="addOccurrence()">
+                    <button
+                      mat-button
+                      type="button"
+                      color="primary"
+                      (click)="addOccurrence()"
+                    >
                       <mat-icon>add</mat-icon> Termin hinzufügen
                     </button>
                   </div>
 
                   <div formArrayName="occurrences">
-                    @for (occurrenceForm of occurrences.controls; track $index) {
+                    @for (
+                      occurrenceForm of occurrences.controls;
+                      track $index
+                    ) {
                       <mat-expansion-panel class="occurrence-panel">
                         <mat-expansion-panel-header>
                           <mat-panel-title>
@@ -132,15 +197,30 @@
                           <div class="form-row">
                             <mat-form-field appearance="outline">
                               <mat-label>Startdatum & Zeit</mat-label>
-                              <input matInput [matDatepicker]="startPicker" formControlName="startDate" required>
-                              <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+                              <input
+                                matInput
+                                [matDatepicker]="startPicker"
+                                formControlName="startDate"
+                                required
+                              />
+                              <mat-datepicker-toggle
+                                matSuffix
+                                [for]="startPicker"
+                              ></mat-datepicker-toggle>
                               <mat-datepicker #startPicker></mat-datepicker>
                             </mat-form-field>
 
                             <mat-form-field appearance="outline">
                               <mat-label>Enddatum & Zeit (optional)</mat-label>
-                              <input matInput [matDatepicker]="endPicker" formControlName="endDate">
-                              <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+                              <input
+                                matInput
+                                [matDatepicker]="endPicker"
+                                formControlName="endDate"
+                              />
+                              <mat-datepicker-toggle
+                                matSuffix
+                                [for]="endPicker"
+                              ></mat-datepicker-toggle>
                               <mat-datepicker #endPicker></mat-datepicker>
                             </mat-form-field>
                           </div>
@@ -150,49 +230,88 @@
                             <div class="form-row">
                               <mat-form-field appearance="outline">
                                 <mat-label>Adresse</mat-label>
-                                <input matInput formControlName="address" placeholder="Straße, Hausnummer" required>
+                                <input
+                                  matInput
+                                  formControlName="address"
+                                  placeholder="Straße, Hausnummer"
+                                  required
+                                />
                               </mat-form-field>
 
                               <mat-form-field appearance="outline">
                                 <mat-label>Stadt</mat-label>
-                                <input matInput formControlName="city" placeholder="z.B. Berlin" required>
+                                <input
+                                  matInput
+                                  formControlName="city"
+                                  placeholder="z.B. Berlin"
+                                  required
+                                />
                               </mat-form-field>
                             </div>
 
                             <div class="form-row">
                               <mat-form-field appearance="outline">
                                 <mat-label>Bundesland</mat-label>
-                                <input matInput formControlName="state" placeholder="z.B. Brandenburg" required>
+                                <input
+                                  matInput
+                                  formControlName="state"
+                                  placeholder="z.B. Brandenburg"
+                                  required
+                                />
                               </mat-form-field>
 
                               <mat-form-field appearance="outline">
                                 <mat-label>Land</mat-label>
-                                <input matInput formControlName="country" placeholder="z.B. Deutschland" required>
+                                <input
+                                  matInput
+                                  formControlName="country"
+                                  placeholder="z.B. Deutschland"
+                                  required
+                                />
                               </mat-form-field>
                             </div>
 
                             <div class="form-row">
                               <mat-form-field appearance="outline">
                                 <mat-label>PLZ (optional)</mat-label>
-                                <input matInput formControlName="postalCode" placeholder="z.B. 10115">
+                                <input
+                                  matInput
+                                  formControlName="postalCode"
+                                  placeholder="z.B. 10115"
+                                />
                               </mat-form-field>
                             </div>
 
                             <div class="form-row">
                               <mat-form-field appearance="outline">
                                 <mat-label>Breitengrad (optional)</mat-label>
-                                <input matInput type="number" formControlName="latitude" placeholder="z.B. 52.5200">
+                                <input
+                                  matInput
+                                  type="number"
+                                  formControlName="latitude"
+                                  placeholder="z.B. 52.5200"
+                                />
                               </mat-form-field>
 
                               <mat-form-field appearance="outline">
                                 <mat-label>Längengrad (optional)</mat-label>
-                                <input matInput type="number" formControlName="longitude" placeholder="z.B. 13.4050">
+                                <input
+                                  matInput
+                                  type="number"
+                                  formControlName="longitude"
+                                  placeholder="z.B. 13.4050"
+                                />
                               </mat-form-field>
                             </div>
                           </div>
 
                           <div class="form-actions">
-                            <button mat-button type="button" color="warn" (click)="removeOccurrence($index)">
+                            <button
+                              mat-button
+                              type="button"
+                              color="warn"
+                              (click)="removeOccurrence($index)"
+                            >
                               <mat-icon>delete</mat-icon> Termin entfernen
                             </button>
                           </div>
@@ -211,7 +330,12 @@
               <div class="tab-content">
                 <div class="section-title">
                   <h3>Event-Manager</h3>
-                  <button mat-button type="button" color="primary" (click)="addManager()">
+                  <button
+                    mat-button
+                    type="button"
+                    color="primary"
+                    (click)="addManager()"
+                  >
                     <mat-icon>add</mat-icon> Manager hinzufügen
                   </button>
                 </div>
@@ -219,13 +343,22 @@
                 <div formArrayName="managers">
                   @for (managerForm of managers.controls; track $index) {
                     <div [formGroupName]="$index" class="manager-item">
-                      <app-user-search [searchType]="'email'" label="Manager einladen"
-                        placeholder="Email-Adresse eingeben..." (userSelected)="onManagerSelected($event, $index)">
+                      <app-user-search
+                        [searchType]="'email'"
+                        label="Manager einladen"
+                        placeholder="Email-Adresse eingeben..."
+                        (userSelected)="onManagerSelected($event, $index)"
+                      >
                       </app-user-search>
 
-                      <input type="hidden" formControlName="userId">
+                      <input type="hidden" formControlName="userId" />
 
-                      <button mat-icon-button type="button" color="warn" (click)="removeManager($index)">
+                      <button
+                        mat-icon-button
+                        type="button"
+                        color="warn"
+                        (click)="removeManager($index)"
+                      >
                         <mat-icon>delete</mat-icon>
                       </button>
                     </div>
@@ -241,7 +374,12 @@
               <div class="tab-content">
                 <div class="section-title">
                   <h3>Einladungen</h3>
-                  <button mat-button type="button" color="primary" (click)="addInvitation()">
+                  <button
+                    mat-button
+                    type="button"
+                    color="primary"
+                    (click)="addInvitation()"
+                  >
                     <mat-icon>add</mat-icon> Einladung hinzufügen
                   </button>
                 </div>
@@ -252,22 +390,43 @@
                       <div class="form-row">
                         <mat-form-field appearance="outline">
                           <mat-label>E-Mail</mat-label>
-                          <input matInput formControlName="email" placeholder="beispiel@email.com" required>
-                          <mat-error *ngIf="invitationForm.get('email')?.hasError('email')">
+                          <input
+                            matInput
+                            formControlName="email"
+                            placeholder="beispiel@email.com"
+                            required
+                          />
+                          <mat-error
+                            *ngIf="
+                              invitationForm.get('email')?.hasError('email')
+                            "
+                          >
                             Bitte gültige E-Mail-Adresse eingeben
                           </mat-error>
                         </mat-form-field>
                       </div>
 
                       <div class="form-row">
-                        <mat-form-field appearance="outline" class="form-field-full-width">
+                        <mat-form-field
+                          appearance="outline"
+                          class="form-field-full-width"
+                        >
                           <mat-label>Nachricht (optional)</mat-label>
-                          <textarea matInput formControlName="message" rows="3"
-                            placeholder="Persönliche Nachricht..."></textarea>
+                          <textarea
+                            matInput
+                            formControlName="message"
+                            rows="3"
+                            placeholder="Persönliche Nachricht..."
+                          ></textarea>
                         </mat-form-field>
                       </div>
 
-                      <button mat-button type="button" color="warn" (click)="removeInvitation($index)">
+                      <button
+                        mat-button
+                        type="button"
+                        color="warn"
+                        (click)="removeInvitation($index)"
+                      >
                         <mat-icon>delete</mat-icon> Einladung entfernen
                       </button>
 
@@ -283,10 +442,20 @@
         </mat-tab-group>
 
         <div class="form-actions">
-          <button mat-button type="button" (click)="resetForm()" [disabled]="isLoading">
+          <button
+            mat-button
+            type="button"
+            (click)="resetForm()"
+            [disabled]="isLoading"
+          >
             Zurücksetzen
           </button>
-          <button mat-raised-button color="primary" type="submit" [disabled]="eventForm.invalid || isLoading">
+          <button
+            mat-raised-button
+            color="primary"
+            type="submit"
+            [disabled]="eventForm.invalid || isLoading"
+          >
             @if (isLoading) {
               <span>
                 <mat-icon class="spinner">sync</mat-icon>

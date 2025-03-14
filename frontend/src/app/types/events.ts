@@ -42,7 +42,7 @@ export type CreateEvent = {
 export type UpdateEvent = Partial<CreateEvent>;
 
 export interface Event {
-  id: string;           // Add this property
+  id: string; // Add this property
   title: string;
   description: string;
   visibility: 'public' | 'private' | 'unlisted';
@@ -53,8 +53,9 @@ export interface Event {
   eventDate?: Date;
   isOnline?: boolean;
   meetingLink?: string;
-  creator?: string;     // User ID of creator
-  creatorObj?: {        // Optional creator object
+  creator?: string; // User ID of creator
+  creatorObj?: {
+    // Optional creator object
     id: string;
     firstName: string;
     lastName: string;

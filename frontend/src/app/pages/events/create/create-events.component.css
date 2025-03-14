@@ -101,7 +101,9 @@ mat-card-content {
   color: #dadce0;
 }
 
-::ng-deep .mat-form-field-appearance-outline.mat-focused .mat-form-field-outline-thick {
+::ng-deep
+  .mat-form-field-appearance-outline.mat-focused
+  .mat-form-field-outline-thick {
   color: var(--primary, #4169e1);
 }
 
@@ -154,7 +156,9 @@ button[mat-raised-button] {
   border-radius: 0.5rem;
   font-family: inherit;
   line-height: normal;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
   box-shadow: 0 0.25rem 0.625rem rgba(65, 105, 225, 0.2);
 }
 
@@ -270,39 +274,39 @@ h4 {
     flex-direction: column;
     gap: 0;
   }
-  
+
   .form-actions {
     flex-direction: column-reverse;
     gap: 1em;
   }
-  
+
   .form-actions button {
     width: 100%;
   }
-  
+
   h1 {
     font-size: 1.75em;
   }
-  
+
   .event-creation-page {
     padding: 0 1rem 1.5em;
   }
-  
+
   mat-card {
     border-radius: 0 !important;
   }
-  
+
   .page-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 1em;
   }
-  
+
   .mode-toggle {
     width: 100%;
     justify-content: flex-start;
   }
-  
+
   .mode-toggle button {
     width: 100%;
     text-align: center;

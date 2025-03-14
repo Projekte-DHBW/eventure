@@ -10,6 +10,7 @@ import { CreateEventsComponent } from './pages/events/create/create-events.compo
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
+  { path: 'events/create', component: CreateEventsComponent },
   { path: 'events/:id', component: EventsComponent },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
@@ -20,5 +21,4 @@ export const routes: Routes = [
     component: DashboardComponent,
     canActivate: [authGuard],
   },
-  { path: 'events/create', component: CreateEventsComponent },
 ];

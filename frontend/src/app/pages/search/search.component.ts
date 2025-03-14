@@ -58,14 +58,30 @@ export class SearchComponent implements OnInit {
     'Kunst',
     'Kultur',
   ];
-  
+
   @Input() locations = [
-    'Berlin', 'München', 'Heidenheim', 'Köln', 'Hamburg', 'Frankfurt', 
-    'Stuttgart', 'Düsseldorf', 'Dresden', 'Leipzig', 'Nürnberg',
-    'Hannover', 'Bremen', 'Essen', 'Dortmund', 'Bonn', 'Mannheim',
-    'Freiburg', 'Heidelberg', 'Augsburg'
+    'Berlin',
+    'München',
+    'Heidenheim',
+    'Köln',
+    'Hamburg',
+    'Frankfurt',
+    'Stuttgart',
+    'Düsseldorf',
+    'Dresden',
+    'Leipzig',
+    'Nürnberg',
+    'Hannover',
+    'Bremen',
+    'Essen',
+    'Dortmund',
+    'Bonn',
+    'Mannheim',
+    'Freiburg',
+    'Heidelberg',
+    'Augsburg',
   ];
-  
+
   @Input() dates = [
     'Heute',
     'Morgen',
@@ -90,7 +106,9 @@ export class SearchComponent implements OnInit {
 
   // New getter for displayed locations
   get displayedLocations(): string[] {
-    return this.showAllLocations ? this.locations : this.locations.slice(0, this.initialLocationCount);
+    return this.showAllLocations
+      ? this.locations
+      : this.locations.slice(0, this.initialLocationCount);
   }
 
   // New method to toggle location visibility

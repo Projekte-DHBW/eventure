@@ -31,9 +31,12 @@ export class EventsService {
    * @param limit Maximum number of results
    * @returns Observable of the city search results
    */
-  searchCities(query: string, limit: number = 10): Observable<{cities: string[]}> {
-    return this.http.get<{cities: string[]}>(`events/cities/search`, {
-      params: { query, limit }
+  searchCities(
+    query: string,
+    limit: number = 10,
+  ): Observable<{ cities: string[] }> {
+    return this.http.get<{ cities: string[] }>(`events/cities/search`, {
+      params: { query, limit },
     });
   }
 }

@@ -25,9 +25,7 @@ export class NavbarComponent {
 
   protected fullName: string | null = null;
 
-  constructor(
-    private router: Router
-  ) {}
+  constructor(private router: Router) {}
 
   ngOnInit() {
     this.fullName = this.auth.getFullName();
@@ -61,7 +59,7 @@ export class NavbarComponent {
       console.error('No refresh token found');
       return;
     }
-    
+
     this.auth.logout(refreshToken).subscribe({
       next: () => {
         this.router.navigate(['/']);
@@ -71,7 +69,7 @@ export class NavbarComponent {
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
         this.router.navigate(['/']);
-      }
+      },
     });
   }
 }

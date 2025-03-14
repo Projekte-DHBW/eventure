@@ -56,18 +56,18 @@ export class CreateEventsComponent implements OnInit {
   users: User[] = [];
   isLoading = false;
   advancedMode = false;
-  
+
   title = new FormControl('', [Validators.required]);
   description = new FormControl('', [Validators.required]);
   visibility = new FormControl('public', [Validators.required]);
   category = new FormControl('', [Validators.required]);
   coverImageUrl = new FormControl('');
   maxParticipants = new FormControl(null, [Validators.min(1)]);
-  
+
   // Simple event properties
   location = new FormControl('');
   eventDate = new FormControl();
-  
+
   // Online event properties
   isOnline = new FormControl(false);
   meetingLink = new FormControl('');
@@ -77,15 +77,15 @@ export class CreateEventsComponent implements OnInit {
     private snackBar: MatSnackBar,
     private eventsService: EventsService,
     private userService: UserService,
-    private router: Router
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
     this.initForm();
     this.loadUsers();
-    
+
     // Update meetingLink validation when isOnline changes
-    this.isOnline.valueChanges.subscribe(isOnline => {
+    this.isOnline.valueChanges.subscribe((isOnline) => {
       if (isOnline) {
         this.meetingLink.setValidators([Validators.required]);
       } else {
@@ -96,7 +96,7 @@ export class CreateEventsComponent implements OnInit {
   }
 
   loadUsers() {
-    this.userService.getUsers().subscribe(users => {
+    this.userService.getUsers().subscribe((users) => {
       this.users = users;
     });
   }
@@ -115,7 +115,7 @@ export class CreateEventsComponent implements OnInit {
       meetingLink: this.meetingLink,
       occurrences: this.fb.array([]),
       managers: this.fb.array([]),
-      invitations: this.fb.array([])
+      invitations: this.fb.array([]),
     });
   }
 
@@ -144,25 +144,29 @@ export class CreateEventsComponent implements OnInit {
         country: ['', Validators.required],
         postalCode: [''],
         latitude: [null],
-        longitude: [null]
-      })
+        longitude: [null],
+      }),
     });
     this.occurrences.push(occurrenceForm);
   }
 
   // Modified addManager method
   addManager(): void {
-    this.managers.push(this.fb.group({
-      userId: ['', Validators.required],
-      displayName: [''], // This is just for display purposes
-    }));
+    this.managers.push(
+      this.fb.group({
+        userId: ['', Validators.required],
+        displayName: [''], // This is just for display purposes
+      }),
+    );
   }
 
   addInvitation(): void {
-    this.invitations.push(this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      message: ['']
-    }));
+    this.invitations.push(
+      this.fb.group({
+        email: ['', [Validators.required, Validators.email]],
+        message: [''],
+      }),
+    );
   }
 
   removeOccurrence(index: number): void {
@@ -185,12 +189,12 @@ export class CreateEventsComponent implements OnInit {
     if (this.eventForm.valid) {
       this.isLoading = true;
       const newEvent: CreateEvent = this.eventForm.value;
-      
+
       // Clean up empty arrays to avoid backend validation issues
       if (newEvent.occurrences?.length === 0) delete newEvent.occurrences;
       if (newEvent.managers?.length === 0) delete newEvent.managers;
       if (newEvent.invitations?.length === 0) delete newEvent.invitations;
-      
+
       console.log('Event being created:', newEvent);
 
       this.eventsService.createEvent(newEvent).subscribe({
@@ -207,16 +211,16 @@ export class CreateEventsComponent implements OnInit {
           this.snackBar.open(
             `Fehler beim Erstellen des Events: ${error.message || 'Unbekannter Fehler'}`,
             'Schließen',
-            { duration: 5000 }
+            { duration: 5000 },
           );
-        }
+        },
       });
     } else {
       this.markFormGroupTouched(this.eventForm);
       this.snackBar.open(
         'Bitte alle erforderlichen Felder ausfüllen!',
         'Schließen',
-        { duration: 3000 }
+        { duration: 3000 },
       );
     }
   }
@@ -224,9 +228,9 @@ export class CreateEventsComponent implements OnInit {
   resetForm(): void {
     this.eventForm.reset({
       visibility: 'public',
-      isOnline: false
+      isOnline: false,
     });
-    
+
     // Clear form arrays
     while (this.occurrences.length) {
       this.occurrences.removeAt(0);

@@ -1,5 +1,11 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { BehaviorSubject, Observable, throwError, interval, Subscription } from 'rxjs';
+import {
+  BehaviorSubject,
+  Observable,
+  throwError,
+  interval,
+  Subscription,
+} from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment';
@@ -29,7 +35,7 @@ export class AuthService implements OnDestroy {
   constructor(
     private http: HttpClient, // Use regular HttpClient, not your custom one
     private tokenService: TokenService,
-    private router: Router
+    private router: Router,
   ) {
     this.loadTokens();
   }
@@ -37,7 +43,6 @@ export class AuthService implements OnDestroy {
   ngOnDestroy() {
     this.stopTokenCheck();
   }
-
 
   private loadTokens(): void {
     const accessToken = this.tokenService.getAccessToken();
@@ -49,7 +54,8 @@ export class AuthService implements OnDestroy {
   }
 
   login(email: string, password: string): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${this.apiUrl}/login`, { email, password })
+    return this.http
+      .post<LoginResponse>(`${this.apiUrl}/login`, { email, password })
       .pipe(
         tap((response) => {
           this.setSession(response);
@@ -64,13 +70,14 @@ export class AuthService implements OnDestroy {
     email: string,
     password: string,
   ): Observable<{ success: boolean }> {
-    return this.http.post<{ success: boolean }>(`${this.apiUrl}/register`, {
-      firstName,
-      lastName,
-      email,
-      password,
-    })
-    .pipe(catchError((error) => this.handleError(error)));
+    return this.http
+      .post<{ success: boolean }>(`${this.apiUrl}/register`, {
+        firstName,
+        lastName,
+        email,
+        password,
+      })
+      .pipe(catchError((error) => this.handleError(error)));
   }
 
   logout(refreshToken?: string): Observable<void> {
@@ -78,7 +85,8 @@ export class AuthService implements OnDestroy {
     const headers = token ? { Authorization: `Bearer ${token}` } : undefined;
     const payload = refreshToken ? { refreshToken } : {};
 
-    return this.http.post<void>(`${this.apiUrl}/logout`, payload, { headers })
+    return this.http
+      .post<void>(`${this.apiUrl}/logout`, payload, { headers })
       .pipe(
         tap(() => {
           this.clearSession();
@@ -98,19 +106,22 @@ export class AuthService implements OnDestroy {
       return throwError(() => new Error('No refresh token available'));
     }
 
-    return this.http.post<TokenRefreshResponse>(`${this.apiUrl}/refresh-token`, {
-      refreshToken,
-    })
-    .pipe(
-      tap((response) => {
-        this.tokenService.setAccessToken(response.accessToken);
-        const decodedToken = this.tokenService.decodeToken(response.accessToken);
-        if (decodedToken) {
-          this.currentUserSubject.next(decodedToken);
-        }
-      }),
-      catchError((error) => this.handleError(error)),
-    );
+    return this.http
+      .post<TokenRefreshResponse>(`${this.apiUrl}/refresh-token`, {
+        refreshToken,
+      })
+      .pipe(
+        tap((response) => {
+          this.tokenService.setAccessToken(response.accessToken);
+          const decodedToken = this.tokenService.decodeToken(
+            response.accessToken,
+          );
+          if (decodedToken) {
+            this.currentUserSubject.next(decodedToken);
+          }
+        }),
+        catchError((error) => this.handleError(error)),
+      );
   }
 
   private setSession(authResult: LoginResponse): void {
@@ -135,9 +146,11 @@ export class AuthService implements OnDestroy {
   // Token check methods remain mostly the same, but use TokenService
   private startTokenCheck(): void {
     this.stopTokenCheck();
-    this.tokenCheckInterval = interval(this.TOKEN_CHECK_INTERVAL).subscribe(() => {
-      this.checkAndRefreshToken();
-    });
+    this.tokenCheckInterval = interval(this.TOKEN_CHECK_INTERVAL).subscribe(
+      () => {
+        this.checkAndRefreshToken();
+      },
+    );
   }
 
   private stopTokenCheck(): void {

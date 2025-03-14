@@ -15,7 +15,7 @@ export interface UserInviteResult {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UserService {
   constructor(private http: HttpClientService) {}
@@ -33,9 +33,12 @@ export class UserService {
    * @param type The type of search: 'email' or 'name'
    * @returns Observable of user search results
    */
-  searchUsers(query: string, type: 'email' | 'name' = 'email'): Observable<UserSearchResult[]> {
+  searchUsers(
+    query: string,
+    type: 'email' | 'name' = 'email',
+  ): Observable<UserSearchResult[]> {
     return this.http.authenticatedGet<UserSearchResult[]>('users/search', {
-      params: { query, type }
+      params: { query, type },
     });
   }
 
@@ -46,11 +49,15 @@ export class UserService {
    * @param message Optional personalized message
    * @returns Observable with information if the user exists
    */
-  inviteByEmail(email: string, eventId?: string, message?: string): Observable<UserInviteResult> {
+  inviteByEmail(
+    email: string,
+    eventId?: string,
+    message?: string,
+  ): Observable<UserInviteResult> {
     return this.http.authenticatedPost<UserInviteResult>('users/invite', {
       email,
       eventId,
-      message
+      message,
     });
   }
 }

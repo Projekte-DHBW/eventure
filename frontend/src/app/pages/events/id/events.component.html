@@ -1,17 +1,24 @@
 <div class="events-container">
     <mat-card class="form" *ngFor="let event of results">
-        <p class="picture">Bild</p>
-        <h1>Eventtitel {{ event.title }} 
+        <img *ngIf="event.coverImageUrl" [src]="event.coverImageUrl" alt="Event Bild" class="event-image" />
+        <h1>{{ event.title }} 
             <span *ngIf="event.isOnline" matBadge="Online-Event" class="badge"></span>
         </h1>
         <h3>Beschreibung: </h3>
             <p>{{ event.description || 'Ist noch nicht vorhanden.'}}</p>
+
+            <button mat-flat-button disabled class="category-button">{{ event.category || 'Keine Kategorie' }}</button>
+        
         <h3>Datum: </h3>
         <p>{{ event.eventDate || 'Ist noch nicht vorhanden.'}}</p>
         <h3>Maximale Anzahl Besucher: </h3>
         <p>{{ event.maxParticipants || 'Ist noch nicht vorhanden.'}}</p>
-        <h3>Veranstaltungsort: </h3>
-        <p>{{ event.location || 'Ist noch nicht vorhanden.'}}</p>
+        
+        <ng-container *ngIf="!event.isOnline">
+            <h3>Veranstaltungsort: </h3>
+            <p>{{ event.location || 'Ist noch nicht vorhanden.'}}</p>
+        </ng-container>
+        
          <!-- Eventlink wird nur angezeigt, wenn event.isOnline wahr ist -->
          <ng-container *ngIf="event.isOnline">
             <h3>Eventlink: </h3>

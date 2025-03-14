@@ -25,6 +25,20 @@
     color: white; 
 }
 
+.event-image {
+    width: 100%; /* Bild nimmt die gesamte Breite der Karte ein */
+    height: auto; /* Höhe wird automatisch angepasst */
+    border-radius: 8px 8px 0 0; /* Abgerundete Ecken oben */
+    margin-bottom: 15px; /* Abstand unter dem Bild */
+}
+
+.category-button {
+    margin-top: 0px;
+    margin-bottom: 10px;
+    background-color: var(--background);
+    color: var(--primary);
+    cursor: default; /* Zeigt an, dass der Button nicht klickbar ist */
+}
 
 h1 {
     font-size: 2em;

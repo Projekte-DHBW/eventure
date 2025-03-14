@@ -9,6 +9,7 @@ import { Event } from '../../../types/events';
 import { FormControl } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatBadgeModule } from '@angular/material/badge';
+import { MatButtonModule } from '@angular/material/button';
 
 
 
@@ -19,6 +20,7 @@ import { MatBadgeModule } from '@angular/material/badge';
     MatCardModule,
     CommonModule,
     MatBadgeModule,
+    MatButtonModule,
   ],
   templateUrl: './events.component.html',
   styleUrls: ['./events.component.css']

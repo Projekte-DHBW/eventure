@@ -1,7 +1,7 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { Component, OnInit, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { RouterModule, ActivatedRoute, Router } from '@angular/router';
+import { ReactiveFormsModule, FormControl } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
@@ -9,18 +9,9 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
-
-interface Event {
-  id: number;
-  title: string;
-  type: string;
-  location: string;
-  description: string;
-  day: string;
-  date: string;
-  tags: string[];
-  image: string;
-}
+import { EventsService } from '../../services/events.service';
+import { Event } from '../../types/events';
+import { Observable, debounceTime, switchMap, of, catchError, map } from 'rxjs';
 
 @Component({
   selector: 'app-search',
@@ -41,33 +32,60 @@ interface Event {
   styleUrl: './search.component.css',
 })
 export class SearchComponent implements OnInit {
+  events: Event[] = [];
+  totalEvents: number = 0;
   searchParams: {
-    [key: string]: string | string[] | undefined;
+    search?: string;
     types?: string[];
     locations?: string[];
     date?: string;
-    startDate?: string;
-    endDate?: string;
-  } = {};
+    page?: number;
+    limit?: number;
+    category?: string;
+    sort?: 'newest' | 'popular' | 'upcoming';
+  } = {
+    page: 1,
+    limit: 20,
+    sort: 'newest',
+  };
+
+  // Map frontend filter values to backend values
+  private dateToBackendFormat: Record<string, string> = {
+    Heute: 'today',
+    Morgen: 'tomorrow',
+    'Diese Woche': 'this_week',
+    'Diesen Monat': 'this_month',
+    'Dieses Jahr': 'this_year',
+  };
+
+  // Map frontend types to backend categories
+  private typeToCategory: Record<string, string> = {
+    Konzert: 'music',
+    Festival: 'music',
+    Sport: 'sports',
+    Theater: 'culture',
+    Ausstellung: 'culture',
+    Workshop: 'other',
+    Konferenz: 'other',
+  };
 
   @Input() types = [
     'Konzert',
     'Festival',
-    'Theater',
     'Sport',
-    'Kunst',
-    'Kultur',
+    'Theater',
+    'Ausstellung',
+    'Workshop',
+    'Konferenz',
   ];
 
   @Input() locations = [
     'Berlin',
-    'München',
-    'Heidenheim',
-    'Köln',
     'Hamburg',
+    'München',
+    'Köln',
     'Frankfurt',
     'Stuttgart',
-    'Düsseldorf',
     'Dresden',
     'Leipzig',
     'Nürnberg',
@@ -90,475 +108,496 @@ export class SearchComponent implements OnInit {
     'Dieses Jahr',
   ];
 
-  // New properties for location filter
+  // Properties for location filter
   showAllLocations = false;
   initialLocationCount = 6;
 
   searchInput = new FormControl('');
-  loading = true;
-  events: any[] = [];
-  hasSearchParams = false;
+  loading = false;
+  filteredLocations: Observable<string[]> | undefined;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
+    private eventsService: EventsService,
   ) {}
 
-  // New getter for displayed locations
+  ngOnInit(): void {
+    // Lade initial die neuesten Events
+    this.loadLatestEvents();
+
+    // Überwache URL-Parameter
+    this.route.queryParamMap.subscribe((params) => {
+      console.log('Query params changed:', params);
+
+      // Zurücksetzen der Parameter mit Beibehaltung der Standardwerte
+      this.searchParams = {
+        page: 1,
+        limit: 20,
+        sort: 'newest',
+      };
+
+      // URL-Parameter auslesen
+      if (params.has('search')) {
+        const searchValue = params.get('search');
+        if (searchValue && searchValue.trim().length > 0) {
+          this.searchParams.search = searchValue;
+          this.searchInput.setValue(searchValue, { emitEvent: false });
+        }
+      } else {
+        this.searchInput.setValue('', { emitEvent: false });
+      }
+
+      // Arrays korrekt extrahieren
+      const types = params.getAll('types');
+      if (types && types.length > 0) {
+        this.searchParams.types = types;
+      }
+
+      const locations = params.getAll('locations');
+      if (locations && locations.length > 0) {
+        this.searchParams.locations = locations;
+      }
+
+      if (params.has('date')) {
+        this.searchParams.date = params.get('date') || undefined;
+      }
+
+      if (params.has('page')) {
+        const page = parseInt(params.get('page') || '1', 10);
+        if (!isNaN(page) && page > 0) {
+          this.searchParams.page = page;
+        }
+      }
+
+      if (params.has('limit')) {
+        const limit = parseInt(params.get('limit') || '20', 10);
+        if (!isNaN(limit) && limit > 0) {
+          this.searchParams.limit = limit;
+        }
+      }
+
+      if (params.has('sort')) {
+        const sort = params.get('sort');
+        if (sort === 'newest' || sort === 'popular' || sort === 'upcoming') {
+          this.searchParams.sort = sort;
+        }
+      }
+
+      console.log('Updated searchParams:', this.searchParams);
+
+      // Wenn Filter aktiv sind, führe Suche durch
+      if (this.hasSearchParams) {
+        console.log('Has search params, performing search');
+        this.performSearch();
+      } else {
+        console.log('No search params, loading latest events');
+        this.loadLatestEvents();
+      }
+    });
+
+    // Einrichtung der Ortsautovervollständigung
+    this.setupLocationAutocomplete();
+  }
+
+  // Lade die neuesten Events
+  loadLatestEvents(): void {
+    this.loading = true;
+    console.log('Loading latest events');
+
+    this.eventsService
+      .getLatestEvents(this.searchParams.limit || 20)
+      .subscribe({
+        next: (events) => {
+          console.log('Latest events loaded:', events);
+          if (Array.isArray(events)) {
+            this.events = events;
+            this.totalEvents = events.length;
+          } else {
+            console.warn('API did not return an array for latest events');
+            this.events = [];
+            this.totalEvents = 0;
+          }
+          this.loading = false;
+        },
+        error: (err) => {
+          console.error('Fehler beim Laden der Events:', err);
+          this.events = [];
+          this.totalEvents = 0;
+          this.loading = false;
+        },
+        complete: () => {
+          // Sicherstellen, dass loading auf false gesetzt wird
+          this.loading = false;
+        },
+      });
+  }
+
+  // Angezeigte Standorte
   get displayedLocations(): string[] {
     return this.showAllLocations
       ? this.locations
       : this.locations.slice(0, this.initialLocationCount);
   }
 
-  // New method to toggle location visibility
-  toggleLocationVisibility() {
+  // Umschalten der Standortanzeige
+  toggleLocationVisibility(): void {
     this.showAllLocations = !this.showAllLocations;
   }
 
-  ngOnInit(): void {
-    this.route.queryParams.subscribe((params) => {
-      let types: string[] = [];
-      let locations: string[] = [];
+  // Prüfen, ob Suchparameter aktiv sind
+  get hasSearchParams(): boolean {
+    return !!(
+      (this.searchParams.search &&
+        this.searchParams.search.trim().length > 0) ||
+      (this.searchParams.types && this.searchParams.types.length > 0) ||
+      (this.searchParams.locations && this.searchParams.locations.length > 0) ||
+      this.searchParams.date
+    );
+  }
 
-      if (params['types']) {
-        types = this.parseArrayParam(params['types']);
+  // Frontend-Filter in Backend-Format konvertieren
+  private convertFiltersToBackend(): any {
+    // Ausgangsbasis
+    const backendFilters: any = {};
 
-        types = [...new Set(types)];
-      } else if (params['type']) {
-        types = [params['type']];
-      }
+    // Immer Pagination angeben
+    backendFilters.page = this.searchParams.page || 1;
+    backendFilters.limit = this.searchParams.limit || 20;
 
-      if (params['locations']) {
-        locations = this.parseArrayParam(params['locations']);
+    // Suche hinzufügen
+    if (this.searchParams.search && this.searchParams.search.trim()) {
+      backendFilters.search = this.searchParams.search.trim().toLowerCase();
+    }
 
-        locations = [...new Set(locations)];
-      } else if (params['location']) {
-        locations = [params['location']];
-      }
+    // Sortierung
+    if (this.searchParams.sort) {
+      backendFilters.sort = this.searchParams.sort;
+    }
 
-      this.searchParams = {
-        types: types,
-        locations: locations,
-        date: params['date'] || '',
-        startDate: params['startDate'] || '',
-        endDate: params['endDate'] || '',
-      };
-
-      if (params['date'] && (!params['startDate'] || !params['endDate'])) {
-        this.setDateRangeFromLabel(params['date']);
-      }
-
-      this.hasSearchParams = !!(
-        this.searchParams.types?.length ||
-        this.searchParams.locations?.length ||
-        this.searchParams.date ||
-        this.searchParams.startDate ||
-        this.searchParams.endDate
+    // Event-Typen verarbeiten
+    if (this.searchParams.types && this.searchParams.types.length > 0) {
+      // Kategorien ermitteln und zählen
+      const categories = this.searchParams.types.map(
+        (type) => this.typeToCategory[type],
       );
+      const categoryCounts: Record<string, number> = {};
 
-      if (params['q']) {
-        this.searchInput.setValue(params['q']);
-      }
-
-      console.log('Search parameters:', this.searchParams);
-
-      this.loading = true;
-
-      setTimeout(() => {
-        this.loading = false;
-        this.events = this.generateMockEvents(this.searchParams, params['q']);
-      }, 1000);
-    });
-  }
-
-  parseArrayParam(param: string | string[]): string[] {
-    if (Array.isArray(param)) {
-      return param;
-    }
-
-    return param
-      .split(',')
-      .map((item) => item.trim())
-      .filter((item) => item.length > 0);
-  }
-
-  setDateRangeFromLabel(dateLabel: string): void {
-    const today = new Date();
-    let startDate: Date | null = null;
-    let endDate: Date | null = null;
-
-    switch (dateLabel.toLowerCase()) {
-      case 'heute':
-        startDate = new Date(today);
-        endDate = new Date(today);
-        break;
-      case 'morgen':
-        const tomorrow = new Date(today);
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        startDate = tomorrow;
-        endDate = tomorrow;
-        break;
-      case 'diese woche':
-        startDate = this.getStartOfWeek(today);
-        endDate = this.getEndOfWeek(today);
-        break;
-      case 'diesen monat':
-        startDate = new Date(today.getFullYear(), today.getMonth(), 1);
-        endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-        break;
-      case 'dieses jahr':
-        startDate = new Date(today.getFullYear(), 0, 1);
-        endDate = new Date(today.getFullYear(), 11, 31);
-        break;
-    }
-
-    if (startDate && endDate) {
-      this.searchParams.startDate = this.formatDate(startDate);
-      this.searchParams.endDate = this.formatDate(endDate);
-    }
-  }
-
-  applyFilter(filterType: 'types' | 'locations' | 'date', value: string): void {
-    const queryParams = { ...this.route.snapshot.queryParams };
-
-    if (filterType === 'types' || filterType === 'locations') {
-      let currentValues = queryParams[filterType]
-        ? queryParams[filterType].split(',')
-        : [];
-
-      if (currentValues.includes(value)) {
-        currentValues = currentValues.filter((v: string) => v !== value);
-      } else {
-        currentValues.push(value);
-      }
-
-      if (currentValues.length > 0) {
-        queryParams[filterType] = currentValues.join(',');
-      } else {
-        delete queryParams[filterType];
-      }
-    } else if (filterType === 'date') {
-      if (queryParams['date'] === value) {
-        delete queryParams['date'];
-        delete queryParams['startDate'];
-        delete queryParams['endDate'];
-      } else {
-        queryParams['date'] = value;
-
-        const today = new Date();
-
-        switch (value.toLowerCase()) {
-          case 'heute':
-            queryParams['startDate'] = this.formatDate(today);
-            queryParams['endDate'] = this.formatDate(today);
-            break;
-          case 'morgen':
-            const tomorrow = new Date(today);
-            tomorrow.setDate(tomorrow.getDate() + 1);
-            queryParams['startDate'] = this.formatDate(tomorrow);
-            queryParams['endDate'] = this.formatDate(tomorrow);
-            break;
-          case 'diese woche':
-            queryParams['startDate'] = this.formatDate(
-              this.getStartOfWeek(today),
-            );
-            queryParams['endDate'] = this.formatDate(this.getEndOfWeek(today));
-            break;
-          case 'diesen monat':
-            queryParams['startDate'] = this.formatDate(
-              new Date(today.getFullYear(), today.getMonth(), 1),
-            );
-            queryParams['endDate'] = this.formatDate(
-              new Date(today.getFullYear(), today.getMonth() + 1, 0),
-            );
-            break;
-          case 'dieses jahr':
-            queryParams['startDate'] = this.formatDate(
-              new Date(today.getFullYear(), 0, 1),
-            );
-            queryParams['endDate'] = this.formatDate(
-              new Date(today.getFullYear(), 11, 31),
-            );
-            break;
+      categories.forEach((category) => {
+        if (category) {
+          // Prüfen ob category definiert ist
+          categoryCounts[category] = (categoryCounts[category] || 0) + 1;
         }
-      }
-    }
+      });
 
-    this.router.navigate(['/search'], {
-      queryParams: queryParams,
-    });
-  }
-
-  removeFilter(
-    filterType: 'types' | 'locations' | 'date',
-    value?: string,
-  ): void {
-    const queryParams = { ...this.route.snapshot.queryParams };
-
-    if ((filterType === 'types' || filterType === 'locations') && value) {
-      let currentValues = queryParams[filterType]
-        ? queryParams[filterType].split(',')
-        : [];
-
-      currentValues = currentValues.filter((v: string) => v !== value);
-
-      if (currentValues.length > 0) {
-        queryParams[filterType] = currentValues.join(',');
+      // Wenn nur eine Kategorie vorkommt, setze category-Parameter
+      const uniqueCategories = Object.keys(categoryCounts);
+      if (uniqueCategories.length === 1) {
+        backendFilters.category = uniqueCategories[0];
       } else {
-        delete queryParams[filterType];
+        // Sonst geben wir die Typen direkt an den Backend-Filter weiter
+        backendFilters.types = this.searchParams.types;
       }
-    } else if (filterType === 'date') {
-      delete queryParams['date'];
-      delete queryParams['startDate'];
-      delete queryParams['endDate'];
-    } else {
-      delete queryParams[filterType];
     }
 
-    this.router.navigate(['/search'], {
-      queryParams: queryParams,
+    // Standorte
+    if (this.searchParams.locations && this.searchParams.locations.length > 0) {
+      backendFilters.locations = this.searchParams.locations;
+    }
+
+    // Datum
+    if (this.searchParams.date) {
+      const backendDate = this.dateToBackendFormat[this.searchParams.date];
+      if (backendDate) {
+        backendFilters.date = backendDate;
+      }
+    }
+
+    console.log('Converted backend filters:', backendFilters);
+    return backendFilters;
+  }
+
+  // Suche ausführen
+  performSearch(): void {
+    this.loading = true;
+    console.log('Performing search with params:', this.searchParams);
+
+    // Frontend-Filter in Backend-Format konvertieren
+    const backendFilters = this.convertFiltersToBackend();
+
+    this.eventsService.getEvents(backendFilters).subscribe({
+      next: ([events, totalCount]) => {
+        console.log('Raw API response values:', { events, totalCount });
+
+        // Null-Check und Schutz vor undefiniertem Array
+        if (!events || !Array.isArray(events)) {
+          console.warn('API returned undefined or invalid events array');
+          this.events = [];
+          this.totalEvents = 0;
+        } else {
+          console.log(
+            `Search results: ${events.length} events, total: ${totalCount}`,
+          );
+          this.events = events;
+          this.totalEvents = totalCount || events.length;
+        }
+
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Fehler bei der Suche:', err);
+        this.events = [];
+        this.totalEvents = 0;
+        this.loading = false;
+      },
+      complete: () => {
+        // Sicherstellen, dass loading auf false gesetzt wird
+        this.loading = false;
+      },
     });
   }
 
+  // Filter anwenden
+  applyFilter(type: string, value: string): void {
+    console.log(`Applying filter: ${type} = ${value}`);
+
+    switch (type) {
+      case 'types':
+        // Initialize array if needed
+        if (!this.searchParams.types) {
+          this.searchParams.types = [];
+        }
+
+        // Toggle filter
+        if (this.searchParams.types.includes(value)) {
+          this.searchParams.types = this.searchParams.types.filter(
+            (t) => t !== value,
+          );
+          if (this.searchParams.types.length === 0) {
+            this.searchParams.types = undefined;
+          }
+        } else {
+          this.searchParams.types.push(value);
+        }
+        break;
+
+      case 'locations':
+        // Initialize array if needed
+        if (!this.searchParams.locations) {
+          this.searchParams.locations = [];
+        }
+
+        // Toggle filter
+        if (this.searchParams.locations.includes(value)) {
+          this.searchParams.locations = this.searchParams.locations.filter(
+            (l) => l !== value,
+          );
+          if (this.searchParams.locations.length === 0) {
+            this.searchParams.locations = undefined;
+          }
+        } else {
+          this.searchParams.locations.push(value);
+        }
+        break;
+
+      case 'date':
+        // Toggle date filter
+        if (this.searchParams.date === value) {
+          this.searchParams.date = undefined;
+        } else {
+          this.searchParams.date = value;
+        }
+        break;
+    }
+
+    // Zurück zur ersten Seite bei Filteränderung
+    this.searchParams.page = 1;
+
+    // URL aktualisieren
+    this.updateUrl();
+  }
+
+  // Filter entfernen
+  removeFilter(type: string, value?: string): void {
+    console.log(`Removing filter: ${type}${value ? ' = ' + value : ''}`);
+
+    switch (type) {
+      case 'types':
+        if (value && this.searchParams.types) {
+          this.searchParams.types = this.searchParams.types.filter(
+            (t) => t !== value,
+          );
+          if (this.searchParams.types.length === 0) {
+            this.searchParams.types = undefined;
+          }
+        }
+        break;
+
+      case 'locations':
+        if (value && this.searchParams.locations) {
+          this.searchParams.locations = this.searchParams.locations.filter(
+            (l) => l !== value,
+          );
+          if (this.searchParams.locations.length === 0) {
+            this.searchParams.locations = undefined;
+          }
+        }
+        break;
+
+      case 'date':
+        this.searchParams.date = undefined;
+        break;
+    }
+
+    // URL aktualisieren
+    this.updateUrl();
+  }
+
+  // Alle Filter zurücksetzen
   clearAllFilters(): void {
-    const searchTerm = this.searchInput.value?.trim();
-    const queryParams: any = {};
+    console.log('Clearing all filters');
 
-    if (searchTerm) {
-      queryParams.q = searchTerm;
-    }
-
-    this.router.navigate(['/search'], {
-      queryParams: queryParams,
-    });
-  }
-
-  onSearch(): void {
-    const searchTerm = this.searchInput.value?.trim();
-    const queryParams: { [key: string]: any } = {
-      ...this.route.snapshot.queryParams,
+    // Zurücksetzen auf Standardwerte
+    this.searchParams = {
+      page: 1,
+      limit: 20,
+      sort: 'newest',
     };
 
-    if (searchTerm) {
-      queryParams['q'] = searchTerm;
+    // Suchfeld leeren
+    this.searchInput.setValue('', { emitEvent: false });
+
+    // Komplett neue Navigation ohne Parameter
+    this.router
+      .navigate(['.'], {
+        relativeTo: this.route,
+        queryParams: {}, // Leere Query-Parameter
+        replaceUrl: true, // Ersetze den aktuellen History-Eintrag
+      })
+      .then(() => {
+        // Nach erfolgreichem Zurücksetzen die neuesten Events laden
+        this.loadLatestEvents();
+      });
+  }
+
+  // Suche bei Klick auf Suchbutton
+  onSearch(): void {
+    const searchValue = this.searchInput.value?.trim() || '';
+    console.log(`Search button clicked, value: "${searchValue}"`);
+
+    // Setze Suchbegriff
+    if (searchValue.length > 0) {
+      this.searchParams.search = searchValue;
     } else {
-      delete queryParams['q'];
+      this.searchParams.search = undefined;
     }
 
-    this.router.navigate(['/search'], {
+    // Zurück zur ersten Seite
+    this.searchParams.page = 1;
+
+    // URL aktualisieren
+    this.updateUrl();
+  }
+
+  // URL mit aktuellen Suchparametern aktualisieren
+  private updateUrl(): void {
+    // Query-Parameter mit definierten Werten erstellen
+    const queryParams: any = {};
+
+    // Nur Parameter hinzufügen, die auch Werte haben
+    if (this.searchParams.search) {
+      queryParams.search = this.searchParams.search;
+    }
+
+    if (this.searchParams.types && this.searchParams.types.length > 0) {
+      queryParams.types = this.searchParams.types;
+    }
+
+    if (this.searchParams.locations && this.searchParams.locations.length > 0) {
+      queryParams.locations = this.searchParams.locations;
+    }
+
+    if (this.searchParams.date) {
+      queryParams.date = this.searchParams.date;
+    }
+
+    if (this.searchParams.page !== 1) {
+      queryParams.page = this.searchParams.page;
+    }
+
+    if (this.searchParams.limit !== 20) {
+      queryParams.limit = this.searchParams.limit;
+    }
+
+    if (this.searchParams.sort && this.searchParams.sort !== 'newest') {
+      queryParams.sort = this.searchParams.sort;
+    }
+
+    console.log('Updating URL with query params:', queryParams);
+
+    // Mit neuen Query-Parametern navigieren
+    this.router.navigate([], {
+      relativeTo: this.route,
       queryParams: queryParams,
+      replaceUrl: true, // Ersetze den aktuellen History-Eintrag
     });
   }
 
-  formatDate(date: Date): string {
-    return date.toISOString().split('T')[0];
+  // Einrichten der Standort-Autovervollständigung
+  private setupLocationAutocomplete(): void {
+    this.filteredLocations = this.searchInput.valueChanges.pipe(
+      debounceTime(300),
+      switchMap((value) => {
+        if (!value || typeof value !== 'string' || value.length < 2) {
+          return of(this.locations);
+        }
+
+        return this.eventsService.searchCities(value).pipe(
+          map((response) => response.cities),
+          catchError(() => {
+            console.error('Fehler beim Abrufen der Städte');
+            return of(this.locations);
+          }),
+        );
+      }),
+    );
   }
 
-  getStartOfWeek(date: Date): Date {
-    const dayOfWeek = date.getDay();
-    const diff = date.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
-    return new Date(date.setDate(diff));
-  }
-
-  getEndOfWeek(date: Date): Date {
-    const startOfWeek = this.getStartOfWeek(new Date(date));
-    const endOfWeek = new Date(startOfWeek);
-    endOfWeek.setDate(endOfWeek.getDate() + 6);
-    return endOfWeek;
-  }
-
+  // Hilfsmethode: Ersten Buchstaben großschreiben
   capitalizeFirstLetter(str: string): string {
-    if (!str) return str;
-    const words = str.split(' ');
-    return words
-      .map((word) => {
-        return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-      })
-      .join(' ');
+    if (!str) return '';
+    return str.charAt(0).toUpperCase() + str.slice(1);
   }
 
-  getMonthAbbreviation(isoDate: string): string {
-    if (!isoDate) return '';
+  // Hilfsmethode: Monatsabkürzung erhalten
+  getMonthAbbreviation(dateString: string): string {
+    if (!dateString) return '';
 
-    const date = new Date(isoDate);
-    const monthNames = [
-      'JAN',
-      'FEB',
-      'MAR',
-      'APR',
-      'MAY',
-      'JUN',
-      'JUL',
-      'AUG',
-      'SEP',
-      'OCT',
-      'NOV',
-      'DEC',
-    ];
-    return monthNames[date.getMonth()];
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) return '';
+      return date.toLocaleString('de-DE', { month: 'short' });
+    } catch (e) {
+      return '';
+    }
   }
 
-  getDayFromDate(isoDate: string): string {
-    if (!isoDate) return '';
+  // Hilfsmethode: Tag des Monats erhalten
+  getDayFromDate(dateString: string): string {
+    if (!dateString) return '';
 
-    const date = new Date(isoDate);
-    return date.getDate().toString();
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) return '';
+      return date.getDate().toString();
+    } catch (e) {
+      return '';
+    }
   }
 
-  generateMockEvents(params: any, query?: string): Event[] {
-    let mockEvents = [
-      {
-        id: 1,
-        title: 'Sommerfestival Berlin',
-        type: 'Festival',
-        location: 'Berlin',
-        description:
-          'Ein fantastisches Sommerfestival mit Live-Musik und Unterhaltung für die ganze Familie.',
-        day: '15',
-        date: '2025-08-15', // ISO format date
-        tags: ['Musik', 'Outdoor', 'Familie'],
-        image:
-          'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6a3?q=80&w=2070',
-      },
-      {
-        id: 2,
-        title: 'Klassisches Konzert',
-        type: 'Konzert',
-        location: 'München',
-        description:
-          'Ein Abend mit den schönsten klassischen Kompositionen in der Münchner Philharmonie.',
-        day: '22',
-        date: '2025-07-22', // ISO format date
-        tags: ['Klassik', 'Orchester'],
-        image:
-          'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=1974',
-      },
-      {
-        id: 3,
-        title: 'Rock am Ring',
-        type: 'Konzert',
-        location: 'Köln',
-        description:
-          'Das legendäre Rock-Festival mit den besten Bands aus aller Welt.',
-        day: '05',
-        date: '2025-09-05', // ISO format date
-        tags: ['Rock', 'Live', 'Festival'],
-        image:
-          'https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?q=80&w=2070',
-      },
-      {
-        id: 4,
-        title: 'Theateraufführung "Der Besuch"',
-        type: 'Theater',
-        location: 'Berlin',
-        description:
-          'Eine bewegende Inszenierung des Klassikers auf der Bühne des Berliner Theaters.',
-        day: '10',
-        date: '2025-08-10', // ISO format date
-        tags: ['Drama', 'Klassiker'],
-        image:
-          'https://images.unsplash.com/photo-1503095396549-807759245b35?q=80&w=2071',
-      },
-      {
-        id: 5,
-        title: 'Kunstausstellung Modern Art',
-        type: 'Kunst',
-        location: 'München',
-        description:
-          'Zeitgenössische Kunst von aufstrebenden Künstlern aus ganz Europa.',
-        day: '18',
-        date: '2025-03-12', // ISO format date
-        tags: ['Modern', 'Galerie'],
-        image:
-          'https://images.unsplash.com/photo-1531913764164-f85c52beb936?q=80&w=1974',
-      },
-      {
-        id: 6,
-        title: 'Fußball Bundesliga',
-        type: 'Sport',
-        location: 'Heidenheim',
-        description: 'Spannendes Bundesligaspiel in der Voith-Arena.',
-        day: '26',
-        date: '2025-03-26', // ISO format date
-        tags: ['Fußball', 'Bundesliga'],
-        image:
-          'https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=2024',
-      },
-      {
-        id: 7,
-        title: 'Jazz Nacht',
-        type: 'Konzert',
-        location: 'Berlin',
-        description:
-          'Eine Nacht voller Swing und Jazz mit internationalen Künstlern.',
-        day: '03',
-        date: '2025-09-03', // ISO format date
-        tags: ['Jazz', 'Nachtleben'],
-        image:
-          'https://images.unsplash.com/photo-1511192336575-5a79af67a629?q=80&w=2071',
-      },
-      {
-        id: 8,
-        title: 'Kulturfestival',
-        type: 'Kultur',
-        location: 'Köln',
-        description:
-          'Ein Wochenende voller kultureller Highlights aus aller Welt.',
-        day: '12',
-        date: '2025-08-12', // ISO format date
-        tags: ['International', 'Kulinarik'],
-        image:
-          'https://images.unsplash.com/photo-1543007630-9710e4a00a20?q=80&w=2075',
-      },
-    ];
-
-    // Filter by types array
-    if (params.types && params.types.length > 0) {
-      mockEvents = mockEvents.filter((event) =>
-        params.types.some(
-          (type: string) => event.type.toLowerCase() === type.toLowerCase(),
-        ),
-      );
-    }
-
-    // Filter by locations array
-    if (params.locations && params.locations.length > 0) {
-      mockEvents = mockEvents.filter((event) =>
-        params.locations.some(
-          (location: string) =>
-            event.location.toLowerCase() === location.toLowerCase(),
-        ),
-      );
-    }
-
-    // Filter by date range
-    if (params.startDate && params.endDate) {
-      const startDate = new Date(params.startDate);
-      const endDate = new Date(params.endDate);
-
-      // Set the end date to the end of the day for inclusive comparison
-      endDate.setHours(23, 59, 59, 999);
-
-      mockEvents = mockEvents.filter((event) => {
-        const eventDate = new Date(event.date);
-        return eventDate >= startDate && eventDate <= endDate;
-      });
-    }
-
-    // Search query
-    if (query) {
-      const lowercaseQuery = query.toLowerCase();
-      mockEvents = mockEvents.filter(
-        (event) =>
-          event.title.toLowerCase().includes(lowercaseQuery) ||
-          event.description.toLowerCase().includes(lowercaseQuery) ||
-          event.tags.some((tag: string) =>
-            tag.toLowerCase().includes(lowercaseQuery),
-          ),
-      );
-    }
-
-    return mockEvents;
+  // Zu Event-Details navigieren
+  goToEventDetails(eventId: string): void {
+    if (!eventId) return;
+    this.router.navigate(['/events', eventId]);
   }
 }

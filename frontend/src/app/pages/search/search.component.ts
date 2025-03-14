@@ -9,6 +9,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 import { EventsService } from '../../services/events.service';
 import { Event } from '../../types/events';
 import { Observable, debounceTime, switchMap, of, catchError, map } from 'rxjs';
@@ -27,6 +29,8 @@ import { Observable, debounceTime, switchMap, of, catchError, map } from 'rxjs';
     MatToolbarModule,
     MatInputModule,
     MatFormFieldModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
   ],
   templateUrl: './search.component.html',
   styleUrl: './search.component.css',
@@ -115,6 +119,9 @@ export class SearchComponent implements OnInit {
   searchInput = new FormControl('');
   loading = false;
   filteredLocations: Observable<string[]> | undefined;
+
+  // Add date picker control
+  specificDateControl = new FormControl<Date | null>(null);
 
   constructor(
     private route: ActivatedRoute,
@@ -300,17 +307,28 @@ export class SearchComponent implements OnInit {
       }
     }
 
-    // Standorte
+    // Standorte - KORRIGIERTE IMPLEMENTIERUNG
     if (this.searchParams.locations && this.searchParams.locations.length > 0) {
-      backendFilters.locations = this.searchParams.locations;
+      // Verwende kein Array, sondern einen einzelnen String mit kommagetrennten Werten
+      backendFilters.locations = this.searchParams.locations.join(',');
     }
 
-    // Datum
+    // Datum - ERWEITERTE IMPLEMENTIERUNG
     if (this.searchParams.date) {
-      const backendDate = this.dateToBackendFormat[this.searchParams.date];
-      if (backendDate) {
-        backendFilters.date = backendDate;
+      // Check if the date is a predefined value or a specific date string
+      if (
+        Object.keys(this.dateToBackendFormat).includes(this.searchParams.date)
+      ) {
+        // It's a predefined value
+        backendFilters.date = this.dateToBackendFormat[this.searchParams.date];
+      } else if (this.searchParams.date.match(/^\d{4}-\d{2}-\d{2}$/)) {
+        // It's already in YYYY-MM-DD format
+        backendFilters.date = this.searchParams.date;
       }
+
+      console.log(
+        `Converted date filter: "${this.searchParams.date}" -> "${backendFilters.date}"`,
+      );
     }
 
     console.log('Converted backend filters:', backendFilters);
@@ -403,9 +421,14 @@ export class SearchComponent implements OnInit {
       case 'date':
         // Toggle date filter
         if (this.searchParams.date === value) {
+          console.log('Removing date filter');
           this.searchParams.date = undefined;
         } else {
+          console.log(`Setting date filter to: ${value}`);
           this.searchParams.date = value;
+
+          // Direkt testen (optional, zu Debug-Zwecken)
+          this.testDateFilter(value);
         }
         break;
     }
@@ -415,6 +438,23 @@ export class SearchComponent implements OnInit {
 
     // URL aktualisieren
     this.updateUrl();
+  }
+
+  // Apply specific date from date picker
+  applySpecificDate(event: any): void {
+    const date = this.specificDateControl.value;
+    if (date) {
+      // Convert to YYYY-MM-DD format
+      const dateString = date.toISOString().split('T')[0];
+      console.log(`Applying specific date: ${dateString}`);
+
+      // Set as date filter
+      this.searchParams.date = dateString;
+
+      // Update UI
+      this.searchParams.page = 1;
+      this.updateUrl();
+    }
   }
 
   // Filter entfernen
@@ -469,10 +509,11 @@ export class SearchComponent implements OnInit {
 
     // Komplett neue Navigation ohne Parameter
     this.router
-      .navigate(['.'], {
+      .navigate([], {
         relativeTo: this.route,
         queryParams: {}, // Leere Query-Parameter
         replaceUrl: true, // Ersetze den aktuellen History-Eintrag
+        queryParamsHandling: '', // Wichtig: Überschreibt alle vorhandenen Parameter
       })
       .then(() => {
         // Nach erfolgreichem Zurücksetzen die neuesten Events laden
@@ -518,14 +559,15 @@ export class SearchComponent implements OnInit {
     }
 
     if (this.searchParams.date) {
+      console.log(`Adding date param to URL: ${this.searchParams.date}`);
       queryParams.date = this.searchParams.date;
     }
 
-    if (this.searchParams.page !== 1) {
+    if (this.searchParams.page && this.searchParams.page !== 1) {
       queryParams.page = this.searchParams.page;
     }
 
-    if (this.searchParams.limit !== 20) {
+    if (this.searchParams.limit && this.searchParams.limit !== 20) {
       queryParams.limit = this.searchParams.limit;
     }
 
@@ -535,11 +577,12 @@ export class SearchComponent implements OnInit {
 
     console.log('Updating URL with query params:', queryParams);
 
-    // Mit neuen Query-Parametern navigieren
+    // Mit neuen Query-Parametern navigieren und alle vorhandenen überschreiben
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: queryParams,
       replaceUrl: true, // Ersetze den aktuellen History-Eintrag
+      queryParamsHandling: '', // Wichtig: Überschreibt alle vorhandenen Parameter
     });
   }
 
@@ -599,5 +642,37 @@ export class SearchComponent implements OnInit {
   goToEventDetails(eventId: string): void {
     if (!eventId) return;
     this.router.navigate(['/events', eventId]);
+  }
+
+  // Debug-Funktion zum Testen des Zeitraumfilters
+  testDateFilter(dateValue: string): void {
+    console.log('TESTING DATE FILTER');
+    console.log('------------------');
+
+    // Setze Test-Datum
+    this.searchParams.date = dateValue;
+
+    // Konvertiere zu Backend-Format
+    const backendFilters = this.convertFiltersToBackend();
+
+    // Debug-Logs
+    console.log(`Frontend date value: "${dateValue}"`);
+    console.log(`Converted to backend: "${backendFilters.date}"`);
+
+    // Test-API-Anfrage ohne Navigation
+    this.loading = true;
+    this.eventsService.getEvents(backendFilters).subscribe({
+      next: ([events, count]) => {
+        console.log(
+          `Test request returned ${events.length} events out of ${count} total`,
+        );
+        console.log('Sample events:', events.slice(0, 3));
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Test request failed:', err);
+        this.loading = false;
+      },
+    });
   }
 }

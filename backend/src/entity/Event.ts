@@ -1,7 +1,15 @@
-import { Entity, Column, ManyToOne, Index, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  ManyToOne,
+  Index,
+  JoinColumn,
+  OneToMany,
+} from 'typeorm';
 import { BaseEntity } from './BaseEntity';
 import { User } from './User';
 import { Exclude } from 'class-transformer';
+import { EventOccurrence } from './EventOccurrence';
 
 @Entity()
 export class Event extends BaseEntity {
@@ -47,4 +55,7 @@ export class Event extends BaseEntity {
 
   @Column({ nullable: true })
   meetingLink?: string;
+
+  @OneToMany(() => EventOccurrence, (occurrence) => occurrence.event)
+  occurrences: EventOccurrence[];
 }

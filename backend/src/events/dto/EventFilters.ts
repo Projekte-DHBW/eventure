@@ -1,4 +1,5 @@
-import { IsEnum, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsOptional, IsString, IsArray } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class EventFiltersDto {
   @IsString()
@@ -18,4 +19,14 @@ export class EventFiltersDto {
 
   @IsOptional()
   limit?: number = 10;
+
+  @IsOptional()
+  @IsString()
+  date?: string;
+
+  @IsOptional()
+  locations?: string | string[];
+
+  @IsOptional()
+  types?: string[];
 }

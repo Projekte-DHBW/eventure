@@ -246,7 +246,6 @@ h4 {
 
 .spinner {
   animation: spin 1s infinite linear;
-  margin-right: 0.75em;
 }
 
 @keyframes spin {

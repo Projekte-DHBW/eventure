@@ -53,19 +53,26 @@
           <div class="filter-group">
             <h3>Zeitraum</h3>
             <div class="filter-options">
-              <div *ngFor="let date of dates" class="filter-chip" [class.active]="
-                  searchParams.date?.toLowerCase() === date.toLowerCase()
-                " (click)="applyFilter('date', date)" [style.background-color]="
-                  searchParams.date?.toLowerCase() === date.toLowerCase()
-                    ? '#4285f4'
-                    : ''
-                " [style.color]="
-                  searchParams.date?.toLowerCase() === date.toLowerCase()
-                    ? 'white'
-                    : ''
-                ">
+              <div *ngFor="let date of dates" class="filter-chip" [class.active]="searchParams.date === date"
+                (click)="applyFilter('date', date)"
+                [style.background-color]="searchParams.date === date ? '#4285f4' : ''"
+                [style.color]="searchParams.date === date ? 'white' : ''">
                 {{ date }}
               </div>
+            </div>
+          </div>
+          <div class="specific-date-picker">
+            <h4>Oder wähle ein bestimmtes Datum:</h4>
+            <div class="date-picker-container">
+              <mat-form-field appearance="outline">
+                <mat-label>Bestimmtes Datum</mat-label>
+                <input matInput [matDatepicker]="picker" [formControl]="specificDateControl">
+                <mat-hint>TT.MM.JJJJ</mat-hint>
+                <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+              </mat-form-field>
+              <button mat-button color="primary"
+                (click)="applySpecificDate(specificDateControl.value)">Anwenden</button>
             </div>
           </div>
         </div>

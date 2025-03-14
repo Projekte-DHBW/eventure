@@ -70,7 +70,7 @@ export class EventDiscoveryComponent implements OnInit {
     // Initialize city autocomplete
     this.filteredCities = this.locationControl.valueChanges.pipe(
       startWith(''),
-      debounceTime(50),
+      debounceTime(300),
       distinctUntilChanged(),
       filter(query => typeof query === 'string'),
       tap(() => this.isLoading = true),

@@ -40,7 +40,7 @@
                 </mat-form-field>
               </div>
 
-              <div class="form-row">
+              <div class="form-row description-row">
                 <mat-form-field
                   appearance="outline"
                   class="form-field-full-width"
@@ -57,6 +57,22 @@
                     getDescriptionErrorMessage()
                   }}</mat-error>
                 </mat-form-field>
+                
+                <button 
+                  type="button" 
+                  mat-mini-fab 
+                  color="primary" 
+                  class="enhance-button"
+                  (click)="enhanceDescription()"
+                  [disabled]="isEnhancingDescription || !description.value"
+                  matTooltip="KI-Beschreibung verbessern"
+                >
+                  @if (isEnhancingDescription) {
+                    <mat-icon class="spinner">sync</mat-icon>
+                  } @else {
+                    <mat-icon>auto_fix_high</mat-icon>
+                  }
+                </button>
               </div>
 
               <div class="form-row">

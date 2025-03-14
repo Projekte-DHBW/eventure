@@ -21,12 +21,15 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
 import { CreateEvent, Event } from '../../../types/events';
 import { EventsService } from '../../../services/events.service';
 import { UserSearchComponent } from '../../../components/user-search/user-search.component';
 import { UserSearchResult, UserService } from '../../../services/user.service';
 import { User } from '../../../types/user';
+import { OpenaiService } from '../../../services/openai.service';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-create-events',
@@ -46,7 +49,8 @@ import { User } from '../../../types/user';
     MatExpansionModule,
     MatTabsModule,
     MatDividerModule,
-    UserSearchComponent, // Add this import
+    MatTooltipModule,
+    UserSearchComponent,
   ],
   templateUrl: './create-events.component.html',
   styleUrls: ['./create-events.component.css'],
@@ -55,6 +59,7 @@ export class CreateEventsComponent implements OnInit {
   eventForm!: FormGroup;
   users: User[] = [];
   isLoading = false;
+  isEnhancingDescription = false;
   advancedMode = false;
 
   title = new FormControl('', [Validators.required]);
@@ -77,6 +82,7 @@ export class CreateEventsComponent implements OnInit {
     private snackBar: MatSnackBar,
     private eventsService: EventsService,
     private userService: UserService,
+    private openaiService: OpenaiService,
     private router: Router,
   ) {}
 
@@ -183,6 +189,51 @@ export class CreateEventsComponent implements OnInit {
 
   toggleAdvancedMode(): void {
     this.advancedMode = !this.advancedMode;
+  }
+
+  enhanceDescription(): void {
+    const currentText = this.description.value;
+    
+    if (!currentText || currentText.trim() === '') {
+      this.snackBar.open(
+        'Bitte geben Sie zuerst eine Beschreibung ein!',
+        'Schließen',
+        { duration: 3000 }
+      );
+      return;
+    }
+
+    this.isEnhancingDescription = true;
+    
+    this.openaiService.enhance(
+      currentText, 
+      this.title.value!, 
+      this.category.value!
+    )
+    .pipe(
+      finalize(() => {
+        this.isEnhancingDescription = false;
+      })
+    )
+    .subscribe({
+      next: (enhancedText) => {
+        console.log('Enhanced description:', enhancedText);
+        this.description.setValue(enhancedText);
+        this.snackBar.open(
+          'Fertig',
+          'Schließen',
+          { duration: 3000 }
+        );
+      },
+      error: (error) => {
+        console.error('Error enhancing description:', error);
+        this.snackBar.open(
+          'Fehler bei der Anfrage',
+          'Schließen',
+          { duration: 5000 }
+        );
+      }
+    });
   }
 
   onSubmit(): void {

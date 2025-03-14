@@ -42,7 +42,7 @@ export type CreateEvent = {
 export type UpdateEvent = Partial<CreateEvent>;
 
 export interface Event {
-  id: string; // Add this property
+  id: string;
   title: string;
   description: string;
   visibility: 'public' | 'private' | 'unlisted';
@@ -54,15 +54,7 @@ export interface Event {
   isOnline?: boolean;
   meetingLink?: string;
   creator?: string; // User ID of creator
-  creatorObj?: {
-    // Optional creator object
-    id: string;
-    firstName: string;
-    lastName: string;
-  };
-  // Additional properties for populated relations
   occurrences?: EventOccurrence[];
   managers?: EventManager[];
   invitations?: Invitation[];
-  // Add any other properties your backend returns
 }

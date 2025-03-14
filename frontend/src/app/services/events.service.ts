@@ -41,7 +41,10 @@ export class EventsService {
 
   constructor(private http: HttpClientService) {}
 
-  getEvents() {
+  // Get events with filters
+  getEvents(filters: any = {}): Observable<[Event[], number]> {
+    const params: any = {};
+
     if (filters.search) params.search = filters.search;
     if (filters.category) params.category = filters.category;
     if (filters.sort) params.sort = filters.sort;
@@ -189,6 +192,7 @@ export class EventsService {
       params: { query, limit },
     });
   }
+
 
 private handleError(error: any): Observable<never> {
     let errorMessage = '';

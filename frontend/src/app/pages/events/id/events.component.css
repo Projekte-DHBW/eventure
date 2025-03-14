@@ -1,8 +1,8 @@
 .events-container {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    min-height: auto;
+    align-items: center;
+    min-height: 100dvh;
     gap: 10px;
     max-width: 75rem;
     margin: 0 auto;
@@ -15,6 +15,7 @@
     flex-direction: column;
     align-items: flex-start;
     min-height: 100dvh;
+    width: 100%;
     gap: 10px;
     padding: 20px;
 }
@@ -24,12 +25,60 @@ h1 {
     margin-top: 10px;
     margin-bottom: 10px;
     align-self: center;
+    color: var(--primary);
 }
 
+h3 {
+    font-size: 1.5em;
+    margin-top: 15px; /* Abstand über der Überschrift */
+    margin-bottom: 5px; /* Abstand unter der Überschrift */
+}
 
 p {
-    font-size: 1.2em;
+    font-size: 1.25em;
+    margin-bottom: 15px; /* Abstand unter dem Text */
 }
+
 .picture {
     align-self: center;
+}
+
+/* Responsive Anpassungen */
+@media (max-width: 600px) {
+    .form {
+        padding: 10px; /* Weniger Padding auf kleineren Bildschirmen */
+        width: 90%;
+    }
+
+    h1 {
+        font-size: 1.5em; /* Kleinere Schriftgröße für Überschriften */
+        margin-top: 5px; /* Angepasster Abstand für kleinere Bildschirme */
+    }
+
+    h3 {
+        font-size: 1.25em;
+    }
+
+    p {
+        font-size: 1em; /* Kleinere Schriftgröße für Text */
+    }
+}
+
+@media (max-width: 300px) {
+    .form {
+        padding: 5px; /* Weniger Padding auf kleineren Bildschirmen */
+        width: 80%;
+    }
+
+    h1 {
+        font-size: 1em; /* Kleinere Schriftgröße für Überschriften */
+    }
+
+    h3 {
+        font-size: 0.75em;
+    }
+
+    p {
+        font-size: 0.5em; /* Kleinere Schriftgröße für Text */
+    }
 }

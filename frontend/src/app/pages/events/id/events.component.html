@@ -2,11 +2,17 @@
     <mat-card class="form" *ngFor="let event of results">
         <p class="picture">Bild</p>
         <h1>Eventtitel {{ event.title }} </h1>
-        <h3>Beschreibung: {{ event.description }}</h3>
-        <h3>Datum: {{ event.eventDate }}</h3>
-        <h3>Maximale Anzahl Besucher: {{ event.maxParticipants }}</h3>
-        <h3>Veranstaltungsort: {{ event.location }}</h3>
-        <h3>Ist es online? {{ event.isOnline ? 'Ja' : 'Nein' }}</h3>
-        <h3>Eventlink: {{ event.meetingLink }}</h3>
+        <h3>Beschreibung: </h3>
+            <p>{{ event.description || 'Ist noch nicht vorhanden.'}}</p>
+        <h3>Datum: </h3>
+        <p>{{ event.eventDate || 'Ist noch nicht vorhanden.'}}</p>
+        <h3>Maximale Anzahl Besucher: </h3>
+        <p>{{ event.maxParticipants || 'Ist noch nicht vorhanden.'}}</p>
+        <h3>Veranstaltungsort: </h3>
+        <p>{{ event.location || 'Ist noch nicht vorhanden.'}}</p>
+        <h3>Ist es online? </h3>
+        <p>{{ event.isOnline ? 'Ja' : 'Nein' }}</p>
+        <h3>Eventlink: </h3>
+        <p>{{ event.meetingLink || 'Ist noch nicht vorhanden.'}}</p>
     </mat-card>
 </div>

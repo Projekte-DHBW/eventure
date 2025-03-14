@@ -1,55 +1,45 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component, OnInit, Output, EventEmitter} from '@angular/core';
+//import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { MatCardModule } from '@angular/material/card';
 import { RouterModule } from '@angular/router';
-import { EventsService } from '../../../services/events.service';
+import { EventsSearchResult, EventsService } from '../../../services/events.service';
+import { Event } from '../../../types/events';
+import { FormControl } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 
-interface Event {
-  id: number;
-  title: string;
-  type: string;
-  location: string;
-  description: string;
-  day: string;
-  date: string;
-  tags: string[];
-  image: string;
-}
+
 
 @Component({
   selector: 'app-events',
   imports: [
     RouterModule,
     MatCardModule,
+    CommonModule,
   ],
   templateUrl: './events.component.html',
-  styleUrl: './events.component.css'
+  styleUrls: ['./events.component.css']
 })
 export class EventsComponent implements OnInit{
-  event: Event | null = null;
+  @Output() eventSelected = new EventEmitter<EventsSearchResult | null>();
+
+  searchControl = new FormControl('');
+  results: EventsSearchResult[] = [];
   errorMessage: string = ''; // Fehlernachricht
 
-  constructor(private route: ActivatedRoute, private eventService: EventsService) {}
+  constructor(private route: ActivatedRoute, private eventsService: EventsService) {}
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
+    console.log('Extrahierte ID:', id); // Debug-Ausgabe hinzufügen
+
     if (id) { // Überprüfen, ob eventID nicht null ist
-      this.eventService.getEventById(id).subscribe(
-        (data) => {
+      this.eventsService.findOne(id).subscribe(
+        (result) => {
           // Hier können Sie die API-Daten anpassen, falls nötig
-          this.event = {
-            id: data.id,
-            title: data.title,
-            type: data.type,
-            location: data.location,
-            description: data.description,
-            day: data.day,
-            date: data.date,
-            tags: data.tags,
-            image: data.image, // Stellen Sie sicher, dass dies mit der API übereinstimmt
-            // Fügen Sie zusätzliche Felder hinzu, falls vorhanden
-          };
+          this.results = [result]; 
+          console.log('Ergebnisse:', this.results); // Debug-Ausgabe
         },
         (error) => {
           this.errorMessage = 'Fehler beim Laden der Eventdaten';

@@ -1,22 +1,12 @@
 <div class="events-container">
-    <mat-card class="form">
+    <mat-card class="form" *ngFor="let event of results">
         <p class="picture">Bild</p>
         <h1>Eventtitel {{ event.title }} </h1>
-        <h3>Beschreibung: </h3>
-        <p>
-            Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt 
-            ut labore et dolore magna aliquyam erat, sed diam voluptua. 
-            At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea 
-            takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur 
-            sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, 
-            sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. 
-            Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
-        </p>
-        <h3>Datum:</h3>
-        <p>12.03.2025</p>
-        <h3>Maximale Anzahl Besucher:</h3>
-        <h3>Veranstaltungsort:</h3>
-        <h3>Ist es online???</h3>
-        <h3>Eventlink:</h3>
+        <h3>Beschreibung: {{ event.description }}</h3>
+        <h3>Datum: {{ event.eventDate }}</h3>
+        <h3>Maximale Anzahl Besucher: {{ event.maxParticipants }}</h3>
+        <h3>Veranstaltungsort: {{ event.location }}</h3>
+        <h3>Ist es online? {{ event.isOnline ? 'Ja' : 'Nein' }}</h3>
+        <h3>Eventlink: {{ event.meetingLink }}</h3>
     </mat-card>
 </div>

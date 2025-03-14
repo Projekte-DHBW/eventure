@@ -21,6 +21,7 @@ import { User } from 'src/entity/User';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { CitySearchDto } from './dto/CitySearch';
 
+
 @Controller('events')
 export class EventsController {
   constructor(private readonly eventsService: EventsService) {}

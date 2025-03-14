@@ -15,6 +15,8 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import * as path from 'path';
 import { EventsModule } from './events/events.module';
+import { OpenaiController } from './openai/openai.controller';
+import { OpenAiModule } from './openai/openai.model';
 
 @Module({
   imports: [
@@ -40,6 +42,7 @@ import { EventsModule } from './events/events.module';
     AuthModule,
     UsersModule,
     EventsModule,
+    OpenAiModule,
   ],
   controllers: [],
   providers: [AppService],

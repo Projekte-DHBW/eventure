@@ -6,6 +6,7 @@ import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { authGuard } from './auth/guards/auth.guard';
 import { SearchComponent } from './pages/search/search.component';
 import { CreateEventsComponent } from './pages/events/create/create-events.component';
+import { ProfileEditComponent } from './pages/profile/edit/profile-edit.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -16,6 +17,11 @@ export const routes: Routes = [
     pathMatch: 'prefix',
     path: 'dashboard',
     component: DashboardComponent,
+    canActivate: [authGuard],
+  },
+  {
+    path: 'profile/edit',
+    component: ProfileEditComponent,
     canActivate: [authGuard],
   },
   { path: 'events/create', component: CreateEventsComponent },

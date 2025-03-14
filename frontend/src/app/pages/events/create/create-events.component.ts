@@ -205,7 +205,7 @@ export class CreateEventsComponent implements OnInit {
 
     this.isEnhancingDescription = true;
     
-    const subscription = this.openaiService.enhance(
+    this.openaiService.enhance(
       currentText, 
       this.title.value!, 
       this.category.value!

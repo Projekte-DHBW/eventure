@@ -1,0 +1,97 @@
+<div class="profile-container">
+  <div class="profile-card">
+    <div class="profile-header">
+      <div class="avatar-container">
+        <div class="avatar" [style.background-color]="avatarColor">
+          {{ userInitials }}
+        </div>
+      </div>
+      <h1 class="profile-title">Profil</h1>
+    </div>
+    
+    <div class="divider"></div>
+    
+    <div class="profile-content">
+      <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="firstName">Vorname*</label>
+            <input id="firstName" class="form-input" formControlName="firstName" placeholder="Vorname">
+            @if (profileForm.get('firstName')?.invalid && profileForm.get('firstName')?.touched) {
+              <div class="error-message">Vorname ist erforderlich</div>
+            }
+          </div>
+          
+          <div class="form-group">
+            <label for="lastName">Nachname*</label>
+            <input id="lastName" class="form-input" formControlName="lastName" placeholder="Nachname">
+            @if (profileForm.get('lastName')?.invalid && profileForm.get('lastName')?.touched) {
+              <div class="error-message">Nachname ist erforderlich</div>
+            }
+          </div>
+        </div>
+        
+        <div class="form-group full-width">
+          <label for="email">E-Mail*</label>
+          <input id="email" class="form-input" formControlName="email" placeholder="E-Mail" type="email">
+          @if (profileForm.get('email')?.invalid && profileForm.get('email')?.touched) {
+            <div class="error-message">Bitte geben Sie eine gültige E-Mail ein</div>
+          }
+        </div>
+        
+        <div class="divider"></div>
+        
+        <div class="password-section">
+          <h2>Passwort ändern</h2>
+          
+          <div class="form-group full-width">
+            <label for="currentPassword">Aktuelles Passwort</label>
+            <div class="password-input-container">
+              <input id="currentPassword" class="form-input" formControlName="currentPassword" 
+                     placeholder="Aktuelles Passwort" [type]="hideCurrentPassword ? 'password' : 'text'">
+              <button type="button" class="password-toggle" (click)="hideCurrentPassword = !hideCurrentPassword">
+                <mat-icon>{{ hideCurrentPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
+            </div>
+            @if (profileForm.get('currentPassword')?.invalid && profileForm.get('currentPassword')?.touched) {
+              <div class="error-message">Aktuelles Passwort ist erforderlich</div>
+            }
+          </div>
+          
+          <div class="form-group full-width">
+            <label for="newPassword">Neues Passwort</label>
+            <div class="password-input-container">
+              <input id="newPassword" class="form-input" formControlName="newPassword" 
+                     placeholder="Neues Passwort" [type]="hideNewPassword ? 'password' : 'text'">
+              <button type="button" class="password-toggle" (click)="hideNewPassword = !hideNewPassword">
+                <mat-icon>{{ hideNewPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
+            </div>
+            @if (profileForm.get('newPassword')?.invalid && profileForm.get('newPassword')?.touched) {
+              <div class="error-message">Passwort muss mindestens 8 Zeichen lang sein</div>
+            }
+          </div>
+          
+          <div class="form-group full-width">
+            <label for="confirmPassword">Neues Passwort bestätigen</label>
+            <div class="password-input-container">
+              <input id="confirmPassword" class="form-input" formControlName="confirmPassword" 
+                     placeholder="Neues Passwort bestätigen" [type]="hideConfirmPassword ? 'password' : 'text'">
+              <button type="button" class="password-toggle" (click)="hideConfirmPassword = !hideConfirmPassword">
+                <mat-icon>{{ hideConfirmPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
+            </div>
+            @if (profileForm.get('confirmPassword')?.invalid && profileForm.get('confirmPassword')?.touched) {
+              <div class="error-message">Passwörter müssen übereinstimmen</div>
+            }
+          </div>
+        </div>
+        
+        <div class="button-row">
+          <button type="button" class="reset-button" (click)="resetForm()">Zurücksetzen</button>
+          <button type="submit" class="save-button" [disabled]="profileForm.invalid">Änderungen speichern</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

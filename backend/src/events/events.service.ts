@@ -4,7 +4,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, Brackets } from 'typeorm';
 import { Event } from '../entity/Event';
 import { EventLocation } from '../entity/EventLocation';
 import { EventOccurrence } from '../entity/EventOccurrence';
@@ -210,21 +210,128 @@ export class EventsService {
   }
 
   async findAll(filters: EventFiltersDto): Promise<[Event[], number]> {
-    const { search, category, sort, page = 1, limit = 10 } = filters;
+    const { search, category, sort, page = 1, limit = 10, date } = filters;
 
-    const query = this.eventRepository
+    // Create base query for events
+    let query = this.eventRepository
       .createQueryBuilder('event')
       .where('event.visibility = :visibility', { visibility: 'public' });
 
+    // Define date range variables outside both query blocks so they're in scope for both
+    let startDate: Date | undefined;
+    let endDate: Date | undefined;
+
+    // Text search
     if (search) {
       query.andWhere(
-        '(event.title LIKE :search OR event.description LIKE :search)',
+        '(event.title LIKE :search OR event.description LIKE :search OR event.location LIKE :search)',
         { search: `%${search}%` },
       );
     }
 
+    // Category filter
     if (category) {
       query.andWhere('event.category = :category', { category });
+    }
+
+    // Location filtering - FIXED
+    if (filters.locations) {
+      // Handle both string and array formats
+      let locationList: string[] = [];
+
+      if (typeof filters.locations === 'string') {
+        locationList = filters.locations
+          .split(',')
+          .map((loc) => loc.trim())
+          .filter(Boolean);
+      } else if (Array.isArray(filters.locations)) {
+        locationList = filters.locations.filter(Boolean);
+      }
+
+      if (locationList.length > 0) {
+        query.andWhere('event.location IN (:...locations)', {
+          locations: locationList,
+        });
+      }
+    }
+
+    // Date filtering - completely reworked
+    if (date) {
+      // Use a simple JOIN instead of leftJoinAndSelect
+      query = query.leftJoin('event.occurrences', 'occurrence');
+
+      const now = new Date();
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+      // Set date ranges based on filter
+      switch (date) {
+        case 'today':
+          startDate = today;
+          endDate = new Date(today);
+          endDate.setHours(23, 59, 59, 999);
+          break;
+        case 'tomorrow':
+          startDate = new Date(today);
+          startDate.setDate(startDate.getDate() + 1);
+          endDate = new Date(startDate);
+          endDate.setHours(23, 59, 59, 999);
+          break;
+        case 'this_week':
+          startDate = today;
+          endDate = new Date(today);
+          const dayOfWeek = endDate.getDay();
+          const daysUntilEndOfWeek = 6 - dayOfWeek; // 6 = Saturday (assuming Sunday is 0)
+          endDate.setDate(endDate.getDate() + daysUntilEndOfWeek);
+          endDate.setHours(23, 59, 59, 999);
+          break;
+        case 'this_month':
+          startDate = today;
+          endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+          endDate.setHours(23, 59, 59, 999);
+          break;
+        case 'this_year':
+          startDate = today;
+          endDate = new Date(today.getFullYear(), 11, 31);
+          endDate.setHours(23, 59, 59, 999);
+          break;
+        default:
+          if (/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+            // Specific date in YYYY-MM-DD format
+            startDate = new Date(date);
+            endDate = new Date(date);
+            endDate.setHours(23, 59, 59, 999);
+          } else {
+            // Default to today if unrecognized format
+            startDate = today;
+            endDate = new Date(today);
+            endDate.setHours(23, 59, 59, 999);
+          }
+      }
+
+      // Log the dates for debugging
+      console.log(
+        `Date filter: ${date}, Range: ${startDate.toISOString()} to ${endDate.toISOString()}`,
+      );
+
+      // Use safer query approach
+      query.andWhere(
+        new Brackets((qb) => {
+          qb.where('event.eventDate BETWEEN :startDate AND :endDate', {
+            startDate,
+            endDate,
+          })
+            .orWhere('occurrence.startDate BETWEEN :startDate AND :endDate', {
+              startDate,
+              endDate,
+            })
+            .orWhere(
+              'occurrence.startDate <= :startDate AND occurrence.endDate >= :startDate',
+              {
+                startDate,
+              },
+            );
+        }),
+      );
     }
 
     // Apply sorting
@@ -235,14 +342,123 @@ export class EventsService {
       case 'popular':
         query.orderBy('event.maxParticipants', 'DESC');
         break;
+      case 'upcoming':
+        query.orderBy('event.eventDate', 'ASC');
+        break;
       default:
         query.orderBy('event.createdAt', 'DESC');
     }
 
-    // Apply pagination
     query.skip((page - 1) * limit).take(limit);
 
-    return query.getManyAndCount();
+    // Select necessary fields
+    query.select([
+      'event.id',
+      'event.title',
+      'event.description',
+      'event.visibility',
+      'event.category',
+      'event.coverImageUrl',
+      'event.maxParticipants',
+      'event.eventDate',
+      'event.location',
+      'event.isOnline',
+      'event.meetingLink',
+      'event.creator',
+      'event.createdAt',
+      'event.updatedAt',
+    ]);
+
+    // Make the query distinct to avoid duplicates
+    query.distinct(true);
+
+    // Get total count using a separate query
+    let totalCount = 0;
+    try {
+      // Create a new count query - don't reuse the where conditions directly
+      const countQuery = this.eventRepository
+        .createQueryBuilder('event')
+        .select('COUNT(DISTINCT event.id)', 'count')
+        .where('event.visibility = :visibility', { visibility: 'public' });
+
+      // Apply the same text search if needed
+      if (search) {
+        countQuery.andWhere(
+          '(event.title LIKE :search OR event.description LIKE :search OR event.location LIKE :search)',
+          { search: `%${search}%` },
+        );
+      }
+
+      // Apply the same category filter if needed
+      if (category) {
+        countQuery.andWhere('event.category = :category', { category });
+      }
+
+      // Apply the same location filter if needed
+      if (filters.locations) {
+        let locationList: string[] = [];
+        if (typeof filters.locations === 'string') {
+          locationList = filters.locations
+            .split(',')
+            .map((loc) => loc.trim())
+            .filter(Boolean);
+        } else if (Array.isArray(filters.locations)) {
+          locationList = filters.locations.filter(Boolean);
+        }
+
+        if (locationList.length > 0) {
+          countQuery.andWhere('event.location IN (:...locations)', {
+            locations: locationList,
+          });
+        }
+      }
+
+      // Apply the same date filter if needed
+      if (date && startDate && endDate) {
+        countQuery.leftJoin('event.occurrences', 'occurrence');
+
+        // Apply the date filter condition
+        countQuery.andWhere(
+          new Brackets((qb) => {
+            qb.where('event.eventDate BETWEEN :startDate AND :endDate', {
+              startDate,
+              endDate,
+            })
+              .orWhere('occurrence.startDate BETWEEN :startDate AND :endDate', {
+                startDate,
+                endDate,
+              })
+              .orWhere(
+                'occurrence.startDate <= :startDate AND occurrence.endDate >= :startDate',
+                {
+                  startDate,
+                },
+              );
+          }),
+        );
+      }
+
+      // Execute the count query
+      const result = await countQuery.getRawOne();
+      totalCount = parseInt(result?.count || '0', 10);
+      console.log(`Found ${totalCount} matching events`);
+    } catch (error) {
+      console.error('Error counting results:', error);
+      totalCount = 0;
+    }
+
+    // Get the events with simpler query
+    let events: Event[] = [];
+    try {
+      events = await query.getMany();
+      console.log(`Retrieved ${events.length} events`);
+    } catch (error) {
+      console.error('Error fetching results:', error);
+      events = [];
+    }
+
+    // Return the events and count
+    return [events, totalCount];
   }
 
   async findOneById(id: string): Promise<Event> {

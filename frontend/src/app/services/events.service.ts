@@ -18,14 +18,39 @@ export class EventsService {
     if (filters.sort) params.sort = filters.sort;
     if (filters.page) params.page = filters.page.toString();
     if (filters.limit) params.limit = filters.limit.toString();
-    if (filters.types && filters.types.length) params.types = filters.types;
-    if (filters.locations && filters.locations.length)
-      params.locations = filters.locations;
-    if (filters.date) params.date = filters.date;
+    if (filters.types) params.types = filters.types; // Kann String oder Array sein
+
+    // Für Standorte, entweder als String oder als Array
+    if (filters.locations) {
+      if (typeof filters.locations === 'string') {
+        params.locations = filters.locations;
+      } else if (Array.isArray(filters.locations)) {
+        params.locations = filters.locations.join(',');
+      }
+    }
+
+    // Datum-Filter - Korrigiert
+    if (filters.date) {
+      // Stellen wir sicher, dass das Datum als String übergeben wird
+      params.date = String(filters.date);
+      console.log(`Setting date param to: ${params.date}`);
+    }
 
     console.log('Sending API request with params:', params);
 
-    return this.http.get<any>('events', { params }).pipe(
+    // Hinzugefügt: Debugging-Info für die URL
+    const url = new URLSearchParams(params).toString();
+    console.log('Query string that would be sent:', url);
+
+    // Spezielles Header-Flag für den HttpClient hinzufügen
+    const options = {
+      params,
+      headers: {
+        Accept: 'application/json',
+      },
+    };
+
+    return this.http.get<any>('events', options).pipe(
       map((response) => {
         console.log('API response:', response);
 

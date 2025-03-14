@@ -20,12 +20,17 @@
     padding: 20px;
 }
 
+.badge .mat-badge-content {
+    background-color: var(--primary); 
+    color: white; 
+}
+
+
 h1 {
     font-size: 2em;
     margin-top: 10px;
     margin-bottom: 10px;
     align-self: center;
-    color: var(--primary);
 }
 
 h3 {

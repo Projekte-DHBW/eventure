@@ -1,7 +1,9 @@
 <div class="events-container">
     <mat-card class="form" *ngFor="let event of results">
         <p class="picture">Bild</p>
-        <h1>Eventtitel {{ event.title }} </h1>
+        <h1>Eventtitel {{ event.title }} 
+            <span *ngIf="event.isOnline" matBadge="Online-Event" class="badge"></span>
+        </h1>
         <h3>Beschreibung: </h3>
             <p>{{ event.description || 'Ist noch nicht vorhanden.'}}</p>
         <h3>Datum: </h3>
@@ -10,9 +12,10 @@
         <p>{{ event.maxParticipants || 'Ist noch nicht vorhanden.'}}</p>
         <h3>Veranstaltungsort: </h3>
         <p>{{ event.location || 'Ist noch nicht vorhanden.'}}</p>
-        <h3>Ist es online? </h3>
-        <p>{{ event.isOnline ? 'Ja' : 'Nein' }}</p>
-        <h3>Eventlink: </h3>
-        <p>{{ event.meetingLink || 'Ist noch nicht vorhanden.'}}</p>
+         <!-- Eventlink wird nur angezeigt, wenn event.isOnline wahr ist -->
+         <ng-container *ngIf="event.isOnline">
+            <h3>Eventlink: </h3>
+            <p>{{ event.meetingLink || 'Ist noch nicht vorhanden.'}}</p>
+        </ng-container>
     </mat-card>
 </div>

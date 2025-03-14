@@ -8,6 +8,7 @@ import { EventsSearchResult, EventsService } from '../../../services/events.serv
 import { Event } from '../../../types/events';
 import { FormControl } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { MatBadgeModule } from '@angular/material/badge';
 
 
 
@@ -17,6 +18,7 @@ import { CommonModule } from '@angular/common';
     RouterModule,
     MatCardModule,
     CommonModule,
+    MatBadgeModule,
   ],
   templateUrl: './events.component.html',
   styleUrls: ['./events.component.css']

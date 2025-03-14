@@ -106,6 +106,7 @@ export class AuthService implements OnDestroy {
       return throwError(() => new Error('No refresh token available'));
     }
 
+    // TODO:
     return this.http
       .post<TokenRefreshResponse>(`${this.apiUrl}/refresh-token`, {
         refreshToken,

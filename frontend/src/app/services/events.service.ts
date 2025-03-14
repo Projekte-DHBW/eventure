@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { CreateEvent, UpdateEvent, Event } from '../types/events';
 import { HttpClientService } from './httpClient.service';
-import { Observable } from 'rxjs';
+import { Observable, map, catchError, of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -9,21 +9,129 @@ import { Observable } from 'rxjs';
 export class EventsService {
   constructor(private http: HttpClientService) {}
 
-  getEvents() {}
+  // Get events with filters
+  getEvents(filters: any = {}): Observable<[Event[], number]> {
+    const params: any = {};
 
-  getEventById(id: string) {}
+    if (filters.search) params.search = filters.search;
+    if (filters.category) params.category = filters.category;
+    if (filters.sort) params.sort = filters.sort;
+    if (filters.page) params.page = filters.page.toString();
+    if (filters.limit) params.limit = filters.limit.toString();
+    if (filters.types && filters.types.length) params.types = filters.types;
+    if (filters.locations && filters.locations.length)
+      params.locations = filters.locations;
+    if (filters.date) params.date = filters.date;
+
+    console.log('Sending API request with params:', params);
+
+    return this.http.get<any>('events', { params }).pipe(
+      map((response) => {
+        console.log('API response:', response);
+
+        // Prüfen, ob die Antwort bereits das gewünschte Format hat [Event[], number]
+        if (
+          Array.isArray(response) &&
+          response.length === 2 &&
+          Array.isArray(response[0])
+        ) {
+          return response as [Event[], number];
+        }
+
+        // Oder ob es das Format {items: Event[], count: number} hat
+        if (response && 'items' in response) {
+          const items = response.items || [];
+          const count = response.count || 0;
+          return [items, count] as [Event[], number];
+        }
+
+        // Fallback für andere Formate
+        console.warn('Unexpected API response format:', response);
+        return [[], 0] as [Event[], number];
+      }),
+      catchError((error) => {
+        console.error('API error in getEvents:', error);
+        return of([[], 0] as [Event[], number]);
+      }),
+    );
+  }
+
+  // Get events by category
+  getEventsByCategory(category: string, limit: number = 10): Observable<any[]> {
+    const params = { limit: limit.toString() };
+    return this.http.get<any[]>(`events/category/${category}`, { params });
+  }
+
+  // Get latest events
+  getLatestEvents(limit: number = 10): Observable<Event[]> {
+    const params = { limit: limit.toString() };
+
+    return this.http.get<any>('events/latest', { params }).pipe(
+      map((response) => {
+        console.log('Latest events response:', response);
+
+        // Prüfen, ob die Antwort bereits ein Array ist
+        if (Array.isArray(response)) {
+          return response;
+        }
+
+        // Oder ob es im Format {items: Event[]} kommt
+        if (response && 'items' in response) {
+          return response.items || [];
+        }
+
+        // Fallback
+        console.warn('Unexpected format in latest events:', response);
+        return [];
+      }),
+      catchError((error) => {
+        console.error('Error loading latest events:', error);
+        return of([]);
+      }),
+    );
+  }
+
+  // Get popular events
+  getPopularEvents(limit: number = 10): Observable<Event[]> {
+    const params = { limit: limit.toString() };
+    return this.http.get<any>('events/popular', { params }).pipe(
+      map((response) => {
+        if (Array.isArray(response)) {
+          return response;
+        }
+        if (response && 'items' in response) {
+          return response.items || [];
+        }
+        return [];
+      }),
+      catchError(() => of([])),
+    );
+  }
+
+  // Get event by ID
+  getEvent(id: string): Observable<Event> {
+    return this.http.get(`events/${id}`);
+  }
 
   createEvent(data: CreateEvent): Observable<Event> {
     return this.http.post<Event>('events', data);
   }
 
-  updateEvent(id: string, data: UpdateEvent) {}
+  updateEvent(id: string, data: UpdateEvent): Observable<Event> {
+    return this.http.patch<Event>(`events/${id}`, data);
+  }
 
-  deleteEvent(id: string) {}
+  deleteEvent(id: string): Observable<void> {
+    return this.http.delete<void>(`events/${id}`);
+  }
 
-  joinEvent(id: string) {}
+  joinEvent(id: string): Observable<any> {
+    return this.http.post<any>(`events/${id}/join`, {});
+  }
 
-  leaveEvent(id: string) {}
+  leaveEvent(id: string): Observable<any> {
+    return this.http.post<any>(`events/${id}/leave`, {});
+  }
 
   /**
    * Search cities by name (autocomplete)
@@ -38,5 +146,21 @@ export class EventsService {
     return this.http.get<{ cities: string[] }>(`events/cities/search`, {
       params: { query, limit },
     });
+  }
+
+  /**
+   * Search events with advanced filters
+   * @param searchParams Search parameters object
+   * @returns Observable of events matching the criteria
+   */
+  searchEvents(searchParams: {
+    search?: string;
+    types?: string[];
+    locations?: string[];
+    date?: string;
+    page?: number;
+    limit?: number;
+  }): Observable<[Event[], number]> {
+    return this.getEvents(searchParams);
   }
 }

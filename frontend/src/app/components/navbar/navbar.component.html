@@ -27,7 +27,7 @@
         Dashboard
       </a>
       <mat-divider></mat-divider>
-      <button mat-menu-item routerLink="/logout">
+      <button mat-menu-item (click)="logout()">
         <mat-icon>exit_to_app</mat-icon>
         Logout
       </button>
@@ -67,9 +67,7 @@
       <a class="mobile-link" routerLink="/dashboard" (click)="closeMobileMenu()"
         >Dashboard</a
       >
-      <a class="mobile-link" routerLink="/logout" (click)="closeMobileMenu()"
-        >Logout</a
-      >
+      <a class="mobile-link" (click)="logout(); closeMobileMenu()">Logout</a>
     </div>
   }
 </div>

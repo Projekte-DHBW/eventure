@@ -17,8 +17,8 @@
         <label>Suche nach</label>
         <mat-form-field appearance="outline">
           <mat-select formControlName="eventType" placeholder="Wähle Event Typ">
-            @for (event of type; track event) {
-              <mat-option [value]="event.toLowerCase()">{{ event }}</mat-option>
+            @for (type of types; track $index) {
+              <mat-option [value]="type.toLowerCase()">{{ type }}</mat-option>
             }
           </mat-select>
           <div matSuffix class="dropdown-icon">
@@ -30,19 +30,26 @@
       <div class="search-field">
         <label>Standort</label>
         <mat-form-field appearance="outline">
-          <mat-select
+          <input
+            type="text"
+            matInput
             formControlName="location"
-            placeholder="Wähle einen standort"
-          >
-            @for (standort of location; track standort) {
-              <mat-option [value]="standort.toLowerCase()">{{
-                standort
-              }}</mat-option>
+            placeholder="Stadt eingeben..."
+            [matAutocomplete]="auto"
+          />
+          <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayCity">
+            @if (isLoading) {
+              <mat-option disabled>
+                <div class="loading-indicator">
+                  <mat-icon>sync</mat-icon> Städte werden geladen...
+                </div>
+              </mat-option>
             }
-          </mat-select>
-          <div matSuffix class="dropdown-icon">
-            <mat-icon>expand_more</mat-icon>
-          </div>
+            @for (city of filteredCities | async; track city) {
+              <mat-option [value]="city">{{ city }}</mat-option>
+            }
+          </mat-autocomplete>
+          <mat-icon matSuffix>search</mat-icon>
         </mat-form-field>
       </div>
 
@@ -50,8 +57,8 @@
         <label>Wann</label>
         <mat-form-field appearance="outline">
           <mat-select formControlName="date" placeholder="Wähle Datum und Zeit">
-            @for (datum of date; track datum) {
-              <mat-option [value]="datum.toLowerCase()">{{ datum }}</mat-option>
+            @for (date of dates; track $index) {
+              <mat-option [value]="date.toLowerCase()">{{ date }}</mat-option>
             }
           </mat-select>
           <div matSuffix class="dropdown-icon">

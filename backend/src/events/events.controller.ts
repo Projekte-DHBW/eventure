@@ -9,6 +9,8 @@ import {
   Query,
   UseGuards,
   Request,
+  ValidationPipe,
+  UsePipes,
 } from '@nestjs/common';
 import { EventsService } from './events.service';
 import { EventFiltersDto } from './dto/EventFilters';
@@ -17,6 +19,7 @@ import { UpdateEventDto } from './dto/UpdateEvent';
 import { GetUser } from 'src/auth/jwtData.decorator';
 import { User } from 'src/entity/User';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { CitySearchDto } from './dto/CitySearch';
 
 @Controller('events')
 export class EventsController {
@@ -24,8 +27,9 @@ export class EventsController {
 
   @UseGuards(AuthGuard)
   @Post()
-  create(@Body() createEventDto: CreateEventDto, @GetUser() user: User) {
-    return this.eventsService.create(createEventDto, user);
+  @UsePipes(new ValidationPipe({ transform: true }))
+  async create(@Body() createEventDto: CreateEventDto, @GetUser() user: User) {
+    return this.eventsService.createEvent(createEventDto, user);
   }
 
   @Get()
@@ -59,7 +63,7 @@ export class EventsController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.eventsService.findOneById(id);
+    return this.eventsService.findOne(id);
   }
 
   @UseGuards(AuthGuard)
@@ -76,5 +80,20 @@ export class EventsController {
   @Delete(':id')
   remove(@Param('id') id: string, @Request() req) {
     return this.eventsService.remove(id, req.user.id);
+  }
+
+  /**
+   * Search for cities for autocomplete
+   * @param searchDto Search parameters (query & limit)
+   * @returns List of matching city names
+   */
+  @Get('cities/search')
+  async searchCities(@Query() searchDto: CitySearchDto) {
+    return {
+      cities: await this.eventsService.searchCities(
+        searchDto.query,
+        searchDto.limit,
+      ),
+    };
   }
 }

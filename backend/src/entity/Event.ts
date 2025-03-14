@@ -15,7 +15,6 @@ export class Event extends BaseEntity {
   // The relation object - exclude from responses
   @ManyToOne(() => User, { nullable: false })
   @JoinColumn({ name: 'creator' })
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   @Exclude()
   creatorObj: User;
 

@@ -315,6 +315,55 @@
   color: #888;
 }
 
+/* New styles for location filter */
+.location-filter {
+  position: relative;
+}
+
+.filter-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  max-height: 5.5rem; /* Limits display to roughly 2 rows */
+  overflow: hidden;
+  transition: all 0.3s ease-in-out;
+  opacity: 1;
+}
+
+.filter-options.expanded {
+  max-height: 15rem; /* Increased max-height when expanded */
+  overflow-y: auto; /* Add scroll for very many items */
+}
+
+.filter-options.closing {
+  max-height: 5.5rem;
+}
+
+.show-more-btn {
+  margin-top: 0.5rem;
+  background: none;
+  border: none;
+  color: #4285f4;
+  cursor: pointer;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  padding: 0.25rem 0;
+  transition: transform 0.2s ease;
+}
+
+.show-more-btn:hover {
+  color: #2a56c6;
+}
+
+.show-more-btn mat-icon {
+  margin-left: 0.25rem;
+  font-size: 1.25rem;
+  height: 1.25rem;
+  width: 1.25rem;
+  transition: transform 0.3s ease;
+}
+
 /* Responsive styles */
 @media (max-width: 768px) {
   .toolbar-content {

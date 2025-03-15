@@ -10,17 +10,23 @@ export class OpenaiService {
   constructor(private http: HttpClientService) {}
 
   enhance(text: string, title: string, category: string): Observable<string> {
-    return this.http.authenticatedGet<string>('openai/enhance', {
-      params: { text, title, category }
-    }).pipe(
-      timeout({
-        each: 30000,
-        with: () => throwError(() => new HttpErrorResponse({
-          error: 'Request timed out',
-          status: 408,
-          statusText: 'Request Timeout'
-        }))
+    return this.http
+      .authenticatedGet<string>('openai/enhance', {
+        params: { text, title, category },
       })
-    );
+      .pipe(
+        timeout({
+          each: 30000,
+          with: () =>
+            throwError(
+              () =>
+                new HttpErrorResponse({
+                  error: 'Request timed out',
+                  status: 408,
+                  statusText: 'Request Timeout',
+                }),
+            ),
+        }),
+      );
   }
 }

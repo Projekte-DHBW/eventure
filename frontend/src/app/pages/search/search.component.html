@@ -5,8 +5,13 @@
 
       <div class="search-input-container">
         <mat-form-field appearance="outline">
-          <input matInput [formControl]="searchInput" type="text" placeholder="Events suchen..."
-            (keyup.enter)="onSearch()" />
+          <input
+            matInput
+            [formControl]="searchInput"
+            type="text"
+            placeholder="Events suchen..."
+            (keyup.enter)="onSearch()"
+          />
           <button mat-icon-button matSuffix (click)="onSearch()">
             <mat-icon>search</mat-icon>
           </button>
@@ -18,12 +23,18 @@
           <div class="filter-group">
             <h3>Event-Typ</h3>
             <div class="filter-options">
-              <div *ngFor="let type of types" class="filter-chip" [class.active]="searchParams.types?.includes(type)"
-                (click)="applyFilter('types', type)" [style.background-color]="
+              <div
+                *ngFor="let type of types"
+                class="filter-chip"
+                [class.active]="searchParams.types?.includes(type)"
+                (click)="applyFilter('types', type)"
+                [style.background-color]="
                   searchParams.types?.includes(type) ? '#4285f4' : ''
-                " [style.color]="
+                "
+                [style.color]="
                   searchParams.types?.includes(type) ? 'white' : ''
-                ">
+                "
+              >
                 {{ type }}
               </div>
             </div>
@@ -32,13 +43,18 @@
           <div class="filter-group location-filter">
             <h3>Standort</h3>
             <div class="filter-options" [class.expanded]="showAllLocations">
-              <div *ngFor="let location of displayedLocations" class="filter-chip"
-                [class.active]="searchParams.locations?.includes(location)" (click)="applyFilter('locations', location)"
+              <div
+                *ngFor="let location of displayedLocations"
+                class="filter-chip"
+                [class.active]="searchParams.locations?.includes(location)"
+                (click)="applyFilter('locations', location)"
                 [style.background-color]="
                   searchParams.locations?.includes(location) ? '#4285f4' : ''
-                " [style.color]="
+                "
+                [style.color]="
                   searchParams.locations?.includes(location) ? 'white' : ''
-                ">
+                "
+              >
                 {{ location }}
               </div>
             </div>
@@ -46,17 +62,23 @@
               {{ showAllLocations ? "Weniger anzeigen" : "Mehr anzeigen" }}
               <mat-icon>{{
                 showAllLocations ? "expand_less" : "expand_more"
-                }}</mat-icon>
+              }}</mat-icon>
             </button>
           </div>
 
           <div class="filter-group">
             <h3>Zeitraum</h3>
             <div class="filter-options">
-              <div *ngFor="let date of dates" class="filter-chip" [class.active]="searchParams.date === date"
+              <div
+                *ngFor="let date of dates"
+                class="filter-chip"
+                [class.active]="searchParams.date === date"
                 (click)="applyFilter('date', date)"
-                [style.background-color]="searchParams.date === date ? '#4285f4' : ''"
-                [style.color]="searchParams.date === date ? 'white' : ''">
+                [style.background-color]="
+                  searchParams.date === date ? '#4285f4' : ''
+                "
+                [style.color]="searchParams.date === date ? 'white' : ''"
+              >
                 {{ date }}
               </div>
             </div>
@@ -66,13 +88,25 @@
             <div class="date-picker-container">
               <mat-form-field appearance="outline">
                 <mat-label>Bestimmtes Datum</mat-label>
-                <input matInput [matDatepicker]="picker" [formControl]="specificDateControl">
+                <input
+                  matInput
+                  [matDatepicker]="picker"
+                  [formControl]="specificDateControl"
+                />
                 <mat-hint>TT.MM.JJJJ</mat-hint>
-                <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker-toggle
+                  matIconSuffix
+                  [for]="picker"
+                ></mat-datepicker-toggle>
                 <mat-datepicker #picker></mat-datepicker>
               </mat-form-field>
-              <button mat-button color="primary"
-                (click)="applySpecificDate(specificDateControl.value)">Anwenden</button>
+              <button
+                mat-button
+                color="primary"
+                (click)="applySpecificDate(specificDateControl.value)"
+              >
+                Anwenden
+              </button>
             </div>
           </div>
         </div>
@@ -83,16 +117,25 @@
             <ng-container *ngIf="searchParams.types?.length">
               <div class="active-chip" *ngFor="let type of searchParams.types">
                 Typ: {{ capitalizeFirstLetter(type) }}
-                <button class="remove-filter" (click)="removeFilter('types', type)">
+                <button
+                  class="remove-filter"
+                  (click)="removeFilter('types', type)"
+                >
                   ×
                 </button>
               </div>
             </ng-container>
 
             <ng-container *ngIf="searchParams.locations?.length">
-              <div class="active-chip" *ngFor="let location of searchParams.locations">
+              <div
+                class="active-chip"
+                *ngFor="let location of searchParams.locations"
+              >
                 Ort: {{ capitalizeFirstLetter(location) }}
-                <button class="remove-filter" (click)="removeFilter('locations', location)">
+                <button
+                  class="remove-filter"
+                  (click)="removeFilter('locations', location)"
+                >
                   ×
                 </button>
               </div>
@@ -105,7 +148,11 @@
               </button>
             </div>
 
-            <button class="clear-all-btn" *ngIf="hasSearchParams" (click)="clearAllFilters()">
+            <button
+              class="clear-all-btn"
+              *ngIf="hasSearchParams"
+              (click)="clearAllFilters()"
+            >
               Alle Filter zurücksetzen
             </button>
           </div>
@@ -117,75 +164,93 @@
 
     <div class="search-results-container">
       @if (loading) {
-      <div class="loading-indicator">
-        <mat-spinner diameter="50"></mat-spinner>
-        <p>Suche nach Events...</p>
-      </div>
+        <div class="loading-indicator">
+          <mat-spinner diameter="50"></mat-spinner>
+          <p>Suche nach Events...</p>
+        </div>
       } @else {
-      <h2 class="results-title">{{ totalEvents }} Events gefunden</h2>
+        <h2 class="results-title">{{ totalEvents }} Events gefunden</h2>
 
-      @if (events.length > 0) {
-      <div class="results-list">
-        @for (event of events; track event.id) {
-        <div class="event-item" (click)="goToEventDetails(event.id)">
-          <div class="event-image">
-            <div class="event-month">
-              {{
-              getMonthAbbreviation(event.eventDate ? event.eventDate.toString() : '') +
-              " " +
-              getDayFromDate(event.eventDate ? event.eventDate.toString() : '')
-              }}
-            </div>
-            <img [src]="
+        @if (events.length > 0) {
+          <div class="results-list">
+            @for (event of events; track event.id) {
+              <div class="event-item" (click)="goToEventDetails(event.id)">
+                <div class="event-image">
+                  <div class="event-month">
+                    {{
+                      getMonthAbbreviation(
+                        event.eventDate ? event.eventDate.toString() : ""
+                      ) +
+                        " " +
+                        getDayFromDate(
+                          event.eventDate ? event.eventDate.toString() : ""
+                        )
+                    }}
+                  </div>
+                  <img
+                    [src]="
                       event.coverImageUrl ||
                       'https://source.unsplash.com/300x200/?' +
                         event.category.toLowerCase()
-                    " alt="{{ event.title }}" />
+                    "
+                    alt="{{ event.title }}"
+                  />
+                </div>
+
+                <div class="event-content">
+                  <h2 class="event-title">{{ event.title }}</h2>
+
+                  <div class="event-location">
+                    <mat-icon>place</mat-icon>
+                    <span>{{
+                      event.location ||
+                        (event.isOnline ? "Online" : "Kein Standort angegeben")
+                    }}</span>
+                  </div>
+
+                  <p class="event-description">{{ event.description }}</p>
+
+                  <div class="event-tags">
+                    <div class="event-tag">
+                      {{ capitalizeFirstLetter(event.category) }}
+                    </div>
+                    <!-- Event tags section replaced with visibility tag -->
+                    <div class="event-tag">
+                      {{ capitalizeFirstLetter(event.visibility) }}
+                    </div>
+                    <div class="event-tag" *ngIf="event.isOnline">Online</div>
+                  </div>
+
+                  <div class="event-actions">
+                    <button
+                      class="action-button details-button"
+                      (click)="
+                        $event.stopPropagation(); goToEventDetails(event.id)
+                      "
+                    >
+                      DETAILS
+                    </button>
+                    <button class="action-button save-button">
+                      <mat-icon>bookmark</mat-icon>
+                      <span>SPEICHERN</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            }
           </div>
-
-          <div class="event-content">
-            <h2 class="event-title">{{ event.title }}</h2>
-
-            <div class="event-location">
-              <mat-icon>place</mat-icon>
-              <span>{{ event.location || (event.isOnline ? 'Online' : 'Kein Standort angegeben') }}</span>
-            </div>
-
-            <p class="event-description">{{ event.description }}</p>
-
-            <div class="event-tags">
-              <div class="event-tag">{{ capitalizeFirstLetter(event.category) }}</div>
-              <!-- Event tags section replaced with visibility tag -->
-              <div class="event-tag">{{ capitalizeFirstLetter(event.visibility) }}</div>
-              <div class="event-tag" *ngIf="event.isOnline">Online</div>
-            </div>
-
-            <div class="event-actions">
-              <button class="action-button details-button"
-                (click)="$event.stopPropagation(); goToEventDetails(event.id)">
-                DETAILS
-              </button>
-              <button class="action-button save-button">
-                <mat-icon>bookmark</mat-icon>
-                <span>SPEICHERN</span>
-              </button>
-            </div>
+        } @else {
+          <div class="no-results">
+            <mat-icon>sentiment_dissatisfied</mat-icon>
+            <h3>Keine Events gefunden</h3>
+            <p>
+              Versuche es mit anderen Suchkriterien oder entferne einige Filter.
+            </p>
+            <button mat-raised-button color="primary" [routerLink]="['/']">
+              Zurück zur Startseite
+            </button>
           </div>
-        </div>
         }
-      </div>
-      } @else {
-      <div class="no-results">
-        <mat-icon>sentiment_dissatisfied</mat-icon>
-        <h3>Keine Events gefunden</h3>
-        <p>
-          Versuche es mit anderen Suchkriterien oder entferne einige Filter.
-        </p>
-        <button mat-raised-button color="primary" [routerLink]="['/']">
-          Zurück zur Startseite
-        </button>
-      </div>
-      }
       }
     </div>
   </div>

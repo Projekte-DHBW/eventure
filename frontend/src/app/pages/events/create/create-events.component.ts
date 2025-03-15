@@ -193,47 +193,38 @@ export class CreateEventsComponent implements OnInit {
 
   enhanceDescription(): void {
     const currentText = this.description.value;
-    
+
     if (!currentText || currentText.trim() === '') {
       this.snackBar.open(
         'Bitte geben Sie zuerst eine Beschreibung ein!',
         'Schließen',
-        { duration: 3000 }
+        { duration: 3000 },
       );
       return;
     }
 
     this.isEnhancingDescription = true;
-    
-    this.openaiService.enhance(
-      currentText, 
-      this.title.value!, 
-      this.category.value!
-    )
-    .pipe(
-      finalize(() => {
-        this.isEnhancingDescription = false;
-      })
-    )
-    .subscribe({
-      next: (enhancedText) => {
-        console.log('Enhanced description:', enhancedText);
-        this.description.setValue(enhancedText);
-        this.snackBar.open(
-          'Fertig',
-          'Schließen',
-          { duration: 3000 }
-        );
-      },
-      error: (error) => {
-        console.error('Error enhancing description:', error);
-        this.snackBar.open(
-          'Fehler bei der Anfrage',
-          'Schließen',
-          { duration: 5000 }
-        );
-      }
-    });
+
+    this.openaiService
+      .enhance(currentText, this.title.value!, this.category.value!)
+      .pipe(
+        finalize(() => {
+          this.isEnhancingDescription = false;
+        }),
+      )
+      .subscribe({
+        next: (enhancedText) => {
+          console.log('Enhanced description:', enhancedText);
+          this.description.setValue(enhancedText);
+          this.snackBar.open('Fertig', 'Schließen', { duration: 3000 });
+        },
+        error: (error) => {
+          console.error('Error enhancing description:', error);
+          this.snackBar.open('Fehler bei der Anfrage', 'Schließen', {
+            duration: 5000,
+          });
+        },
+      });
   }
 
   onSubmit(): void {

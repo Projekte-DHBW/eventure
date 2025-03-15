@@ -57,7 +57,7 @@
 }
 
 .filter-group h3::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: 0;
   left: 0;
@@ -73,7 +73,9 @@
   max-height: 6.25rem;
   /* Slightly increased to show more */
   overflow: hidden;
-  transition: max-height 0.3s ease-in-out, opacity 0.2s ease;
+  transition:
+    max-height 0.3s ease-in-out,
+    opacity 0.2s ease;
 }
 
 .filter-options.expanded {
@@ -482,7 +484,6 @@
 
 /* Enhanced responsive styles */
 @media (max-width: 64rem) {
-
   /* 1024px */
   .filter-categories {
     grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
@@ -491,7 +492,6 @@
 }
 
 @media (max-width: 48rem) {
-
   /* 768px */
   .filter-section {
     padding: 1rem;
@@ -508,7 +508,6 @@
 }
 
 @media (max-width: 36rem) {
-
   /* 576px */
   .filter-categories {
     display: flex;

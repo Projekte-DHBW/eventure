@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
@@ -9,10 +9,8 @@ import { environment } from '../../environments/environment';
   providedIn: 'root',
 })
 export class HttpClientService {
-  constructor(
-    private http: HttpClient,
-    private authService: AuthService,
-  ) {}
+  private http = inject(HttpClient);
+  private authService = inject(AuthService);
 
   /**
    * Make an HTTP request without authentication

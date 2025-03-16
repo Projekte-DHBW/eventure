@@ -1,4 +1,4 @@
-import { Injectable, OnDestroy } from '@angular/core';
+import { Injectable, OnDestroy, inject } from '@angular/core';
 import {
   BehaviorSubject,
   Observable,
@@ -25,6 +25,10 @@ export interface TokenRefreshResponse {
   providedIn: 'root',
 })
 export class AuthService implements OnDestroy {
+  private http = inject(HttpClient);
+  private tokenService = inject(TokenService);
+  private router = inject(Router);
+
   private apiUrl = `${environment.apiUrl}/auth`;
   private currentUserSubject = new BehaviorSubject<JwtPayload | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
@@ -32,11 +36,7 @@ export class AuthService implements OnDestroy {
   private tokenCheckInterval: Subscription | null = null;
   private readonly TOKEN_CHECK_INTERVAL = 60000; // Check every minute
 
-  constructor(
-    private http: HttpClient, // Use regular HttpClient, not your custom one
-    private tokenService: TokenService,
-    private router: Router,
-  ) {
+  constructor() {
     this.loadTokens();
   }
 

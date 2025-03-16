@@ -10,7 +10,8 @@ import { User } from '../../types/user';
   styleUrl: './profile.component.css',
 })
 export class ProfileComponent {
-  constructor(private userService: UserService) {}
+  private userService = inject(UserService);
+
   protected auth = inject(AuthService);
   protected isLoggedIn = this.auth.isAuthenticated();
 

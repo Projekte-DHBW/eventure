@@ -24,9 +24,9 @@
                     placeholder="Titel"
                     required
                   />
-                  <mat-error *ngIf="title.invalid">{{
-                    getTitleErrorMessage()
-                  }}</mat-error>
+                  @if (title.invalid) {
+                    <mat-error>{{ getTitleErrorMessage() }}</mat-error>
+                  }
                 </mat-form-field>
 
                 <mat-form-field appearance="outline">
@@ -53,9 +53,9 @@
                     placeholder="Beschreibung"
                     required
                   ></textarea>
-                  <mat-error *ngIf="description.invalid">{{
-                    getDescriptionErrorMessage()
-                  }}</mat-error>
+                  @if (description.invalid) {
+                    <mat-error>{{ getDescriptionErrorMessage() }}</mat-error>
+                  }
                 </mat-form-field>
 
                 <button
@@ -94,9 +94,11 @@
                     min="1"
                     placeholder="Anzahl eingeben"
                   />
-                  <mat-error *ngIf="maxParticipants.invalid">{{
-                    getMaxParticipantsErrorMessage()
-                  }}</mat-error>
+                  @if (maxParticipants.invalid) {
+                    <mat-error>{{
+                      getMaxParticipantsErrorMessage()
+                    }}</mat-error>
+                  }
                 </mat-form-field>
               </div>
 
@@ -144,11 +146,11 @@
                       placeholder="z.B. Zoom-Link"
                       required
                     />
-                    <mat-error
-                      *ngIf="eventForm.get('meetingLink')?.hasError('required')"
-                    >
-                      Meeting-Link ist für Online-Events erforderlich
-                    </mat-error>
+                    @if (eventForm.get("meetingLink")?.hasError("required")) {
+                      <mat-error>
+                        Meeting-Link ist für Online-Events erforderlich
+                      </mat-error>
+                    }
                   </mat-form-field>
                 }
               </div>
@@ -412,13 +414,11 @@
                             placeholder="beispiel@email.com"
                             required
                           />
-                          <mat-error
-                            *ngIf="
-                              invitationForm.get('email')?.hasError('email')
-                            "
-                          >
-                            Bitte gültige E-Mail-Adresse eingeben
-                          </mat-error>
+                          @if (invitationForm.get("email")?.hasError("email")) {
+                            <mat-error>
+                              Bitte gültige E-Mail-Adresse eingeben
+                            </mat-error>
+                          }
                         </mat-form-field>
                       </div>
 

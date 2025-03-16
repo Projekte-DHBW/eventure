@@ -1,4 +1,4 @@
-import { Component, ViewChild, ElementRef } from '@angular/core';
+import { Component, ViewChild, ElementRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { EventsService } from '../../services/events.service';
 import { Event } from '../../types/events';
@@ -12,12 +12,12 @@ import { MatIcon } from '@angular/material/icon';
   styleUrl: './event-slider.component.css',
 })
 export class EventSliderComponent {
+  private eventsService = inject(EventsService);
+
   @ViewChild('eventSlider', { static: false }) eventSlider!: ElementRef;
 
   events: Event[] = [];
   loading = false;
-
-  constructor(private eventsService: EventsService) {}
 
   ngOnInit(): void {
     this.loadLatestEvents();

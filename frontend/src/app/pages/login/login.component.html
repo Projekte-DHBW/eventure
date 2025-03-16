@@ -11,14 +11,14 @@
             type="email"
             placeholder="Email"
           />
-          <mat-error
-            *ngIf="
-              loginForm.get('email')?.invalid &&
-              (loginForm.get('email')?.dirty || loginForm.get('email')?.touched)
-            "
-          >
-            Bitte geben Sie eine gültige E-Mail-Adresse ein
-          </mat-error>
+          @if (
+            loginForm.get("email")?.invalid &&
+            (loginForm.get("email")?.dirty || loginForm.get("email")?.touched)
+          ) {
+            <mat-error>
+              Bitte geben Sie eine gültige E-Mail-Adresse ein
+            </mat-error>
+          }
         </mat-form-field>
 
         <mat-form-field class="full-width">
@@ -29,21 +29,21 @@
             type="password"
             placeholder="Passwort"
           />
-          <mat-error
-            *ngIf="
-              loginForm.get('password')?.invalid &&
-              (loginForm.get('password')?.dirty ||
-                loginForm.get('password')?.touched)
-            "
-          >
-            Passwort wird benötigt
-          </mat-error>
+          @if (
+            loginForm.get("password")?.invalid &&
+            (loginForm.get("password")?.dirty ||
+              loginForm.get("password")?.touched)
+          ) {
+            <mat-error> Passwort wird benötigt </mat-error>
+          }
         </mat-form-field>
 
         <section>
-          <div *ngIf="errorMessage" class="error-message">
-            {{ errorMessage }}
-          </div>
+          @if (errorMessage) {
+            <div class="error-message">
+              {{ errorMessage }}
+            </div>
+          }
           <div class="example-button-row">
             <button
               mat-flat-button

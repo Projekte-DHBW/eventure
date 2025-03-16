@@ -8,9 +8,8 @@ describe('EventSliderComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [EventSliderComponent]
-    })
-    .compileComponents();
+      imports: [EventSliderComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(EventSliderComponent);
     component = fixture.componentInstance;

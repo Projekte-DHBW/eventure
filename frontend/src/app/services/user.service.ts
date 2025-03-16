@@ -20,7 +20,6 @@ export interface UserInviteResult {
 export class UserService {
   private http = inject(HttpClientService);
 
-
   /**
    * Get all users (admin access only, should be restricted)
    */

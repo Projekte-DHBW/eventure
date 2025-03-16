@@ -9,7 +9,6 @@ import { HttpErrorResponse } from '@angular/common/http';
 export class OpenaiService {
   private http = inject(HttpClientService);
 
-
   enhance(text: string, title: string, category: string): Observable<string> {
     return this.http
       .authenticatedGet<string>('openai/enhance', {

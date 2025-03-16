@@ -9,7 +9,6 @@ import { Observable, map, catchError, of } from 'rxjs';
 export class EventsService {
   private http = inject(HttpClientService);
 
-
   // Get events with filters
   getEvents(filters: any = {}): Observable<[Event[], number]> {
     const params: any = {};

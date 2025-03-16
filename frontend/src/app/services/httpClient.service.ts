@@ -12,7 +12,6 @@ export class HttpClientService {
   private http = inject(HttpClient);
   private authService = inject(AuthService);
 
-
   /**
    * Make an HTTP request without authentication
    * @param method HTTP method

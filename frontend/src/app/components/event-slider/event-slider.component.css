@@ -85,6 +85,25 @@
   max-width: 100%;
 }
 
+@media (max-width: 768px) {
+  .event-slider {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    white-space: normal;
+    overflow-x: hidden;
+  }
+
+  .event-card {
+    width: 90%;
+    max-width: 400px;
+  }
+
+  .scroll-btn {
+    display: none;
+  }
+}
+
 .scroll-btn {
   position: absolute;
   top: 50%;

@@ -1,4 +1,4 @@
-<div class="event-slider-section">
+<div class="event-slider-section" *ngIf="events.length > 0">
   <h2>Nächste Events</h2>
   <div *ngIf="loading" class="loading-indicator">
     <mat-spinner diameter="40"></mat-spinner>

@@ -29,8 +29,8 @@ import { Observable, debounceTime, switchMap, of, catchError, map } from 'rxjs';
     MatInputModule,
     MatFormFieldModule,
     MatDatepickerModule,
-    MatNativeDateModule
-],
+    MatNativeDateModule,
+  ],
   templateUrl: './search.component.html',
   styleUrl: './search.component.css',
 })

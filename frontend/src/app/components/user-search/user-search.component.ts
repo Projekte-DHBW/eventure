@@ -27,8 +27,8 @@ import { UserService, UserSearchResult } from '../../services/user.service';
     MatAutocompleteModule,
     MatOptionModule,
     MatButtonModule,
-    MatIconModule
-],
+    MatIconModule,
+  ],
   template: `
     <div class="user-search">
       <mat-form-field appearance="outline" class="search-field">
@@ -42,15 +42,11 @@ import { UserService, UserSearchResult } from '../../services/user.service';
           (blur)="onBlur()"
         />
         @if (searchType === 'email') {
-<mat-hint
-          >Geben Sie die vollständige E-Mail-Adresse ein</mat-hint
-        >
-}
+          <mat-hint>Geben Sie die vollständige E-Mail-Adresse ein</mat-hint>
+        }
         @if (searchType === 'name') {
-<mat-hint
-          >Mindestens 3 Zeichen eingeben</mat-hint
-        >
-}
+          <mat-hint>Mindestens 3 Zeichen eingeben</mat-hint>
+        }
         <mat-icon matSuffix>{{ isLoading ? 'sync' : 'search' }}</mat-icon>
         <mat-autocomplete
           #auto="matAutocomplete"
@@ -58,37 +54,33 @@ import { UserService, UserSearchResult } from '../../services/user.service';
           (optionSelected)="onOptionSelected($event)"
         >
           @if (isLoading) {
-<mat-option disabled>
-            <span>Suche...</span>
-          </mat-option>
-}
+            <mat-option disabled>
+              <span>Suche...</span>
+            </mat-option>
+          }
           @if (!isLoading) {
-
             @if (results.length === 0) {
-<mat-option disabled>
-              Keine Ergebnisse gefunden
-            </mat-option>
-}
+              <mat-option disabled> Keine Ergebnisse gefunden </mat-option>
+            }
             @for (user of results; track user) {
-<mat-option [value]="user">
-              {{ user.firstName }} {{ user.lastName }}
-            </mat-option>
-}
-          
-}
+              <mat-option [value]="user">
+                {{ user.firstName }} {{ user.lastName }}
+              </mat-option>
+            }
+          }
         </mat-autocomplete>
       </mat-form-field>
 
       @if (selectedUser) {
-<div class="selected-user">
-        <span class="user-name"
-          >{{ selectedUser.firstName }} {{ selectedUser.lastName }}</span
-        >
-        <button mat-icon-button (click)="clearSelection()">
-          <mat-icon>close</mat-icon>
-        </button>
-      </div>
-}
+        <div class="selected-user">
+          <span class="user-name"
+            >{{ selectedUser.firstName }} {{ selectedUser.lastName }}</span
+          >
+          <button mat-icon-button (click)="clearSelection()">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+      }
     </div>
   `,
   styles: [

@@ -25,10 +25,8 @@
                     required
                   />
                   @if (title.invalid) {
-<mat-error>{{
-                    getTitleErrorMessage()
-                  }}</mat-error>
-}
+                    <mat-error>{{ getTitleErrorMessage() }}</mat-error>
+                  }
                 </mat-form-field>
 
                 <mat-form-field appearance="outline">
@@ -56,10 +54,8 @@
                     required
                   ></textarea>
                   @if (description.invalid) {
-<mat-error>{{
-                    getDescriptionErrorMessage()
-                  }}</mat-error>
-}
+                    <mat-error>{{ getDescriptionErrorMessage() }}</mat-error>
+                  }
                 </mat-form-field>
 
                 <button
@@ -99,10 +95,10 @@
                     placeholder="Anzahl eingeben"
                   />
                   @if (maxParticipants.invalid) {
-<mat-error>{{
-                    getMaxParticipantsErrorMessage()
-                  }}</mat-error>
-}
+                    <mat-error>{{
+                      getMaxParticipantsErrorMessage()
+                    }}</mat-error>
+                  }
                 </mat-form-field>
               </div>
 
@@ -150,13 +146,11 @@
                       placeholder="z.B. Zoom-Link"
                       required
                     />
-                    @if (eventForm.get('meetingLink')?.hasError('required')) {
-<mat-error
-                     
-                    >
-                      Meeting-Link ist für Online-Events erforderlich
-                    </mat-error>
-}
+                    @if (eventForm.get("meetingLink")?.hasError("required")) {
+                      <mat-error>
+                        Meeting-Link ist für Online-Events erforderlich
+                      </mat-error>
+                    }
                   </mat-form-field>
                 }
               </div>
@@ -420,15 +414,11 @@
                             placeholder="beispiel@email.com"
                             required
                           />
-                          @if (
-                              invitationForm.get('email')?.hasError('email')
-                            ) {
-<mat-error
-                           
-                          >
-                            Bitte gültige E-Mail-Adresse eingeben
-                          </mat-error>
-}
+                          @if (invitationForm.get("email")?.hasError("email")) {
+                            <mat-error>
+                              Bitte gültige E-Mail-Adresse eingeben
+                            </mat-error>
+                          }
                         </mat-form-field>
                       </div>
 

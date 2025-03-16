@@ -24,21 +24,20 @@
             <h3>Event-Typ</h3>
             <div class="filter-options">
               @for (type of types; track type) {
-<div
-               
-                class="filter-chip"
-                [class.active]="searchParams.types?.includes(type)"
-                (click)="applyFilter('types', type)"
-                [style.background-color]="
-                  searchParams.types?.includes(type) ? '#4285f4' : ''
-                "
-                [style.color]="
-                  searchParams.types?.includes(type) ? 'white' : ''
-                "
-              >
-                {{ type }}
-              </div>
-}
+                <div
+                  class="filter-chip"
+                  [class.active]="searchParams.types?.includes(type)"
+                  (click)="applyFilter('types', type)"
+                  [style.background-color]="
+                    searchParams.types?.includes(type) ? '#4285f4' : ''
+                  "
+                  [style.color]="
+                    searchParams.types?.includes(type) ? 'white' : ''
+                  "
+                >
+                  {{ type }}
+                </div>
+              }
             </div>
           </div>
 
@@ -46,21 +45,20 @@
             <h3>Standort</h3>
             <div class="filter-options" [class.expanded]="showAllLocations">
               @for (location of displayedLocations; track location) {
-<div
-               
-                class="filter-chip"
-                [class.active]="searchParams.locations?.includes(location)"
-                (click)="applyFilter('locations', location)"
-                [style.background-color]="
-                  searchParams.locations?.includes(location) ? '#4285f4' : ''
-                "
-                [style.color]="
-                  searchParams.locations?.includes(location) ? 'white' : ''
-                "
-              >
-                {{ location }}
-              </div>
-}
+                <div
+                  class="filter-chip"
+                  [class.active]="searchParams.locations?.includes(location)"
+                  (click)="applyFilter('locations', location)"
+                  [style.background-color]="
+                    searchParams.locations?.includes(location) ? '#4285f4' : ''
+                  "
+                  [style.color]="
+                    searchParams.locations?.includes(location) ? 'white' : ''
+                  "
+                >
+                  {{ location }}
+                </div>
+              }
             </div>
             <button class="show-more-btn" (click)="toggleLocationVisibility()">
               {{ showAllLocations ? "Weniger anzeigen" : "Mehr anzeigen" }}
@@ -74,19 +72,18 @@
             <h3>Zeitraum</h3>
             <div class="filter-options">
               @for (date of dates; track date) {
-<div
-               
-                class="filter-chip"
-                [class.active]="searchParams.date === date"
-                (click)="applyFilter('date', date)"
-                [style.background-color]="
-                  searchParams.date === date ? '#4285f4' : ''
-                "
-                [style.color]="searchParams.date === date ? 'white' : ''"
-              >
-                {{ date }}
-              </div>
-}
+                <div
+                  class="filter-chip"
+                  [class.active]="searchParams.date === date"
+                  (click)="applyFilter('date', date)"
+                  [style.background-color]="
+                    searchParams.date === date ? '#4285f4' : ''
+                  "
+                  [style.color]="searchParams.date === date ? 'white' : ''"
+                >
+                  {{ date }}
+                </div>
+              }
             </div>
           </div>
           <div class="specific-date-picker">
@@ -118,65 +115,54 @@
         </div>
 
         @if (hasSearchParams) {
-<div class="active-filters">
-          <h3>Aktive Filter</h3>
-          <div class="active-filter-chips">
-            @if (searchParams.types?.length) {
+          <div class="active-filters">
+            <h3>Aktive Filter</h3>
+            <div class="active-filter-chips">
+              @if (searchParams.types?.length) {
+                @for (type of searchParams.types; track type) {
+                  <div class="active-chip">
+                    Typ: {{ capitalizeFirstLetter(type) }}
+                    <button
+                      class="remove-filter"
+                      (click)="removeFilter('types', type)"
+                    >
+                      ×
+                    </button>
+                  </div>
+                }
+              }
 
-              @for (type of searchParams.types; track type) {
-<div class="active-chip">
-                Typ: {{ capitalizeFirstLetter(type) }}
-                <button
-                  class="remove-filter"
-                  (click)="removeFilter('types', type)"
-                >
-                  ×
+              @if (searchParams.locations?.length) {
+                @for (location of searchParams.locations; track location) {
+                  <div class="active-chip">
+                    Ort: {{ capitalizeFirstLetter(location) }}
+                    <button
+                      class="remove-filter"
+                      (click)="removeFilter('locations', location)"
+                    >
+                      ×
+                    </button>
+                  </div>
+                }
+              }
+
+              @if (searchParams.date) {
+                <div class="active-chip">
+                  Zeit: {{ capitalizeFirstLetter(searchParams.date) }}
+                  <button class="remove-filter" (click)="removeFilter('date')">
+                    ×
+                  </button>
+                </div>
+              }
+
+              @if (hasSearchParams) {
+                <button class="clear-all-btn" (click)="clearAllFilters()">
+                  Alle Filter zurücksetzen
                 </button>
-              </div>
-}
-            
-}
-
-            @if (searchParams.locations?.length) {
-
-              @for (location of searchParams.locations; track location) {
-<div
-                class="active-chip"
-               
-              >
-                Ort: {{ capitalizeFirstLetter(location) }}
-                <button
-                  class="remove-filter"
-                  (click)="removeFilter('locations', location)"
-                >
-                  ×
-                </button>
-              </div>
-}
-            
-}
-
-            @if (searchParams.date) {
-<div class="active-chip">
-              Zeit: {{ capitalizeFirstLetter(searchParams.date) }}
-              <button class="remove-filter" (click)="removeFilter('date')">
-                ×
-              </button>
+              }
             </div>
-}
-
-            @if (hasSearchParams) {
-<button
-              class="clear-all-btn"
-             
-              (click)="clearAllFilters()"
-            >
-              Alle Filter zurücksetzen
-            </button>
-}
           </div>
-        </div>
-}
+        }
       </div>
     </div>
 
@@ -239,8 +225,8 @@
                       {{ capitalizeFirstLetter(event.visibility) }}
                     </div>
                     @if (event.isOnline) {
-<div class="event-tag">Online</div>
-}
+                      <div class="event-tag">Online</div>
+                    }
                   </div>
 
                   <div class="event-actions">

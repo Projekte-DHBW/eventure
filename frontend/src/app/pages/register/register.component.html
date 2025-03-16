@@ -11,32 +11,24 @@
           <mat-label>Vorname</mat-label>
           <input matInput formControlName="firstName" placeholder="Vorname" />
           @if (
-              registerForm.get('firstName')?.invalid &&
-              (registerForm.get('firstName')?.dirty ||
-                registerForm.get('firstName')?.touched)
-            ) {
-<mat-error
-           
-          >
-            Vorname wird benötigt
-          </mat-error>
-}
+            registerForm.get("firstName")?.invalid &&
+            (registerForm.get("firstName")?.dirty ||
+              registerForm.get("firstName")?.touched)
+          ) {
+            <mat-error> Vorname wird benötigt </mat-error>
+          }
         </mat-form-field>
 
         <mat-form-field class="full-width">
           <mat-label>Nachname</mat-label>
           <input matInput formControlName="lastName" placeholder="Nachname" />
           @if (
-              registerForm.get('lastName')?.invalid &&
-              (registerForm.get('lastName')?.dirty ||
-                registerForm.get('lastName')?.touched)
-            ) {
-<mat-error
-           
-          >
-            Nachname wird benötigt
-          </mat-error>
-}
+            registerForm.get("lastName")?.invalid &&
+            (registerForm.get("lastName")?.dirty ||
+              registerForm.get("lastName")?.touched)
+          ) {
+            <mat-error> Nachname wird benötigt </mat-error>
+          }
         </mat-form-field>
 
         <mat-form-field class="full-width">
@@ -48,16 +40,14 @@
             placeholder="email@example.com"
           />
           @if (
-              registerForm.get('email')?.invalid &&
-              (registerForm.get('email')?.dirty ||
-                registerForm.get('email')?.touched)
-            ) {
-<mat-error
-           
-          >
-            Bitte geben Sie eine gültige E-Mail-Adresse ein
-          </mat-error>
-}
+            registerForm.get("email")?.invalid &&
+            (registerForm.get("email")?.dirty ||
+              registerForm.get("email")?.touched)
+          ) {
+            <mat-error>
+              Bitte geben Sie eine gültige E-Mail-Adresse ein
+            </mat-error>
+          }
         </mat-form-field>
 
         <mat-form-field class="full-width">
@@ -69,29 +59,27 @@
             placeholder="Passwort"
           />
           @if (
-              registerForm.get('password')?.invalid &&
-              (registerForm.get('password')?.dirty ||
-                registerForm.get('password')?.touched)
-            ) {
-<mat-error
-           
-          >
-            Passwort muss mindestens 6 Zeichen lang sein
-          </mat-error>
-}
+            registerForm.get("password")?.invalid &&
+            (registerForm.get("password")?.dirty ||
+              registerForm.get("password")?.touched)
+          ) {
+            <mat-error>
+              Passwort muss mindestens 6 Zeichen lang sein
+            </mat-error>
+          }
         </mat-form-field>
 
         <section>
           @if (errorMessage) {
-<div class="error-message">
-            {{ errorMessage }}
-          </div>
-}
+            <div class="error-message">
+              {{ errorMessage }}
+            </div>
+          }
           @if (successMessage) {
-<div class="success-message">
-            {{ successMessage }}
-          </div>
-}
+            <div class="success-message">
+              {{ successMessage }}
+            </div>
+          }
           <div class="login-button-row">
             <button
               mat-flat-button

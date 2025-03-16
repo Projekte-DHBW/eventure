@@ -26,8 +26,8 @@ import { AuthService } from '../../auth/services/auth.service';
     MatButtonModule,
     MatDividerModule,
     MatIconModule,
-    RouterModule
-],
+    RouterModule,
+  ],
   templateUrl: './register.component.html',
   styleUrl: './register.component.css',
 })

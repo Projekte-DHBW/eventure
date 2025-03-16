@@ -12,15 +12,13 @@
             placeholder="Email"
           />
           @if (
-              loginForm.get('email')?.invalid &&
-              (loginForm.get('email')?.dirty || loginForm.get('email')?.touched)
-            ) {
-<mat-error
-           
-          >
-            Bitte geben Sie eine gültige E-Mail-Adresse ein
-          </mat-error>
-}
+            loginForm.get("email")?.invalid &&
+            (loginForm.get("email")?.dirty || loginForm.get("email")?.touched)
+          ) {
+            <mat-error>
+              Bitte geben Sie eine gültige E-Mail-Adresse ein
+            </mat-error>
+          }
         </mat-form-field>
 
         <mat-form-field class="full-width">
@@ -32,24 +30,20 @@
             placeholder="Passwort"
           />
           @if (
-              loginForm.get('password')?.invalid &&
-              (loginForm.get('password')?.dirty ||
-                loginForm.get('password')?.touched)
-            ) {
-<mat-error
-           
-          >
-            Passwort wird benötigt
-          </mat-error>
-}
+            loginForm.get("password")?.invalid &&
+            (loginForm.get("password")?.dirty ||
+              loginForm.get("password")?.touched)
+          ) {
+            <mat-error> Passwort wird benötigt </mat-error>
+          }
         </mat-form-field>
 
         <section>
           @if (errorMessage) {
-<div class="error-message">
-            {{ errorMessage }}
-          </div>
-}
+            <div class="error-message">
+              {{ errorMessage }}
+            </div>
+          }
           <div class="example-button-row">
             <button
               mat-flat-button

@@ -19,6 +19,7 @@ export class ProfileComponent {
   protected userID: string | null = null;
   protected firstname: string | null = null;
   protected lastname: string | null = null;
+  protected avInitial: string = '';
 
   users: User[] = [];
 
@@ -27,6 +28,14 @@ export class ProfileComponent {
     this.userID = this.auth.getUserId();
     this.firstname = this.auth.getfirstName();
     this.lastname = this.auth.getlastName();
+
+    const firstInitial = this.firstname
+      ? this.firstname.charAt(0).toUpperCase()
+      : '';
+    const lastInitial = this.lastname
+      ? this.lastname.charAt(0).toUpperCase()
+      : '';
+    this.avInitial = `${firstInitial}${lastInitial}`;
     this.loadUser();
   }
 

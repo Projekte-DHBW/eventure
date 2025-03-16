@@ -104,3 +104,44 @@
 .profile-value {
   color: #333;
 }
+
+@media (max-width: 768px) {
+  .profile-group {
+    display: flex;
+    flex-direction: column; /* Stack sections vertically */
+    gap: 1rem;
+  }
+
+  .profile-section {
+    flex-direction: column; /* Ensure stacking */
+    align-items: center;
+    text-align: center;
+  }
+
+  .profile-info {
+    align-items: stretch; /* Ensure it takes full width */
+    width: 100%;
+  }
+
+  .profile-info-item {
+    display: flex;
+    justify-content: space-between; /* Align label left, value right */
+    text-align: left;
+    width: 100%;
+    padding: 0.75rem;
+    border-bottom: 1px solid #eee;
+  }
+
+  .profile-label {
+    text-align: left; /* Ensure labels are left-aligned */
+    font-weight: bold;
+    color: #666;
+    flex: 1;
+  }
+
+  .profile-value {
+    text-align: right;
+    color: #333;
+    flex: 1;
+  }
+}

@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, input, inject } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -14,7 +14,7 @@ import {
   tap,
   catchError,
 } from 'rxjs/operators';
-import { Observable, of } from 'rxjs';
+import { of } from 'rxjs';
 import { UserService, UserSearchResult } from '../../services/user.service';
 
 @Component({
@@ -33,17 +33,17 @@ import { UserService, UserSearchResult } from '../../services/user.service';
   styleUrls: ['./user-search.component.css'],
 })
 export class UserSearchComponent implements OnInit {
-  @Input() searchType: 'email' | 'name' = 'email';
-  @Input() label = 'Benutzer suchen';
-  @Input() placeholder = 'Suchen...';
+  private userService = inject(UserService);
+
+  readonly searchType = input<'email' | 'name'>('email');
+  readonly label = input('Benutzer suchen');
+  readonly placeholder = input('Suchen...');
   @Output() userSelected = new EventEmitter<UserSearchResult | null>();
 
   searchControl = new FormControl('');
   results: UserSearchResult[] = [];
   selectedUser: UserSearchResult | null = null;
   isLoading = false;
-
-  constructor(private userService: UserService) {}
 
   ngOnInit(): void {
     this.searchControl.valueChanges
@@ -58,16 +58,17 @@ export class UserSearchComponent implements OnInit {
             return of([]);
           }
 
+          const searchType = this.searchType();
           if (
             !value ||
-            (this.searchType === 'name' && value.trim().length < 3) ||
-            (this.searchType === 'email' && !value.includes('@'))
+            (searchType === 'name' && value.trim().length < 3) ||
+            (searchType === 'email' && !value.includes('@'))
           ) {
             this.isLoading = false;
             return of([]);
           }
 
-          return this.userService.searchUsers(value, this.searchType).pipe(
+          return this.userService.searchUsers(value, searchType).pipe(
             catchError(() => {
               this.isLoading = false;
               return of([]);

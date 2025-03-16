@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, input, inject } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -43,36 +43,36 @@ import { EventsService } from '../../services/events.service';
   styleUrl: './event-discovery.component.css',
 })
 export class EventDiscoveryComponent implements OnInit {
-  @Input() types = [
+  private fb = inject(FormBuilder);
+  private router = inject(Router);
+  private eventsService = inject(EventsService);
+
+  readonly types = input([
     'Konzert',
     'Festival',
     'Theater',
     'Sport',
     'Kunst',
     'Kultur',
-  ];
+]);
 
   // Keep a static list as fallback, but we'll replace with API data
-  @Input() locations = ['Berlin', 'München', 'Heidenheim', 'Köln'];
+  readonly locations = input(['Berlin', 'München', 'Heidenheim', 'Köln']);
 
-  @Input() dates = [
+  readonly dates = input([
     'Heute',
     'Morgen',
     'Diese Woche',
     'Diesen Monat',
     'Dieses Jahr',
-  ];
+]);
 
   eventSearchForm: FormGroup;
   locationControl = new FormControl('');
   filteredCities: Observable<string[]> | undefined;
   isLoading = false;
 
-  constructor(
-    private fb: FormBuilder,
-    private router: Router,
-    private eventsService: EventsService,
-  ) {
+  constructor() {
     this.eventSearchForm = this.fb.group({
       eventType: [''],
       location: this.locationControl,
@@ -90,7 +90,7 @@ export class EventDiscoveryComponent implements OnInit {
       tap(() => (this.isLoading = true)),
       switchMap((query) => {
         if (!query || query.length < 2) {
-          return of(this.locations); // Return default locations for empty query
+          return of(this.locations()); // Return default locations for empty query
         }
 
         return this.eventsService.searchCities(query).pipe(
@@ -98,7 +98,7 @@ export class EventDiscoveryComponent implements OnInit {
           map((response) => response.cities),
           catchError(() => {
             console.error('Error fetching cities');
-            return of(this.locations); // Fallback to static list on error
+            return of(this.locations()); // Fallback to static list on error
           }),
         );
       }),

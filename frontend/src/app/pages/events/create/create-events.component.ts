@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -54,6 +54,13 @@ import { finalize } from 'rxjs';
   styleUrls: ['./create-events.component.css'],
 })
 export class CreateEventsComponent implements OnInit {
+  private fb = inject(FormBuilder);
+  private snackBar = inject(MatSnackBar);
+  private eventsService = inject(EventsService);
+  private userService = inject(UserService);
+  private openaiService = inject(OpenaiService);
+  private router = inject(Router);
+
   eventForm!: FormGroup;
   users: User[] = [];
   isLoading = false;
@@ -74,15 +81,6 @@ export class CreateEventsComponent implements OnInit {
   // Online event properties
   isOnline = new FormControl(false);
   meetingLink = new FormControl('');
-
-  constructor(
-    private fb: FormBuilder,
-    private snackBar: MatSnackBar,
-    private eventsService: EventsService,
-    private userService: UserService,
-    private openaiService: OpenaiService,
-    private router: Router,
-  ) {}
 
   ngOnInit(): void {
     this.initForm();

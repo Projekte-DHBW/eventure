@@ -23,7 +23,7 @@
           <div class="filter-group">
             <h3>Event-Typ</h3>
             <div class="filter-options">
-              @for (type of types; track type) {
+              @for (type of types(); track type) {
                 <div
                   class="filter-chip"
                   [class.active]="searchParams.types?.includes(type)"
@@ -71,7 +71,7 @@
           <div class="filter-group">
             <h3>Zeitraum</h3>
             <div class="filter-options">
-              @for (date of dates; track date) {
+              @for (date of dates(); track date) {
                 <div
                   class="filter-chip"
                   [class.active]="searchParams.date === date"

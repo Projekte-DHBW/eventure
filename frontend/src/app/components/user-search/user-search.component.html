@@ -1,18 +1,18 @@
 <div class="user-search">
   <mat-form-field appearance="outline" class="search-field">
-    <mat-label>{{ label }}</mat-label>
+    <mat-label>{{ label() }}</mat-label>
     <input
       type="text"
       matInput
       [formControl]="searchControl"
-      [placeholder]="placeholder"
+      [placeholder]="placeholder()"
       [matAutocomplete]="auto"
       (blur)="onBlur()"
     />
-    @if (searchType === "email") {
+    @if (searchType() === "email") {
       <mat-hint>Geben Sie die vollständige E-Mail-Adresse ein</mat-hint>
     }
-    @if (searchType === "name") {
+    @if (searchType() === "name") {
       <mat-hint>Mindestens 3 Zeichen eingeben</mat-hint>
     }
     <mat-icon matSuffix>{{ isLoading ? "sync" : "search" }}</mat-icon>

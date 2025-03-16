@@ -62,6 +62,23 @@ p {
     align-self: center;
 }
 
+.button {
+    display: table-cell;
+    font-size: 14px;
+    margin-left: 8px;
+    min-width: 120px;
+    background-color: var(--primary);
+  }
+  
+mat-flat-button {
+    background-color: var(--primary);
+}
+  
+.button-row {
+    margin-bottom: 0.5rem;
+}
+  
+
 /* Responsive Anpassungen */
 @media (max-width: 600px) {
     .form {

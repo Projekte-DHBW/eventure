@@ -7,10 +7,12 @@
         <h3>Beschreibung: </h3>
             <p>{{ event.description || 'Ist noch nicht vorhanden.'}}</p>
 
-            <button mat-flat-button disabled class="category-button">{{ event.category || 'Keine Kategorie' }}</button>
+        <h3>Kategorie: </h3>
+        <button mat-flat-button disabled class="category-button">{{ event.category || 'Keine Kategorie' }}</button>
         
         <h3>Datum: </h3>
-        <p>{{ event.eventDate || 'Ist noch nicht vorhanden.'}}</p>
+        <p>{{ event.eventDate ? (event.eventDate | date:'medium') : 'Ist noch nicht vorhanden.'}}</p>
+
         <h3>Maximale Anzahl Besucher: </h3>
         <p>{{ event.maxParticipants || 'Ist noch nicht vorhanden.'}}</p>
         
@@ -24,5 +26,17 @@
             <h3>Eventlink: </h3>
             <p>{{ event.meetingLink || 'Ist noch nicht vorhanden.'}}</p>
         </ng-container>
+
+        <div class="button-row">
+            <button
+              mat-flat-button
+              color="primary"
+              class="button"
+              type="submit"
+            >
+            {{ "Anmelden" }}
+            </button>
+          </div>
+
     </mat-card>
 </div>

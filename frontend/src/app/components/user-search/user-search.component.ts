@@ -6,7 +6,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatOptionModule } from '@angular/material/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { CommonModule } from '@angular/common';
+
 import {
   debounceTime,
   distinctUntilChanged,
@@ -21,15 +21,14 @@ import { UserService, UserSearchResult } from '../../services/user.service';
   selector: 'app-user-search',
   standalone: true,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     MatFormFieldModule,
     MatInputModule,
     MatAutocompleteModule,
     MatOptionModule,
     MatButtonModule,
-    MatIconModule,
-  ],
+    MatIconModule
+],
   template: `
     <div class="user-search">
       <mat-form-field appearance="outline" class="search-field">
@@ -42,33 +41,46 @@ import { UserService, UserSearchResult } from '../../services/user.service';
           [matAutocomplete]="auto"
           (blur)="onBlur()"
         />
-        <mat-hint *ngIf="searchType === 'email'"
+        @if (searchType === 'email') {
+<mat-hint
           >Geben Sie die vollständige E-Mail-Adresse ein</mat-hint
         >
-        <mat-hint *ngIf="searchType === 'name'"
+}
+        @if (searchType === 'name') {
+<mat-hint
           >Mindestens 3 Zeichen eingeben</mat-hint
         >
+}
         <mat-icon matSuffix>{{ isLoading ? 'sync' : 'search' }}</mat-icon>
         <mat-autocomplete
           #auto="matAutocomplete"
           [displayWith]="displayFn"
           (optionSelected)="onOptionSelected($event)"
         >
-          <mat-option *ngIf="isLoading" disabled>
+          @if (isLoading) {
+<mat-option disabled>
             <span>Suche...</span>
           </mat-option>
-          <ng-container *ngIf="!isLoading">
-            <mat-option *ngIf="results.length === 0" disabled>
+}
+          @if (!isLoading) {
+
+            @if (results.length === 0) {
+<mat-option disabled>
               Keine Ergebnisse gefunden
             </mat-option>
-            <mat-option *ngFor="let user of results" [value]="user">
+}
+            @for (user of results; track user) {
+<mat-option [value]="user">
               {{ user.firstName }} {{ user.lastName }}
             </mat-option>
-          </ng-container>
+}
+          
+}
         </mat-autocomplete>
       </mat-form-field>
 
-      <div *ngIf="selectedUser" class="selected-user">
+      @if (selectedUser) {
+<div class="selected-user">
         <span class="user-name"
           >{{ selectedUser.firstName }} {{ selectedUser.lastName }}</span
         >
@@ -76,6 +88,7 @@ import { UserService, UserSearchResult } from '../../services/user.service';
           <mat-icon>close</mat-icon>
         </button>
       </div>
+}
     </div>
   `,
   styles: [

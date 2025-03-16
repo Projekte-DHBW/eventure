@@ -6,7 +6,7 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { CommonModule } from '@angular/common';
+
 import { MatCardModule } from '@angular/material/card';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -19,7 +19,6 @@ import { AuthService } from '../../auth/services/auth.service';
   selector: 'app-register',
   standalone: true,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     MatCardModule,
     MatFormFieldModule,
@@ -27,8 +26,8 @@ import { AuthService } from '../../auth/services/auth.service';
     MatButtonModule,
     MatDividerModule,
     MatIconModule,
-    RouterModule,
-  ],
+    RouterModule
+],
   templateUrl: './register.component.html',
   styleUrl: './register.component.css',
 })

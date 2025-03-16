@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, OnInit } from '@angular/core';
 import {
   FormBuilder,
@@ -35,7 +35,6 @@ import { finalize } from 'rxjs';
   selector: 'app-create-events',
   standalone: true,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     MatFormFieldModule,
     MatInputModule,
@@ -50,8 +49,8 @@ import { finalize } from 'rxjs';
     MatTabsModule,
     MatDividerModule,
     MatTooltipModule,
-    UserSearchComponent,
-  ],
+    UserSearchComponent
+],
   templateUrl: './create-events.component.html',
   styleUrls: ['./create-events.component.css'],
 })

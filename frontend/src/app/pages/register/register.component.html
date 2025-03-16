@@ -10,29 +10,33 @@
         <mat-form-field class="full-width">
           <mat-label>Vorname</mat-label>
           <input matInput formControlName="firstName" placeholder="Vorname" />
-          <mat-error
-            *ngIf="
+          @if (
               registerForm.get('firstName')?.invalid &&
               (registerForm.get('firstName')?.dirty ||
                 registerForm.get('firstName')?.touched)
-            "
+            ) {
+<mat-error
+           
           >
             Vorname wird benötigt
           </mat-error>
+}
         </mat-form-field>
 
         <mat-form-field class="full-width">
           <mat-label>Nachname</mat-label>
           <input matInput formControlName="lastName" placeholder="Nachname" />
-          <mat-error
-            *ngIf="
+          @if (
               registerForm.get('lastName')?.invalid &&
               (registerForm.get('lastName')?.dirty ||
                 registerForm.get('lastName')?.touched)
-            "
+            ) {
+<mat-error
+           
           >
             Nachname wird benötigt
           </mat-error>
+}
         </mat-form-field>
 
         <mat-form-field class="full-width">
@@ -43,15 +47,17 @@
             type="email"
             placeholder="email@example.com"
           />
-          <mat-error
-            *ngIf="
+          @if (
               registerForm.get('email')?.invalid &&
               (registerForm.get('email')?.dirty ||
                 registerForm.get('email')?.touched)
-            "
+            ) {
+<mat-error
+           
           >
             Bitte geben Sie eine gültige E-Mail-Adresse ein
           </mat-error>
+}
         </mat-form-field>
 
         <mat-form-field class="full-width">
@@ -62,24 +68,30 @@
             type="password"
             placeholder="Passwort"
           />
-          <mat-error
-            *ngIf="
+          @if (
               registerForm.get('password')?.invalid &&
               (registerForm.get('password')?.dirty ||
                 registerForm.get('password')?.touched)
-            "
+            ) {
+<mat-error
+           
           >
             Passwort muss mindestens 6 Zeichen lang sein
           </mat-error>
+}
         </mat-form-field>
 
         <section>
-          <div *ngIf="errorMessage" class="error-message">
+          @if (errorMessage) {
+<div class="error-message">
             {{ errorMessage }}
           </div>
-          <div *ngIf="successMessage" class="success-message">
+}
+          @if (successMessage) {
+<div class="success-message">
             {{ successMessage }}
           </div>
+}
           <div class="login-button-row">
             <button
               mat-flat-button

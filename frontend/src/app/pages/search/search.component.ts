@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -19,7 +19,6 @@ import { Observable, debounceTime, switchMap, of, catchError, map } from 'rxjs';
   selector: 'app-search',
   standalone: true,
   imports: [
-    CommonModule,
     RouterModule,
     ReactiveFormsModule,
     MatButtonModule,
@@ -30,8 +29,8 @@ import { Observable, debounceTime, switchMap, of, catchError, map } from 'rxjs';
     MatInputModule,
     MatFormFieldModule,
     MatDatepickerModule,
-    MatNativeDateModule,
-  ],
+    MatNativeDateModule
+],
   templateUrl: './search.component.html',
   styleUrl: './search.component.css',
 })

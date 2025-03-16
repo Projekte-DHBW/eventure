@@ -1,5 +1,4 @@
-import { Component, OnInit, inject, input } from '@angular/core';
-
+import { Component, OnInit, input, inject } from '@angular/core';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -84,7 +83,7 @@ export class SearchComponent implements OnInit {
     'Ausstellung',
     'Workshop',
     'Konferenz',
-  ]);
+]);
 
   readonly locations = input([
     'Berlin',
@@ -105,7 +104,7 @@ export class SearchComponent implements OnInit {
     'Freiburg',
     'Heidelberg',
     'Augsburg',
-  ]);
+]);
 
   readonly dates = input([
     'Heute',
@@ -113,7 +112,7 @@ export class SearchComponent implements OnInit {
     'Diese Woche',
     'Diesen Monat',
     'Dieses Jahr',
-  ]);
+]);
 
   // Properties for location filter
   showAllLocations = false;

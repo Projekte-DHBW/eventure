@@ -1,6 +1,18 @@
 .container {
   height: 100svh;
   height: 100vh;
+  display: flex;
+  flex-direction: column; /* Ensures stacking */
+  justify-content: flex-start; /* Align to the top */
+  align-items: center;
+}
+
+.column-layout {
+  display: flex;
+  flex-direction: column; /* Stack elements vertically */
+  align-items: center;
+  width: 100%;
+  gap: 2rem; /* Add spacing between sections */
 }
 
 .container div {

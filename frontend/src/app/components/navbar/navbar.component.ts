@@ -19,13 +19,13 @@ import { MatIcon } from '@angular/material/icon';
   styleUrl: './navbar.component.css',
 })
 export class NavbarComponent {
+  private router = inject(Router);
+
   protected auth = inject(AuthService);
 
   protected isLoggedIn = this.auth.isAuthenticated();
 
   protected fullName: string | null = null;
-
-  constructor(private router: Router) {}
 
   ngOnInit() {
     this.fullName = this.auth.getFullName();

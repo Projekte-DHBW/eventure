@@ -23,40 +23,42 @@
           <div class="filter-group">
             <h3>Event-Typ</h3>
             <div class="filter-options">
-              <div
-                *ngFor="let type of types"
-                class="filter-chip"
-                [class.active]="searchParams.types?.includes(type)"
-                (click)="applyFilter('types', type)"
-                [style.background-color]="
-                  searchParams.types?.includes(type) ? '#4285f4' : ''
-                "
-                [style.color]="
-                  searchParams.types?.includes(type) ? 'white' : ''
-                "
-              >
-                {{ type }}
-              </div>
+              @for (type of types(); track type) {
+                <div
+                  class="filter-chip"
+                  [class.active]="searchParams.types?.includes(type)"
+                  (click)="applyFilter('types', type)"
+                  [style.background-color]="
+                    searchParams.types?.includes(type) ? '#4285f4' : ''
+                  "
+                  [style.color]="
+                    searchParams.types?.includes(type) ? 'white' : ''
+                  "
+                >
+                  {{ type }}
+                </div>
+              }
             </div>
           </div>
 
           <div class="filter-group location-filter">
             <h3>Standort</h3>
             <div class="filter-options" [class.expanded]="showAllLocations">
-              <div
-                *ngFor="let location of displayedLocations"
-                class="filter-chip"
-                [class.active]="searchParams.locations?.includes(location)"
-                (click)="applyFilter('locations', location)"
-                [style.background-color]="
-                  searchParams.locations?.includes(location) ? '#4285f4' : ''
-                "
-                [style.color]="
-                  searchParams.locations?.includes(location) ? 'white' : ''
-                "
-              >
-                {{ location }}
-              </div>
+              @for (location of displayedLocations; track location) {
+                <div
+                  class="filter-chip"
+                  [class.active]="searchParams.locations?.includes(location)"
+                  (click)="applyFilter('locations', location)"
+                  [style.background-color]="
+                    searchParams.locations?.includes(location) ? '#4285f4' : ''
+                  "
+                  [style.color]="
+                    searchParams.locations?.includes(location) ? 'white' : ''
+                  "
+                >
+                  {{ location }}
+                </div>
+              }
             </div>
             <button class="show-more-btn" (click)="toggleLocationVisibility()">
               {{ showAllLocations ? "Weniger anzeigen" : "Mehr anzeigen" }}
@@ -69,18 +71,19 @@
           <div class="filter-group">
             <h3>Zeitraum</h3>
             <div class="filter-options">
-              <div
-                *ngFor="let date of dates"
-                class="filter-chip"
-                [class.active]="searchParams.date === date"
-                (click)="applyFilter('date', date)"
-                [style.background-color]="
-                  searchParams.date === date ? '#4285f4' : ''
-                "
-                [style.color]="searchParams.date === date ? 'white' : ''"
-              >
-                {{ date }}
-              </div>
+              @for (date of dates(); track date) {
+                <div
+                  class="filter-chip"
+                  [class.active]="searchParams.date === date"
+                  (click)="applyFilter('date', date)"
+                  [style.background-color]="
+                    searchParams.date === date ? '#4285f4' : ''
+                  "
+                  [style.color]="searchParams.date === date ? 'white' : ''"
+                >
+                  {{ date }}
+                </div>
+              }
             </div>
           </div>
           <div class="specific-date-picker">
@@ -111,52 +114,55 @@
           </div>
         </div>
 
-        <div class="active-filters" *ngIf="hasSearchParams">
-          <h3>Aktive Filter</h3>
-          <div class="active-filter-chips">
-            <ng-container *ngIf="searchParams.types?.length">
-              <div class="active-chip" *ngFor="let type of searchParams.types">
-                Typ: {{ capitalizeFirstLetter(type) }}
-                <button
-                  class="remove-filter"
-                  (click)="removeFilter('types', type)"
-                >
-                  ×
-                </button>
-              </div>
-            </ng-container>
+        @if (hasSearchParams) {
+          <div class="active-filters">
+            <h3>Aktive Filter</h3>
+            <div class="active-filter-chips">
+              @if (searchParams.types?.length) {
+                @for (type of searchParams.types; track type) {
+                  <div class="active-chip">
+                    Typ: {{ capitalizeFirstLetter(type) }}
+                    <button
+                      class="remove-filter"
+                      (click)="removeFilter('types', type)"
+                    >
+                      ×
+                    </button>
+                  </div>
+                }
+              }
 
-            <ng-container *ngIf="searchParams.locations?.length">
-              <div
-                class="active-chip"
-                *ngFor="let location of searchParams.locations"
-              >
-                Ort: {{ capitalizeFirstLetter(location) }}
-                <button
-                  class="remove-filter"
-                  (click)="removeFilter('locations', location)"
-                >
-                  ×
-                </button>
-              </div>
-            </ng-container>
+              @if (searchParams.locations?.length) {
+                @for (location of searchParams.locations; track location) {
+                  <div class="active-chip">
+                    Ort: {{ capitalizeFirstLetter(location) }}
+                    <button
+                      class="remove-filter"
+                      (click)="removeFilter('locations', location)"
+                    >
+                      ×
+                    </button>
+                  </div>
+                }
+              }
 
-            <div class="active-chip" *ngIf="searchParams.date">
-              Zeit: {{ capitalizeFirstLetter(searchParams.date) }}
-              <button class="remove-filter" (click)="removeFilter('date')">
-                ×
-              </button>
+              @if (searchParams.date) {
+                <div class="active-chip">
+                  Zeit: {{ capitalizeFirstLetter(searchParams.date) }}
+                  <button class="remove-filter" (click)="removeFilter('date')">
+                    ×
+                  </button>
+                </div>
+              }
+
+              @if (hasSearchParams) {
+                <button class="clear-all-btn" (click)="clearAllFilters()">
+                  Alle Filter zurücksetzen
+                </button>
+              }
             </div>
-
-            <button
-              class="clear-all-btn"
-              *ngIf="hasSearchParams"
-              (click)="clearAllFilters()"
-            >
-              Alle Filter zurücksetzen
-            </button>
           </div>
-        </div>
+        }
       </div>
     </div>
 
@@ -218,7 +224,9 @@
                     <div class="event-tag">
                       {{ capitalizeFirstLetter(event.visibility) }}
                     </div>
-                    <div class="event-tag" *ngIf="event.isOnline">Online</div>
+                    @if (event.isOnline) {
+                      <div class="event-tag">Online</div>
+                    }
                   </div>
 
                   <div class="event-actions">

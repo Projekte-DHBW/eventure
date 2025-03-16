@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { CreateEvent, UpdateEvent, Event } from '../types/events';
 import { HttpClientService } from './httpClient.service';
 import { Observable, map, catchError, of } from 'rxjs';
@@ -7,7 +7,7 @@ import { Observable, map, catchError, of } from 'rxjs';
   providedIn: 'root',
 })
 export class EventsService {
-  constructor(private http: HttpClientService) {}
+  private http = inject(HttpClientService);
 
   // Get events with filters
   getEvents(filters: any = {}): Observable<[Event[], number]> {

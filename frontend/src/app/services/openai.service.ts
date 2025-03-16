@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClientService } from './httpClient.service';
 import { Observable, throwError, timeout } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -7,7 +7,7 @@ import { HttpErrorResponse } from '@angular/common/http';
   providedIn: 'root',
 })
 export class OpenaiService {
-  constructor(private http: HttpClientService) {}
+  private http = inject(HttpClientService);
 
   enhance(text: string, title: string, category: string): Observable<string> {
     return this.http

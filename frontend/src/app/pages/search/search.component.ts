@@ -83,7 +83,7 @@ export class SearchComponent implements OnInit {
     'Ausstellung',
     'Workshop',
     'Konferenz',
-]);
+  ]);
 
   readonly locations = input([
     'Berlin',
@@ -104,7 +104,7 @@ export class SearchComponent implements OnInit {
     'Freiburg',
     'Heidelberg',
     'Augsburg',
-]);
+  ]);
 
   readonly dates = input([
     'Heute',
@@ -112,7 +112,7 @@ export class SearchComponent implements OnInit {
     'Diese Woche',
     'Diesen Monat',
     'Dieses Jahr',
-]);
+  ]);
 
   // Properties for location filter
   showAllLocations = false;

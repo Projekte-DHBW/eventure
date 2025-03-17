@@ -54,7 +54,7 @@ export class EventDiscoveryComponent implements OnInit {
     'Sport',
     'Kunst',
     'Kultur',
-]);
+  ]);
 
   // Keep a static list as fallback, but we'll replace with API data
   readonly locations = input(['Berlin', 'München', 'Heidenheim', 'Köln']);
@@ -65,7 +65,7 @@ export class EventDiscoveryComponent implements OnInit {
     'Diese Woche',
     'Diesen Monat',
     'Dieses Jahr',
-]);
+  ]);
 
   eventSearchForm: FormGroup;
   locationControl = new FormControl('');

@@ -97,4 +97,23 @@ export class EventsController {
       ),
     };
   }
+
+  /*@UseGuards(AuthGuard)
+  @Post(':id/signup')
+  
+  async inviteUser(
+    @Body() body: { eventId: string; },
+    @GetUser() currentUser: User,
+    
+     ): Promise<{ success: boolean }> {
+    return this.eventsService.inviteUser(currentUser.id, body.eventId);
+  }*/
+  
+  @UseGuards(AuthGuard)
+  @Post(':id/signup')
+  
+  async inviteUser(@Param('id') eventId: string, @GetUser() user: User, ): Promise<{ success: boolean }> {
+    return this.eventsService.inviteUser(user.id, eventId);
+  }
+
 }

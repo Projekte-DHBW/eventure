@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { CreateEvent, UpdateEvent, Event } from '../types/events';
 import { HttpClientService } from './httpClient.service';
 import { Observable, throwError, map, catchError, of } from 'rxjs';
@@ -28,8 +28,6 @@ export interface EventsSearchResult {
     
 }
   
-
-
 
 @Injectable({
   providedIn: 'root',
@@ -113,6 +111,15 @@ export class EventsService {
     );
   }
 
+  // Methode zum Einladen eines Benutzers zu einem Event
+  inviteUser(userId: string, eventId: string): Observable<{ success: boolean }> {
+    const token = localStorage.getItem('accessToken'); // Holen Sie das Token aus dem Local Storage
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http
+      .post<{ success: boolean }>(`${this.apiUrl}/events/${eventId}/signup`, { userId }, { headers })
+      .pipe(catchError((error) => this.handleError(error)));
+  }
+
   // Get events by category
   getEventsByCategory(category: string, limit: number = 10): Observable<any[]> {
     const params = { limit: limit.toString() };
@@ -175,10 +182,6 @@ export class EventsService {
     return this.http.authenticatedGet<EventsSearchResult>(`events/${id}`, {
       params: { id },
     });
-    // return this.http.get<Event>(`${this.apiUrl}/events/${id}`);
-      //.post<Event>(`${this.apiUrl}/events/${id}`, { id })
-      //.pipe(catchError((error) => this.handleError(error)),
-    //);
   }
 
    

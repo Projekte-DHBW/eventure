@@ -125,6 +125,14 @@ export class AuthService implements OnDestroy {
       );
   }
 
+  /*signUp(userID: string, eventID: string): Observable<{ success: boolean }> {
+    return this.http.post<{ success: boolean }>(`${this.apiUrl}/${eventID}/signup`, {
+      userID,
+      eventID,
+    });
+  }*/
+
+
   private setSession(authResult: LoginResponse): void {
     this.tokenService.setAccessToken(authResult.accessToken);
     this.tokenService.setRefreshToken(authResult.refreshToken);

@@ -14,6 +14,7 @@ import { User } from 'src/entity/User';
 import { CreateEventDto, EventLocationDto } from './dto/CreateEvent';
 import { EventFiltersDto } from './dto/EventFilters';
 import { UpdateEventDto } from './dto/UpdateEvent';
+import { InvitedUsers } from 'src/entity/InvitedUsers';
 
 @Injectable()
 export class EventsService {
@@ -30,6 +31,8 @@ export class EventsService {
     private invitationRepository: Repository<Invitation>,
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    @InjectRepository(InvitedUsers)
+    private invitedUserRepository: Repository<InvitedUsers>,
   ) {}
 
   async createEvent(
@@ -568,4 +571,13 @@ export class EventsService {
 
     return locations;
   }
+
+  async inviteUser(userId: string, eventId: string): Promise<{ success: boolean }> {
+    const invitedUser = new InvitedUsers();
+    invitedUser.user.id = userId;
+    invitedUser.event.id = eventId;
+    await this.invitedUserRepository.save(invitedUser);
+    return { success: true };
+  }
+
 }

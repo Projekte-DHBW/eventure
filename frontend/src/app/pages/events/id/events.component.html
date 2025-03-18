@@ -26,17 +26,26 @@
             <h3>Eventlink: </h3>
             <p>{{ event.meetingLink || 'Ist noch nicht vorhanden.'}}</p>
         </ng-container>
-
-        <div class="button-row">
-            <button
-              mat-flat-button
-              color="primary"
-              class="button"
-              type="submit"
-            >
-            {{ "Anmelden" }}
-            </button>
-          </div>
-
+        
+        <section>
+            <div *ngIf="errorMessage" class="error-message">
+              {{ errorMessage }}
+            </div>
+            <div *ngIf="successMessage" class="success-message">
+              {{ successMessage }}
+            </div>
+            <div class="button-row">
+                <button (click)="onSubmit()"
+                  mat-flat-button
+                  color="primary"
+                  class="button"
+                  type="submit"
+                  [disabled]="signUpForm.invalid || isLoading"
+                >
+                {{ isLoading ? "Wird angemeldet..." : "Anmelden" }}
+                </button>
+            </div>
+          </section>
+        
     </mat-card>
 </div>

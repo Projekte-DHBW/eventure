@@ -11,6 +11,7 @@ import { EventsController } from './events.controller';
 import { AuthModule } from '../auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { UsersModule } from '../users/users.module';
+import { InvitedUsers } from 'src/entity/InvitedUsers';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { UsersModule } from '../users/users.module';
       EventManager,
       Invitation,
       User,
+      InvitedUsers,
     ]),
     AuthModule,
     UsersModule,

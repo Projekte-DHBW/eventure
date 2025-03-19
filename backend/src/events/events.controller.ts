@@ -113,7 +113,8 @@ export class EventsController {
   @Post(':id/signup')
   
   async inviteUser(@Param('id') eventId: string, @GetUser() user: User, ): Promise<{ success: boolean }> {
-    return this.eventsService.inviteUser(user.id, eventId);
+    await this.eventsService.inviteUser(user.id, eventId);
+    return { success: true }; // Rückgabe des Erfolgsstatus
   }
 
 }

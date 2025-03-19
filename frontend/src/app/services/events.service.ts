@@ -35,8 +35,8 @@ export interface EventsSearchResult {
 export class EventsService {
 
   //private http = inject(HttpClient);
-  private apiUrl = `${environment.apiUrl}/auth`;
-
+  //private apiUrl = `${environment.apiUrl}`;
+  
   constructor(private http: HttpClientService) {}
 
   // Get events with filters
@@ -114,10 +114,21 @@ export class EventsService {
   // Methode zum Einladen eines Benutzers zu einem Event
   inviteUser(userId: string, eventId: string): Observable<{ success: boolean }> {
     const token = localStorage.getItem('accessToken'); // Holen Sie das Token aus dem Local Storage
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    return this.http
-      .post<{ success: boolean }>(`${this.apiUrl}/events/${eventId}/signup`, { userId }, { headers })
-      .pipe(catchError((error) => this.handleError(error)));
+    console.log('Token:', token); // Überprüfen Sie, ob das Token vorhanden ist
+  
+    // Spezielle Header-Flag für den HttpClientService hinzufügen
+    const headers = {
+      Authorization: `Bearer ${token}`,
+      Accept: 'application/json',
+    };
+  
+    // Verwenden Sie den injizierten HttpClientService für die Anfrage
+    return this.http.post<{ success: boolean }>(`events/${eventId}/signup`, { userId }, { headers }).pipe(
+      catchError((error) => {
+        console.error('Error inviting user:', error);
+        return of({ success: false }); // Fallback bei Fehler
+      })
+    );
   }
 
   // Get events by category

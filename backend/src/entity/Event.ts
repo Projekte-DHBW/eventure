@@ -10,6 +10,7 @@ import { BaseEntity } from './BaseEntity';
 import { User } from './User';
 import { Exclude } from 'class-transformer';
 import { EventOccurrence } from './EventOccurrence';
+import { InvitedUsers } from './InvitedUsers';
 
 @Entity()
 export class Event extends BaseEntity {
@@ -58,4 +59,8 @@ export class Event extends BaseEntity {
 
   @OneToMany(() => EventOccurrence, (occurrence) => occurrence.event)
   occurrences: EventOccurrence[];
+
+  @OneToMany(() => InvitedUsers, (invitedUser) => invitedUser.event)
+  invitedUsers: InvitedUsers[];
+
 }

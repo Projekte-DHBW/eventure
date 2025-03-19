@@ -76,23 +76,20 @@ export class EventsComponent implements OnInit{
   
   onSubmit(): void {
     if (this.signUpForm.invalid) return;
-
+  
     this.isLoading = true;
     this.errorMessage = null;
     this.successMessage = null;
-
+  
     const { userID, eventID } = this.signUpForm.value;
-
+  
     // Benutzer zu einem Event einladen
     this.eventsService.inviteUser(userID, eventID).subscribe({
       next: () => {
-        this.successMessage = 'Benutzer erfolgreich für das Event angemeldet!';
-        setTimeout(() => {
-          this.router.navigate(['/login']);
-        }, 1500);
+        this.successMessage = 'Sie haben sich erfolgreich für das Event angemeldet!';
       },
       error: (error) => {
-        this.errorMessage = 'Fehler beim Einladen des Benutzers: ' + error.message;
+        this.errorMessage = 'Fehler beim ihrer Anmeldung: ' + error.message;
         this.isLoading = false;
       },
       complete: () => {
@@ -100,7 +97,5 @@ export class EventsComponent implements OnInit{
       },
     });
   }
-
-
 
 }

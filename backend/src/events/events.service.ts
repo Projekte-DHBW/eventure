@@ -572,12 +572,22 @@ export class EventsService {
     return locations;
   }
 
-  async inviteUser(userId: string, eventId: string): Promise<{ success: boolean }> {
-    const invitedUser = new InvitedUsers();
-    invitedUser.user.id = userId;
-    invitedUser.event.id = eventId;
-    await this.invitedUserRepository.save(invitedUser);
-    return { success: true };
+  async inviteUser(userId: string, eventId: string): Promise<InvitedUsers> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    const event = await this.eventRepository.findOne({ where: { id: eventId } });
+
+    if (!user || !event) {
+      throw new Error('User or Event not found');
+    }
+
+    const invitedUser = this.invitedUserRepository.create({
+      user,
+      event,
+      invitedAt: new Date(),
+      status: 'pending',
+    });
+
+    return await this.invitedUserRepository.save(invitedUser);
   }
 
 }

@@ -14,29 +14,46 @@ import {
   IsEmail,
   MinLength,
 } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 // DTO for creating event locations
 export class EventLocationDto {
+  @ApiProperty({ description: 'Street address of the event location' })
   @IsString()
   address: string;
 
+  @ApiProperty({ description: 'City where the event takes place' })
   @IsString()
   city: string;
 
+  @ApiProperty({ description: 'State/Province where the event takes place' })
   @IsString()
   state: string;
 
+  @ApiProperty({ description: 'Country where the event takes place' })
   @IsString()
   country: string;
 
+  @ApiProperty({
+    description: 'Postal code of the event location',
+    required: false,
+  })
   @IsString()
   @IsOptional()
   postalCode?: string;
 
+  @ApiProperty({
+    description: 'Latitude coordinate of the event location',
+    required: false,
+  })
   @IsNumber()
   @IsOptional()
   latitude?: number;
 
+  @ApiProperty({
+    description: 'Longitude coordinate of the event location',
+    required: false,
+  })
   @IsNumber()
   @IsOptional()
   longitude?: number;
@@ -44,16 +61,25 @@ export class EventLocationDto {
 
 // DTO for creating event occurrences
 export class EventOccurrenceDto {
+  @ApiProperty({ description: 'Start date and time of the event occurrence' })
   @IsDate()
   @Type(() => Date)
   startDate: Date;
 
+  @ApiProperty({
+    description: 'End date and time of the event occurrence',
+    required: false,
+  })
   @IsDate()
   @IsOptional()
   @Type(() => Date)
   endDate?: Date;
 
-  // Each occurrence can have its own location
+  @ApiProperty({
+    description: 'Location details for this specific occurrence',
+    required: false,
+    type: EventLocationDto,
+  })
   @IsOptional()
   @ValidateNested()
   @Type(() => EventLocationDto)
@@ -62,15 +88,21 @@ export class EventOccurrenceDto {
 
 // DTO for event managers (by user ID)
 export class EventManagerDto {
+  @ApiProperty({ description: 'User ID of the event manager' })
   @IsUUID()
   userId: string;
 }
 
 // DTO for invitations
 export class InvitationDto {
+  @ApiProperty({ description: 'Email address of the invited user' })
   @IsEmail()
   email: string;
 
+  @ApiProperty({
+    description: 'Optional message to include with the invitation',
+    required: false,
+  })
   @IsString()
   @IsOptional()
   @MinLength(1)
@@ -79,61 +111,104 @@ export class InvitationDto {
 
 // Main CreateEventDto
 export class CreateEventDto {
-  // Basic event properties
+  @ApiProperty({ description: 'Title of the event' })
   @IsString()
   title: string;
 
+  @ApiProperty({ description: 'Detailed description of the event' })
   @IsString()
   description: string;
 
+  @ApiProperty({
+    description: 'Visibility setting of the event',
+    enum: ['public', 'private', 'unlisted'],
+  })
   @IsEnum(['public', 'private', 'unlisted'])
   visibility: 'public' | 'private' | 'unlisted';
 
+  @ApiProperty({
+    description: 'Category of the event',
+    enum: ['music', 'sports', 'culture', 'other'],
+  })
   @IsEnum(['music', 'sports', 'culture', 'other'])
   category: 'music' | 'sports' | 'culture' | 'other';
 
+  @ApiProperty({ description: 'URL of the event cover image', required: false })
   @IsString()
   @IsOptional()
   @IsUrl()
   coverImageUrl?: string;
 
+  @ApiProperty({
+    description: 'Maximum number of participants allowed',
+    required: false,
+  })
   @IsNumber()
   @IsOptional()
   maxParticipants?: number;
 
-  // Simple event properties (for backward compatibility)
+  @ApiProperty({
+    description: 'Simple location string (for backward compatibility)',
+    required: false,
+  })
   @IsString()
   @IsOptional()
   location?: string;
 
+  @ApiProperty({
+    description: 'Event date (for backward compatibility)',
+    required: false,
+  })
   @IsDate()
   @IsOptional()
   @Type(() => Date)
   eventDate?: Date;
 
-  // Online event properties
+  @ApiProperty({
+    description: 'Whether the event is online',
+    required: false,
+    default: false,
+  })
   @IsBoolean()
   @IsOptional()
   isOnline?: boolean = false;
 
+  @ApiProperty({
+    description: 'Meeting link for online events',
+    required: false,
+  })
   @IsString()
   @IsOptional()
   @ValidateIf((o) => o.isOnline === true)
   meetingLink?: string;
 
-  // Advanced event properties using related entities
+  @ApiProperty({
+    description: 'List of event occurrences',
+    required: false,
+    type: [EventOccurrenceDto],
+  })
   @IsArray()
   @IsOptional()
   @ValidateNested({ each: true })
   @Type(() => EventOccurrenceDto)
   occurrences?: EventOccurrenceDto[];
 
+  @ApiProperty({
+    description: 'List of event managers',
+    required: false,
+    type: [EventManagerDto],
+  })
   @IsArray()
   @IsOptional()
   @ValidateNested({ each: true })
   @Type(() => EventManagerDto)
   managers?: EventManagerDto[];
 
+  @ApiProperty({
+    description: 'List of invitations to send',
+    required: false,
+    type: [InvitationDto],
+  })
   @IsArray()
   @IsOptional()
   @ValidateNested({ each: true })

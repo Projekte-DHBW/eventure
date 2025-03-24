@@ -1,7 +1,7 @@
-import { Component, OnInit, input, inject } from '@angular/core';
+import { Component, type OnInit, input, inject } from '@angular/core';
 import {
   FormBuilder,
-  FormGroup,
+  type FormGroup,
   FormControl,
   ReactiveFormsModule,
 } from '@angular/forms';
@@ -13,7 +13,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { CommonModule } from '@angular/common';
-import { Observable, of } from 'rxjs';
+import { type Observable, of } from 'rxjs';
 import {
   debounceTime,
   distinctUntilChanged,
@@ -87,6 +87,7 @@ export class EventDiscoveryComponent implements OnInit {
       debounceTime(300),
       distinctUntilChanged(),
       filter((query) => typeof query === 'string'),
+      // biome-ignore lint/suspicious/noAssignInExpressions: <explanation>
       tap(() => (this.isLoading = true)),
       switchMap((query) => {
         if (!query || query.length < 2) {
@@ -102,6 +103,7 @@ export class EventDiscoveryComponent implements OnInit {
           }),
         );
       }),
+      // biome-ignore lint/suspicious/noAssignInExpressions: <explanation>
       tap(() => (this.isLoading = false)),
     );
   }
@@ -110,8 +112,14 @@ export class EventDiscoveryComponent implements OnInit {
     if (this.eventSearchForm.valid) {
       const formValues = this.eventSearchForm.value;
 
+      interface QueryParams {
+        type?: string;
+        location?: string;
+        date?: string;
+      }
+
       // Create query parameters object
-      const queryParams: any = {};
+      const queryParams: QueryParams = {};
 
       // Only add parameters that have values
       if (formValues.eventType) {

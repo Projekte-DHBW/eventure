@@ -36,6 +36,11 @@ export class EventsService {
       console.log(`Setting date param to: ${params.date}`);
     }
 
+    // Add attending filter if provided
+    if (filters.attending === true) {
+      params.attending = 'true';
+    }
+
     console.log('Sending API request with params:', params);
 
     // Hinzugefügt: Debugging-Info für die URL
@@ -135,27 +140,27 @@ export class EventsService {
 
   // Get event by ID
   getEvent(id: string): Observable<Event> {
-    return this.http.get(`events/${id}`);
+    return this.http.authenticatedGet(`events/${id}`);
   }
 
   createEvent(data: CreateEvent): Observable<Event> {
-    return this.http.post<Event>('events', data);
+    return this.http.authenticatedPost<Event>('events', data);
   }
 
   updateEvent(id: string, data: UpdateEvent): Observable<Event> {
-    return this.http.patch<Event>(`events/${id}`, data);
+    return this.http.authenticatedPatch<Event>(`events/${id}`, data);
   }
 
   deleteEvent(id: string): Observable<void> {
-    return this.http.delete<void>(`events/${id}`);
+    return this.http.authenticatedDelete<void>(`events/${id}`);
   }
 
   joinEvent(id: string): Observable<any> {
-    return this.http.post<any>(`events/${id}/join`, {});
+    return this.http.authenticatedPost<any>(`events/${id}/join`, {});
   }
 
   leaveEvent(id: string): Observable<any> {
-    return this.http.post<any>(`events/${id}/leave`, {});
+    return this.http.authenticatedPost<any>(`events/${id}/leave`, {});
   }
 
   /**
@@ -187,5 +192,50 @@ export class EventsService {
     limit?: number;
   }): Observable<[Event[], number]> {
     return this.getEvents(searchParams);
+  }
+
+  /**
+   * Get events created by the current user
+   */
+  getMyEvents(): Observable<Event[]> {
+    return this.http.authenticatedGet<any[]>('events/my').pipe(
+      map((events) => this.normalizeEvents(events || [])),
+      catchError((error) => {
+        console.error('Error loading my events:', error);
+        return of([]);
+      }),
+    );
+  }
+
+  /**
+   * Get events the user is attending
+   */
+  getAttendingEvents(): Observable<Event[]> {
+    return this.http.authenticatedGet<any[]>('events/attending').pipe(
+      map((events) => this.normalizeEvents(events || [])),
+      catchError((error) => {
+        console.error('Error loading attending events:', error);
+        return of([]);
+      }),
+    );
+  }
+
+  /**
+   * Stellt sicher, dass Event-Daten die richtigen Typen haben
+   */
+  private normalizeEvent(event: any): Event {
+    return {
+      ...event,
+      eventDate: event.eventDate || null,
+      createdAt: event.createdAt || null,
+      updatedAt: event.updatedAt || null,
+    };
+  }
+
+  /**
+   * Normalisiert eine Liste von Events
+   */
+  private normalizeEvents(events: any[]): Event[] {
+    return events.map((event) => this.normalizeEvent(event));
   }
 }

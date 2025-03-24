@@ -1,0 +1,202 @@
+<div class="edit-event-container">
+    <div class="edit-event-header">
+        <h1>Event bearbeiten</h1>
+        <p>Aktualisiere die Details deines Events</p>
+    </div>
+
+    @if (isLoadingEvent) {
+    <div class="loading-container">
+        <mat-spinner diameter="50"></mat-spinner>
+        <p>Event wird geladen...</p>
+    </div>
+    } @else {
+    <form [formGroup]="eventForm" (ngSubmit)="onSubmit()">
+        <mat-card>
+            <mat-card-content>
+                <!-- Grundinformationen -->
+                <h2>Grundinformationen</h2>
+
+                <div class="form-row">
+                    <mat-form-field appearance="outline" class="full-width">
+                        <mat-label>Titel</mat-label>
+                        <input matInput formControlName="title" placeholder="Event-Titel">
+                        <mat-error *ngIf="eventForm.get('title')?.hasError('required')">Titel ist
+                            erforderlich</mat-error>
+                        <mat-error *ngIf="eventForm.get('title')?.hasError('minlength')">Titel muss mindestens 3 Zeichen
+                            lang sein</mat-error>
+                    </mat-form-field>
+                </div>
+
+                <div class="form-row">
+                    <mat-form-field appearance="outline" class="full-width">
+                        <mat-label>Beschreibung</mat-label>
+                        <textarea matInput formControlName="description" rows="5"
+                            placeholder="Beschreibe dein Event"></textarea>
+                        <mat-error *ngIf="eventForm.get('description')?.hasError('required')">Beschreibung ist
+                            erforderlich</mat-error>
+                        <mat-error *ngIf="eventForm.get('description')?.hasError('minlength')">Beschreibung muss
+                            mindestens 10 Zeichen lang sein</mat-error>
+                    </mat-form-field>
+                    <button type="button" mat-button color="accent" (click)="enhanceDescription()"
+                        [disabled]="isEnhancingDescription" matTooltip="Verbessere deine Beschreibung mit KI">
+                        <mat-icon>auto_awesome</mat-icon>
+                        {{ isEnhancingDescription ? 'Verbessere...' : 'Beschreibung verbessern' }}
+                    </button>
+                </div>
+
+                <div class="form-row two-cols">
+                    <mat-form-field appearance="outline">
+                        <mat-label>Kategorie</mat-label>
+                        <mat-select formControlName="category">
+                            @for (option of categoryOptions; track option.value) {
+                            <mat-option [value]="option.value">{{ option.label }}</mat-option>
+                            }
+                        </mat-select>
+                        <mat-error *ngIf="eventForm.get('category')?.hasError('required')">Kategorie ist
+                            erforderlich</mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                        <mat-label>Sichtbarkeit</mat-label>
+                        <mat-select formControlName="visibility">
+                            @for (option of visibilityOptions; track option.value) {
+                            <mat-option [value]="option.value">{{ option.label }}</mat-option>
+                            }
+                        </mat-select>
+                        <mat-error *ngIf="eventForm.get('visibility')?.hasError('required')">Sichtbarkeit ist
+                            erforderlich</mat-error>
+                    </mat-form-field>
+                </div>
+
+                <!-- Ort und Zeit -->
+                <h2>Ort und Zeit</h2>
+
+                <div class="form-row">
+                    <mat-checkbox formControlName="isOnline">Online Event</mat-checkbox>
+                </div>
+
+                <div class="form-row" *ngIf="!eventForm.get('isOnline')?.value">
+                    <mat-form-field appearance="outline" class="full-width">
+                        <mat-label>Ort</mat-label>
+                        <input matInput formControlName="location" placeholder="Wo findet das Event statt?">
+                    </mat-form-field>
+                </div>
+
+                <div class="form-row" *ngIf="eventForm.get('isOnline')?.value">
+                    <mat-form-field appearance="outline" class="full-width">
+                        <mat-label>Meeting-Link</mat-label>
+                        <input matInput formControlName="meetingLink" placeholder="Link zum Online-Event">
+                        <mat-error *ngIf="eventForm.get('meetingLink')?.hasError('required')">Meeting-Link ist für
+                            Online-Events erforderlich</mat-error>
+                    </mat-form-field>
+                </div>
+
+                <div class="form-row">
+                    <mat-form-field appearance="outline" class="full-width">
+                        <mat-label>Datum & Zeit</mat-label>
+                        <input matInput [matDatepicker]="picker" formControlName="eventDate">
+                        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-datepicker #picker></mat-datepicker>
+                        <mat-error *ngIf="eventForm.get('eventDate')?.hasError('required')">Datum ist
+                            erforderlich</mat-error>
+                    </mat-form-field>
+                </div>
+
+                <!-- Weitere Optionen Button -->
+                <button type="button" mat-button color="primary" (click)="toggleAdvancedMode()">
+                    {{ advancedMode ? 'Weniger Optionen anzeigen' : 'Mehr Optionen anzeigen' }}
+                    <mat-icon>{{ advancedMode ? 'expand_less' : 'expand_more' }}</mat-icon>
+                </button>
+
+                @if (advancedMode) {
+                <!-- Erweiterte Optionen -->
+                <div class="advanced-options">
+                    <h2>Erweiterte Optionen</h2>
+
+                    <div class="form-row">
+                        <mat-form-field appearance="outline" class="full-width">
+                            <mat-label>Cover-Bild URL</mat-label>
+                            <input matInput formControlName="coverImageUrl"
+                                placeholder="URL zu einem Bild für dein Event">
+                        </mat-form-field>
+                    </div>
+
+                    <div class="form-row">
+                        <mat-form-field appearance="outline">
+                            <mat-label>Maximale Teilnehmerzahl</mat-label>
+                            <input matInput formControlName="maxParticipants" type="number" min="1"
+                                placeholder="Leer lassen für unbegrenzt">
+                        </mat-form-field>
+                    </div>
+
+                    <h3>Event-Manager</h3>
+                    <p>Manager können dieses Event bearbeiten und verwalten</p>
+
+                    @for (managerGroup of managersArray.controls; track i; let i = $index) {
+                    <div class="manager-row" [formGroup]="$any(managerGroup)">
+                        <div class="manager-search">
+                            <app-user-search (userSelected)="onUserSelected($event, i)"></app-user-search>
+                        </div>
+
+                        <div class="manager-info" *ngIf="managerGroup.get('userName')?.value">
+                            <p>{{ managerGroup.get('userName')?.value }}</p>
+                            <p class="manager-email">{{ managerGroup.get('email')?.value }}</p>
+                        </div>
+
+                        <button type="button" mat-icon-button color="warn" (click)="removeManager(i)">
+                            <mat-icon>delete</mat-icon>
+                        </button>
+                    </div>
+                    }
+
+                    <button type="button" mat-stroked-button (click)="addManager()">
+                        <mat-icon>person_add</mat-icon> Manager hinzufügen
+                    </button>
+
+                    <h3>Einladungen</h3>
+                    <p>Lade Personen per E-Mail zu deinem Event ein</p>
+
+                    @for (invitationGroup of invitationsArray.controls; track i; let i = $index) {
+                    <div class="invitation-row" [formGroup]="$any(invitationGroup)">
+                        <mat-form-field appearance="outline">
+                            <mat-label>E-Mail</mat-label>
+                            <input matInput formControlName="email" placeholder="E-Mail-Adresse">
+                            <mat-error *ngIf="invitationGroup.get('email')?.hasError('required')">E-Mail ist
+                                erforderlich</mat-error>
+                            <mat-error *ngIf="invitationGroup.get('email')?.hasError('email')">Ungültige
+                                E-Mail</mat-error>
+                        </mat-form-field>
+
+                        <button type="button" mat-icon-button color="warn" (click)="removeInvitation(i)">
+                            <mat-icon>delete</mat-icon>
+                        </button>
+                    </div>
+                    }
+
+                    <button type="button" mat-stroked-button (click)="addInvitation()">
+                        <mat-icon>mail</mat-icon> Einladung hinzufügen
+                    </button>
+                </div>
+                }
+            </mat-card-content>
+
+            <mat-divider></mat-divider>
+
+            <mat-card-actions>
+                <button type="submit" mat-raised-button color="primary" [disabled]="isLoading">
+                    <mat-icon>save</mat-icon>
+                    {{ isLoading ? 'Wird gespeichert...' : 'Änderungen speichern' }}
+                </button>
+                <button type="button" mat-button (click)="resetForm()">
+                    <mat-icon>refresh</mat-icon>
+                    Zurücksetzen
+                </button>
+                <button type="button" mat-button (click)="cancel()">
+                    <mat-icon>cancel</mat-icon>
+                    Abbrechen
+                </button>
+            </mat-card-actions>
+        </mat-card>
+    </form>
+    }
+</div>

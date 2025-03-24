@@ -11,14 +11,14 @@ import {
   ValidationPipe,
   UsePipes,
 } from '@nestjs/common';
-import type { EventsService } from './events.service';
-import type { EventFiltersDto } from './dto/EventFilters';
-import type { CreateEventDto } from './dto/CreateEvent';
-import type { UpdateEventDto } from './dto/UpdateEvent';
+import { EventsService } from './events.service';
+import { EventFiltersDto } from './dto/EventFilters';
+import { CreateEventDto } from './dto/CreateEvent';
+import { UpdateEventDto } from './dto/UpdateEvent';
 import { GetUser } from 'src/auth/jwtData.decorator';
-import type { User } from 'src/entity/User';
+import { User } from 'src/entity/User';
 import { AuthGuard } from 'src/auth/auth.guard';
-import type { CitySearchDto } from './dto/CitySearch';
+import { CitySearchDto } from './dto/CitySearch';
 import {
   ApiTags,
   ApiOperation,
@@ -125,6 +125,36 @@ export class EventsController {
     return this.eventsService.findByUser(user.id);
   }
 
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get events the user is attending' })
+  @ApiResponse({
+    status: 200,
+    description: 'List of events the user is attending',
+    type: [Event],
+  })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @UseGuards(AuthGuard)
+  @Get('attending')
+  findAttendingEvents(@GetUser() user: User) {
+    return this.eventsService.findAttendingEvents(user.id);
+  }
+
+  @ApiOperation({ summary: 'Search for cities' })
+  @ApiResponse({
+    status: 200,
+    description: 'List of matching city names',
+    type: Object,
+  })
+  @Get('cities/search')
+  async searchCities(@Query() searchDto: CitySearchDto) {
+    return {
+      cities: await this.eventsService.searchCities(
+        searchDto.query,
+        searchDto.limit,
+      ),
+    };
+  }
+
   @ApiOperation({ summary: 'Get event by ID' })
   @ApiResponse({ status: 200, description: 'Event details', type: Event })
   @ApiResponse({ status: 404, description: 'Event not found' })
@@ -166,19 +196,26 @@ export class EventsController {
     return this.eventsService.remove(id, user.id);
   }
 
-  @ApiOperation({ summary: 'Search for cities' })
-  @ApiResponse({
-    status: 200,
-    description: 'List of matching city names',
-    type: Object,
-  })
-  @Get('cities/search')
-  async searchCities(@Query() searchDto: CitySearchDto) {
-    return {
-      cities: await this.eventsService.searchCities(
-        searchDto.query,
-        searchDto.limit,
-      ),
-    };
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Join an event' })
+  @ApiResponse({ status: 200, description: 'Successfully joined the event' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 404, description: 'Event not found' })
+  @UseGuards(AuthGuard)
+  @Post(':id/join')
+  async joinEvent(@Param('id') id: string, @GetUser() user: User) {
+    await this.eventsService.addAttendee(id, user.id);
+    return { success: true };
+  }
+
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Leave an event' })
+  @ApiResponse({ status: 200, description: 'Successfully left the event' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @UseGuards(AuthGuard)
+  @Post(':id/leave')
+  async leaveEvent(@Param('id') id: string, @GetUser() user: User) {
+    await this.eventsService.removeAttendee(id, user.id);
+    return { success: true };
   }
 }

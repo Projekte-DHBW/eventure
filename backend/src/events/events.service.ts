@@ -14,6 +14,7 @@ import { User } from 'src/entity/User';
 import { CreateEventDto, EventLocationDto } from './dto/CreateEvent';
 import { EventFiltersDto } from './dto/EventFilters';
 import { UpdateEventDto } from './dto/UpdateEvent';
+import { EventAttendee } from '../entity/EventAttendee';
 
 @Injectable()
 export class EventsService {
@@ -30,6 +31,8 @@ export class EventsService {
     private invitationRepository: Repository<Invitation>,
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    @InjectRepository(EventAttendee)
+    private eventAttendeeRepository: Repository<EventAttendee>,
   ) {}
 
   async createEvent(
@@ -210,12 +213,28 @@ export class EventsService {
   }
 
   async findAll(filters: EventFiltersDto): Promise<[Event[], number]> {
-    const { search, category, sort, page = 1, limit = 10, date } = filters;
+    const {
+      search,
+      category,
+      sort,
+      page = 1,
+      limit = 10,
+      date,
+      attending,
+      userId,
+    } = filters;
 
     // Create base query for events
     let query = this.eventRepository
       .createQueryBuilder('event')
       .where('event.visibility = :visibility', { visibility: 'public' });
+
+    // If attending filter is applied, we need to join with attendees
+    if (attending && userId) {
+      query = query
+        .innerJoin('event.attendees', 'attendee')
+        .andWhere('attendee.userId = :userId', { userId });
+    }
 
     // Define date range variables outside both query blocks so they're in scope for both
     let startDate: Date | undefined;
@@ -567,5 +586,51 @@ export class EventsService {
       );
 
     return locations;
+  }
+
+  /**
+   * Find events that a user is attending
+   */
+  async findAttendingEvents(userId: string): Promise<Event[]> {
+    const attendeeRecords = await this.eventAttendeeRepository.find({
+      where: { userId },
+      relations: ['event'],
+    });
+
+    // Extract the events from the attendee records
+    return attendeeRecords.map((record) => record.event);
+  }
+
+  /**
+   * Add a user as an attendee to an event
+   */
+  async addAttendee(eventId: string, userId: string): Promise<void> {
+    // Check if the event exists
+    const event = await this.findOneById(eventId);
+
+    // Check if user is already attending
+    const existing = await this.eventAttendeeRepository.findOne({
+      where: { eventId, userId },
+    });
+
+    if (!existing) {
+      const attendee = this.eventAttendeeRepository.create({
+        eventId,
+        userId,
+        status: 'confirmed',
+      });
+
+      await this.eventAttendeeRepository.save(attendee);
+    }
+  }
+
+  /**
+   * Remove a user as an attendee from an event
+   */
+  async removeAttendee(eventId: string, userId: string): Promise<void> {
+    await this.eventAttendeeRepository.delete({
+      eventId,
+      userId,
+    });
   }
 }

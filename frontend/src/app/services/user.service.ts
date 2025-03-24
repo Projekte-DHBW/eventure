@@ -7,6 +7,8 @@ export interface UserSearchResult {
   id: string;
   firstName: string;
   lastName: string;
+  email: string; // Fehlende Property hinzufügen
+  // ...andere Properties
 }
 
 export interface UserInviteResult {

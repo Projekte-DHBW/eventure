@@ -29,4 +29,8 @@ export class OpenaiService {
         }),
       );
   }
+
+  enhanceEventDescription(description: string): Observable<string> {
+    return this.enhance(description, '', '');
+  }
 }

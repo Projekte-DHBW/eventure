@@ -39,22 +39,47 @@ export type CreateEvent = {
   invitations?: Invitation[];
 };
 
-export type UpdateEvent = Partial<CreateEvent>;
-
 export interface Event {
   id: string;
   title: string;
-  description: string;
+  description?: string;
   visibility: 'public' | 'private' | 'unlisted';
-  category: 'music' | 'sports' | 'culture' | 'other';
+  category: string;
   coverImageUrl?: string;
   maxParticipants?: number;
+  creator?: string;
+  creatorObj?: any;
+  eventDate?: string; // ISO8601 Datumsformat als String
   location?: string;
-  eventDate?: Date;
   isOnline?: boolean;
   meetingLink?: string;
-  creator?: string; // User ID of creator
-  occurrences?: EventOccurrence[];
-  managers?: EventManager[];
-  invitations?: Invitation[];
+  createdAt?: string; // Hinzugefügte Eigenschaft
+  updatedAt?: string; // Hinzugefügte Eigenschaft
+  attendees?: any[];
+}
+
+export interface UpdateEvent {
+  title?: string;
+  description?: string;
+  visibility?: 'public' | 'private' | 'unlisted';
+  category?: string;
+  coverImageUrl?: string;
+  maxParticipants?: number;
+  eventDate?: string | Date;
+  location?: string;
+  isOnline?: boolean;
+  meetingLink?: string;
+  managers?: Array<{
+    userId: string;
+    userName?: string;
+    email?: string;
+  }>;
+  invitations?: Array<{
+    email: string;
+  }>;
+  occurrences?: Array<{
+    startDate: string | Date;
+    endDate?: string | Date;
+    title?: string;
+  }>;
 }

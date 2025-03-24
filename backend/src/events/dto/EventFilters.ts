@@ -1,5 +1,6 @@
-import { IsEnum, IsOptional, IsString } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { IsEnum, IsOptional, IsString, IsBoolean } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 
 export class EventFiltersDto {
   @ApiProperty({
@@ -65,4 +66,19 @@ export class EventFiltersDto {
   })
   @IsOptional()
   types?: string[];
+
+  @ApiPropertyOptional({
+    description: 'Filter for events the user is attending',
+  })
+  @IsOptional()
+  @IsBoolean()
+  @Transform(({ value }) => value === 'true')
+  attending?: boolean;
+
+  @ApiPropertyOptional({
+    description: 'User ID for filtering attended events (internal use)',
+  })
+  @IsOptional()
+  @IsString()
+  userId?: string;
 }

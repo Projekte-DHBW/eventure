@@ -1,15 +1,15 @@
-import { Injectable, OnDestroy, inject } from '@angular/core';
+import { Injectable, type OnDestroy, inject } from '@angular/core';
 import {
   BehaviorSubject,
-  Observable,
+  type Observable,
   throwError,
   interval,
-  Subscription,
+  type Subscription,
 } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment';
-import { TokenService, JwtPayload } from './token.service';
+import { TokenService, type JwtPayload } from './token.service';
 import { HttpClient } from '@angular/common/http';
 
 export interface LoginResponse {
@@ -214,6 +214,14 @@ export class AuthService implements OnDestroy {
 
     const decoded = this.tokenService.decodeToken(token);
     return decoded ? decoded.lastName : null;
+  }
+
+  getEmail(): string | null {
+    const token = this.tokenService.getAccessToken();
+    if (!token) return null;
+
+    const decoded = this.tokenService.decodeToken(token);
+    return decoded ? decoded.email : null;
   }
 
   private handleError(error: any): Observable<never> {

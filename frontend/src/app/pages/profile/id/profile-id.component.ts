@@ -1,15 +1,15 @@
 import { Component, inject } from '@angular/core';
-import { AuthService } from '../../auth/services/auth.service';
-import { UserService } from '../../services/user.service';
-import { User } from '../../types/user';
+import { AuthService } from '../../../auth/services/auth.service';
+import { UserService } from '../../../services/user.service';
+import { User } from '../../../types/user';
 
 @Component({
-  selector: 'app-profile',
+  selector: 'app-profile-id',
   imports: [],
-  templateUrl: './profile.component.html',
-  styleUrl: './profile.component.css',
+  templateUrl: './profile-id.component.html',
+  styleUrl: './profile-id.component.css',
 })
-export class ProfileComponent {
+export class ProfileIdComponent {
   private userService = inject(UserService);
 
   protected auth = inject(AuthService);
@@ -19,7 +19,8 @@ export class ProfileComponent {
   protected userID: string | null = null;
   protected firstname: string | null = null;
   protected lastname: string | null = null;
-  protected avInitial: string = '';
+  protected email: string | null = null;
+  protected avInitial = '';
 
   users: User[] = [];
 
@@ -28,6 +29,7 @@ export class ProfileComponent {
     this.userID = this.auth.getUserId();
     this.firstname = this.auth.getfirstName();
     this.lastname = this.auth.getlastName();
+    this.email = this.auth.getEmail();
 
     const firstInitial = this.firstname
       ? this.firstname.charAt(0).toUpperCase()

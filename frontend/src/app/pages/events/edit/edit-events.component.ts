@@ -146,7 +146,7 @@ export class EditEventsComponent implements OnInit {
       invitations: this.fb.array([]),
     });
 
-    // Zeige das Meeting-Link-Feld nur, wenn es sich um ein Online-Event handelt
+    // Zeige den Meeting-Link-Feld nur, wenn es sich um ein Online-Event handelt
     this.eventForm.get('isOnline')?.valueChanges.subscribe((isOnline) => {
       const meetingLinkControl = this.eventForm.get('meetingLink');
       if (isOnline) {

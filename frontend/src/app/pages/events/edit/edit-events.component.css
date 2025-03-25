@@ -1,161 +1,161 @@
 .edit-event-container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 2rem 1rem;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
 }
 
 .edit-event-header {
-    margin-bottom: 2rem;
-    text-align: center;
+  margin-bottom: 2rem;
+  text-align: center;
 }
 
 .edit-event-header h1 {
-    font-size: 2rem;
-    margin-bottom: 0.5rem;
-    color: #333;
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  color: #333;
 }
 
 .edit-event-header p {
-    color: #666;
-    font-size: 1.1rem;
+  color: #666;
+  font-size: 1.1rem;
 }
 
 .loading-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
 }
 
 .loading-container p {
-    margin-top: 1rem;
-    color: #666;
+  margin-top: 1rem;
+  color: #666;
 }
 
 mat-card {
-    margin-bottom: 2rem;
+  margin-bottom: 2rem;
 }
 
 .form-row {
-    margin-bottom: 1.5rem;
+  margin-bottom: 1.5rem;
 }
 
 .full-width {
-    width: 100%;
+  width: 100%;
 }
 
 h2 {
-    margin-top: 2rem;
-    margin-bottom: 1rem;
-    color: #444;
-    font-size: 1.4rem;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  color: #444;
+  font-size: 1.4rem;
 }
 
 h3 {
-    margin-top: 1.5rem;
-    margin-bottom: 0.5rem;
-    color: #555;
-    font-size: 1.2rem;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: #555;
+  font-size: 1.2rem;
 }
 
 .two-cols {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
 }
 
 .manager-row,
 .invitation-row {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 1rem;
-    padding: 0.5rem;
-    border-radius: 4px;
-    background-color: #f9f9f9;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  border-radius: 4px;
+  background-color: #f9f9f9;
 }
 
 .manager-search {
-    flex-grow: 1;
+  flex-grow: 1;
 }
 
 .manager-info {
-    min-width: 200px;
-    padding: 0 1rem;
+  min-width: 200px;
+  padding: 0 1rem;
 }
 
 .manager-info p {
-    margin: 0;
+  margin: 0;
 }
 
 .manager-email {
-    color: #666;
-    font-size: 0.9rem;
+  color: #666;
+  font-size: 0.9rem;
 }
 
 .advanced-options {
-    margin-top: 1.5rem;
-    padding-top: 1rem;
-    border-top: 1px dashed #ddd;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px dashed #ddd;
 }
 
 mat-card-actions {
-    display: flex;
-    gap: 1rem;
-    padding: 1rem !important;
-    flex-wrap: wrap;
-    /* Ermöglicht das Umbrechen auf kleineren Bildschirmen */
+  display: flex;
+  gap: 1rem;
+  padding: 1rem !important;
+  flex-wrap: wrap;
+  /* Ermöglicht das Umbrechen auf kleineren Bildschirmen */
 }
 
 mat-card-actions button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-width: auto;
-    /* Erlaubt dem Button, auf die tatsächliche Breite des Inhalts zu schrumpfen */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: auto;
+  /* Erlaubt dem Button, auf die tatsächliche Breite des Inhalts zu schrumpfen */
 }
 
 mat-card-actions button mat-icon {
-    margin-right: 8px;
-    /* Konsistenter Abstand zwischen Icon und Text */
+  margin-right: 8px;
+  /* Konsistenter Abstand zwischen Icon und Text */
 }
 
 /* Responsive */
 @media (max-width: 768px) {
-    .two-cols {
-        grid-template-columns: 1fr;
-    }
+  .two-cols {
+    grid-template-columns: 1fr;
+  }
 
-    .manager-row,
-    .invitation-row {
-        flex-direction: column;
-        align-items: flex-start;
-    }
+  .manager-row,
+  .invitation-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 
-    .manager-info {
-        width: 100%;
-        padding: 0.5rem 0;
-    }
+  .manager-info {
+    width: 100%;
+    padding: 0.5rem 0;
+  }
 }
 
 /* Zusätzliche responsive Anpassungen */
 @media (max-width: 600px) {
-    mat-card-actions {
-        flex-direction: column;
-        /* Buttons untereinander anordnen auf sehr kleinen Bildschirmen */
-        align-items: stretch;
-    }
+  mat-card-actions {
+    flex-direction: column;
+    /* Buttons untereinander anordnen auf sehr kleinen Bildschirmen */
+    align-items: stretch;
+  }
 
-    mat-card-actions button {
-        margin-bottom: 8px;
-        /* Vertikaler Abstand zwischen Buttons */
-        padding: 0 16px;
-        /* Horizontalen Innenabstand anpassen */
-    }
+  mat-card-actions button {
+    margin-bottom: 8px;
+    /* Vertikaler Abstand zwischen Buttons */
+    padding: 0 16px;
+    /* Horizontalen Innenabstand anpassen */
+  }
 
-    .form-row {
-        margin-bottom: 1rem;
-        /* Etwas reduzierter Abstand auf Mobilgeräten */
-    }
+  .form-row {
+    margin-bottom: 1rem;
+    /* Etwas reduzierter Abstand auf Mobilgeräten */
+  }
 }

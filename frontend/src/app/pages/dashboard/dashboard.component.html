@@ -1,185 +1,236 @@
 <div class="dashboard-container">
-    <div class="dashboard-header">
-        <h1>Dein Dashboard</h1>
-        <p>Willkommen zurück, {{userFullName}}!</p>
+  <div class="dashboard-header">
+    <h1>Dein Dashboard</h1>
+    <p>Willkommen zurück, {{ userFullName }}!</p>
 
-        <div class="quick-actions">
-            <button mat-raised-button color="primary" (click)="createNewEvent()">
-                <mat-icon>add</mat-icon>
-                Neues Event erstellen
-            </button>
-        </div>
+    <div class="quick-actions">
+      <button mat-raised-button color="primary" (click)="createNewEvent()">
+        <mat-icon>add</mat-icon>
+        Neues Event erstellen
+      </button>
     </div>
+  </div>
 
-    <mat-divider></mat-divider>
+  <mat-divider></mat-divider>
 
-    <mat-tab-group animationDuration="200ms" class="dashboard-tabs">
-        <!-- Meine Events Tab -->
-        <mat-tab label="Meine Events">
-            <div class="tab-content">
-                @if (loadingMyEvents) {
-                <div class="loading-spinner">
-                    <mat-spinner diameter="40"></mat-spinner>
-                    <p>Lade deine Events...</p>
+  <mat-tab-group animationDuration="200ms" class="dashboard-tabs">
+    <!-- Meine Events Tab -->
+    <mat-tab label="Meine Events">
+      <div class="tab-content">
+        @if (loadingMyEvents) {
+          <div class="loading-spinner">
+            <mat-spinner diameter="40"></mat-spinner>
+            <p>Lade deine Events...</p>
+          </div>
+        } @else if (myEvents.length === 0) {
+          <div class="empty-state">
+            <mat-icon>event_busy</mat-icon>
+            <h3>Keine Events gefunden</h3>
+            <p>Du hast noch keine Events erstellt.</p>
+            <button
+              mat-stroked-button
+              color="primary"
+              (click)="createNewEvent()"
+            >
+              Erstelle dein erstes Event
+            </button>
+          </div>
+        } @else {
+          <div class="events-grid">
+            @for (event of myEvents; track event.id) {
+              <mat-card class="event-card" (click)="viewEventDetails(event.id)">
+                <div class="event-image">
+                  <img
+                    [src]="
+                      event.coverImageUrl ||
+                      'https://source.unsplash.com/300x200/?' +
+                        event.category.toLowerCase()
+                    "
+                    alt="{{ event.title }}"
+                  />
+                  <div class="event-date-badge" *ngIf="event.eventDate">
+                    <span class="day">{{ getEventDay(event.eventDate) }}</span>
+                    <span class="month">{{
+                      getEventMonth(event.eventDate)
+                    }}</span>
+                  </div>
                 </div>
-                } @else if (myEvents.length === 0) {
-                <div class="empty-state">
-                    <mat-icon>event_busy</mat-icon>
-                    <h3>Keine Events gefunden</h3>
-                    <p>Du hast noch keine Events erstellt.</p>
-                    <button mat-stroked-button color="primary" (click)="createNewEvent()">
-                        Erstelle dein erstes Event
-                    </button>
-                </div>
-                } @else {
-                <div class="events-grid">
-                    @for (event of myEvents; track event.id) {
-                    <mat-card class="event-card" (click)="viewEventDetails(event.id)">
-                        <div class="event-image">
-                            <img [src]="event.coverImageUrl || 'https://source.unsplash.com/300x200/?' + event.category.toLowerCase()"
-                                alt="{{event.title}}">
-                            <div class="event-date-badge" *ngIf="event.eventDate">
-                                <span class="day">{{ getEventDay(event.eventDate) }}</span>
-                                <span class="month">{{ getEventMonth(event.eventDate) }}</span>
-                            </div>
-                        </div>
 
-                        <mat-card-content>
-                            <h3 class="event-title">{{event.title}}</h3>
+                <mat-card-content>
+                  <h3 class="event-title">{{ event.title }}</h3>
 
-                            <div class="event-details">
-                                <div class="event-location">
-                                    <mat-icon>place</mat-icon>
-                                    <span>{{event.location || (event.isOnline ? 'Online' : 'Kein Ort
-                                        angegeben')}}</span>
-                                </div>
-
-                                <div class="event-info">
-                                    <mat-chip-set>
-                                        <mat-chip>{{getCategoryLabel(event.category)}}</mat-chip>
-                                        <mat-chip *ngIf="event.maxParticipants">
-                                            {{event.maxParticipants}} Teilnehmer
-                                        </mat-chip>
-                                    </mat-chip-set>
-                                </div>
-                            </div>
-                        </mat-card-content>
-
-                        <mat-card-actions>
-                            <button mat-button color="primary" [routerLink]="['/events', event.id, 'edit']">
-                                <mat-icon>edit</mat-icon> Bearbeiten
-                            </button>
-                            <button mat-button (click)="$event.stopPropagation(); deleteEvent(event.id)">
-                                <mat-icon>delete</mat-icon> Löschen
-                            </button>
-                        </mat-card-actions>
-                    </mat-card>
-                    }
-                </div>
-                }
-            </div>
-        </mat-tab>
-
-        <!-- Anstehende Events Tab -->
-        <mat-tab label="Anstehende Events" [matBadge]="upcomingEvents.length"
-            [matBadgeHidden]="upcomingEvents.length === 0">
-            <div class="tab-content">
-                @if (loadingAttendingEvents) {
-                <div class="loading-spinner">
-                    <mat-spinner diameter="40"></mat-spinner>
-                    <p>Lade anstehende Events...</p>
-                </div>
-                } @else if (upcomingEvents.length === 0) {
-                <div class="empty-state">
-                    <mat-icon>event_available</mat-icon>
-                    <h3>Keine anstehenden Events</h3>
-                    <p>Du hast keine anstehenden Events, an denen du teilnimmst.</p>
-                    <button mat-stroked-button color="primary" routerLink="/search">
-                        Events suchen
-                    </button>
-                </div>
-                } @else {
-                <div class="events-list">
-                    @for (event of upcomingEvents; track event.id) {
-                    <div class="event-list-item" (click)="viewEventDetails(event.id)">
-                        <div class="event-list-image">
-                            <img [src]="event.coverImageUrl || 'https://source.unsplash.com/100x100/?' + event.category.toLowerCase()"
-                                alt="{{event.title}}">
-                        </div>
-
-                        <div class="event-list-details">
-                            <h3>{{event.title}}</h3>
-                            <div class="event-list-info">
-                                <div>
-                                    <mat-icon>calendar_today</mat-icon>
-                                    <span>{{formatDate(event.eventDate)}}</span>
-                                </div>
-                                <div>
-                                    <mat-icon>place</mat-icon>
-                                    <span>{{event.location || (event.isOnline ? 'Online' : 'Kein Ort
-                                        angegeben')}}</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="event-list-actions">
-                            <button mat-icon-button>
-                                <mat-icon>arrow_forward</mat-icon>
-                            </button>
-                        </div>
+                  <div class="event-details">
+                    <div class="event-location">
+                      <mat-icon>place</mat-icon>
+                      <span>{{
+                        event.location ||
+                          (event.isOnline
+                            ? "Online"
+                            : "Kein Ort
+                                        angegeben")
+                      }}</span>
                     </div>
-                    }
-                </div>
-                }
-            </div>
-        </mat-tab>
 
-        <!-- Vergangene Events Tab -->
-        <mat-tab label="Vergangene Events">
-            <div class="tab-content">
-                @if (loadingAttendingEvents) {
-                <div class="loading-spinner">
-                    <mat-spinner diameter="40"></mat-spinner>
-                    <p>Lade vergangene Events...</p>
-                </div>
-                } @else if (pastEvents.length === 0) {
-                <div class="empty-state">
-                    <mat-icon>history</mat-icon>
-                    <h3>Keine vergangenen Events</h3>
-                    <p>Du hast noch an keinen Events teilgenommen.</p>
-                </div>
-                } @else {
-                <div class="events-list past-events">
-                    @for (event of pastEvents; track event.id) {
-                    <div class="event-list-item" (click)="viewEventDetails(event.id)">
-                        <div class="event-list-image grayscale">
-                            <img [src]="event.coverImageUrl || 'https://source.unsplash.com/100x100/?' + event.category.toLowerCase()"
-                                alt="{{event.title}}">
-                        </div>
-
-                        <div class="event-list-details">
-                            <h3>{{event.title}}</h3>
-                            <div class="event-list-info">
-                                <div>
-                                    <mat-icon>calendar_today</mat-icon>
-                                    <span>{{formatDate(event.eventDate)}}</span>
-                                </div>
-                                <div>
-                                    <mat-icon>place</mat-icon>
-                                    <span>{{event.location || (event.isOnline ? 'Online' : 'Kein Ort
-                                        angegeben')}}</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="event-list-actions">
-                            <span class="past-event-badge">Vergangen</span>
-                        </div>
+                    <div class="event-info">
+                      <mat-chip-set>
+                        <mat-chip>{{
+                          getCategoryLabel(event.category)
+                        }}</mat-chip>
+                        <mat-chip *ngIf="event.maxParticipants">
+                          {{ event.maxParticipants }} Teilnehmer
+                        </mat-chip>
+                      </mat-chip-set>
                     </div>
-                    }
+                  </div>
+                </mat-card-content>
+
+                <mat-card-actions>
+                  <button
+                    mat-button
+                    color="primary"
+                    [routerLink]="['/events', event.id, 'edit']"
+                  >
+                    <mat-icon>edit</mat-icon> Bearbeiten
+                  </button>
+                  <button
+                    mat-button
+                    (click)="$event.stopPropagation(); deleteEvent(event.id)"
+                  >
+                    <mat-icon>delete</mat-icon> Löschen
+                  </button>
+                </mat-card-actions>
+              </mat-card>
+            }
+          </div>
+        }
+      </div>
+    </mat-tab>
+
+    <!-- Anstehende Events Tab -->
+    <mat-tab
+      label="Anstehende Events"
+      [matBadge]="upcomingEvents.length"
+      [matBadgeHidden]="upcomingEvents.length === 0"
+    >
+      <div class="tab-content">
+        @if (loadingAttendingEvents) {
+          <div class="loading-spinner">
+            <mat-spinner diameter="40"></mat-spinner>
+            <p>Lade anstehende Events...</p>
+          </div>
+        } @else if (upcomingEvents.length === 0) {
+          <div class="empty-state">
+            <mat-icon>event_available</mat-icon>
+            <h3>Keine anstehenden Events</h3>
+            <p>Du hast keine anstehenden Events, an denen du teilnimmst.</p>
+            <button mat-stroked-button color="primary" routerLink="/search">
+              Events suchen
+            </button>
+          </div>
+        } @else {
+          <div class="events-list">
+            @for (event of upcomingEvents; track event.id) {
+              <div class="event-list-item" (click)="viewEventDetails(event.id)">
+                <div class="event-list-image">
+                  <img
+                    [src]="
+                      event.coverImageUrl ||
+                      'https://source.unsplash.com/100x100/?' +
+                        event.category.toLowerCase()
+                    "
+                    alt="{{ event.title }}"
+                  />
                 </div>
-                }
-            </div>
-        </mat-tab>
-    </mat-tab-group>
+
+                <div class="event-list-details">
+                  <h3>{{ event.title }}</h3>
+                  <div class="event-list-info">
+                    <div>
+                      <mat-icon>calendar_today</mat-icon>
+                      <span>{{ formatDate(event.eventDate) }}</span>
+                    </div>
+                    <div>
+                      <mat-icon>place</mat-icon>
+                      <span>{{
+                        event.location ||
+                          (event.isOnline
+                            ? "Online"
+                            : "Kein Ort
+                                        angegeben")
+                      }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="event-list-actions">
+                  <button mat-icon-button>
+                    <mat-icon>arrow_forward</mat-icon>
+                  </button>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </mat-tab>
+
+    <!-- Vergangene Events Tab -->
+    <mat-tab label="Vergangene Events">
+      <div class="tab-content">
+        @if (loadingAttendingEvents) {
+          <div class="loading-spinner">
+            <mat-spinner diameter="40"></mat-spinner>
+            <p>Lade vergangene Events...</p>
+          </div>
+        } @else if (pastEvents.length === 0) {
+          <div class="empty-state">
+            <mat-icon>history</mat-icon>
+            <h3>Keine vergangenen Events</h3>
+            <p>Du hast noch an keinen Events teilgenommen.</p>
+          </div>
+        } @else {
+          <div class="events-list past-events">
+            @for (event of pastEvents; track event.id) {
+              <div class="event-list-item" (click)="viewEventDetails(event.id)">
+                <div class="event-list-image grayscale">
+                  <img
+                    [src]="
+                      event.coverImageUrl ||
+                      'https://source.unsplash.com/100x100/?' +
+                        event.category.toLowerCase()
+                    "
+                    alt="{{ event.title }}"
+                  />
+                </div>
+
+                <div class="event-list-details">
+                  <h3>{{ event.title }}</h3>
+                  <div class="event-list-info">
+                    <div>
+                      <mat-icon>calendar_today</mat-icon>
+                      <span>{{ formatDate(event.eventDate) }}</span>
+                    </div>
+                    <div>
+                      <mat-icon>place</mat-icon>
+                      <span>{{
+                        event.location ||
+                          (event.isOnline
+                            ? "Online"
+                            : "Kein Ort
+                                        angegeben")
+                      }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="event-list-actions">
+                  <span class="past-event-badge">Vergangen</span>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </mat-tab>
+  </mat-tab-group>
 </div>

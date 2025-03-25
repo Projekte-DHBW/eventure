@@ -590,4 +590,12 @@ export class EventsService {
     return await this.invitedUserRepository.save(invitedUser);
   }
 
+  async isUserRegistered(userId: string, eventId: string): Promise<boolean> {
+    const result = await this.invitedUserRepository.query(
+      'SELECT COUNT(*) AS count FROM event_registrations WHERE user_id = ? AND event_id = ?',
+      [userId, eventId]
+    );
+    return result[0].count > 0;
+  }
+
 }

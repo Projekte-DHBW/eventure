@@ -39,6 +39,7 @@ export class EventsComponent implements OnInit{
   results: EventsSearchResult[] = [];
 
   isLoading = false;
+  isRegistered = false;
   errorMessage: string | null = null;
   successMessage: string | null = null;
 
@@ -57,6 +58,9 @@ export class EventsComponent implements OnInit{
     const id = this.route.snapshot.paramMap.get('id');
     console.log('Extrahierte ID:', id); // Debug-Ausgabe hinzufügen
 
+    const { userID, eventID } = this.signUpForm.value;
+  
+
     if (id) { // Überprüfen, ob eventID nicht null ist
       this.signUpForm.patchValue({ eventID: id }); 
       this.eventsService.findOne(id).subscribe(
@@ -69,8 +73,23 @@ export class EventsComponent implements OnInit{
           this.errorMessage = 'Fehler beim Laden der Eventdaten';
           console.error('Fehler:', error);
         }
-      ); 
+      );
+      
+      // Überprüfung der Registrierung
+      this.eventsService.checkRegistration(userID, id).subscribe(
+        (response) => {
+          this.signUpForm.patchValue({ userID: userID });
+          this.isRegistered = response.isRegistered;
+        },
+        (error) => {
+          this.errorMessage = 'Fehler beim Überprüfen der Registrierung';
+          console.error('Fehler:', error);
+        }
+      );
+
+
     }
+
   }
 
   

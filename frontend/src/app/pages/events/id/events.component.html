@@ -40,9 +40,9 @@
                   color="primary"
                   class="button"
                   type="submit"
-                  [disabled]="signUpForm.invalid || isLoading"
+                  [disabled]="signUpForm.invalid || isLoading || isRegistered"
                 >
-                {{ isLoading ? "Wird angemeldet..." : "Anmelden" }}
+                {{ isLoading ? "Wird angemeldet..." : isRegistered ? "Bereits angemeldet" : "Anmelden" }}
                 </button>
             </div>
           </section>

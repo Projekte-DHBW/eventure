@@ -13,6 +13,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { AuthService } from '../../../auth/services/auth.service';
 import { UserService } from '../../../services/user.service';
 import { User } from '../../../types/user';
+import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-events',
@@ -34,6 +35,7 @@ export class EventsComponent implements OnInit{
   private authService = inject(AuthService);
   private router = inject(Router);
   private userService = inject(UserService);
+  private changeDetector = inject(ChangeDetectorRef);
 
   searchControl = new FormControl('');
   results: EventsSearchResult[] = [];
@@ -64,6 +66,7 @@ export class EventsComponent implements OnInit{
     const userID = this.authService.getUserId() as string;
     console.log('UserID: ', userID);
   
+    console.log('Form invalid:', this.signUpForm.invalid); // Debug-Ausgabe
 
     if (id && userID) { // Überprüfen, ob eventID und userid nicht null ist
       this.signUpForm.patchValue({ eventID: id , userID: userID}); 
@@ -85,7 +88,7 @@ export class EventsComponent implements OnInit{
           //this.signUpForm.patchValue({ userID: userID });
           this.isRegistered = response.isRegistered;
           console.log('Is Registered:', this.isRegistered); // Debug-Ausgabe
-          this.errorMessage = 'Sie sind bereits angemeldet.';
+          //this.successMessage = 'Sie sind bereits angemeldet.';
         },
         (error) => {
           this.errorMessage = 'Fehler beim Überprüfen der Registrierung';
@@ -112,6 +115,9 @@ export class EventsComponent implements OnInit{
     this.eventsService.inviteUser(userID, eventID).subscribe({
       next: () => {
         this.successMessage = 'Sie haben sich erfolgreich für das Event angemeldet!';
+        this.isRegistered = true; // Aktualisiere den Registrierungsstatus
+        this.isLoading = false;
+        this.changeDetector.detectChanges(); // Manuelle Änderungserkennung
       },
       error: (error) => {
         this.errorMessage = 'Fehler beim ihrer Anmeldung: ' + error.message;

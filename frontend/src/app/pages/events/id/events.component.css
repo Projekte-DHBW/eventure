@@ -91,10 +91,22 @@ p {
 mat-flat-button {
     background-color: var(--primary);
 }
-  
-.button-row {
-    margin-bottom: 0.5rem;
+
+.button-row button {
+    margin-top: 30px;
+    background-color: var(--primary);
+    color: white;
+    cursor: pointer; /* Zeigt an, dass der Button klickbar ist */
+    opacity: 1; /* Volle Sichtbarkeit für den aktiven Zustand */
 }
+  
+.button-row button:disabled {
+    margin-top: 30px;
+    background-color: var(--primary); 
+    color:black; 
+    cursor: not-allowed; /* Zeigt an, dass der Button nicht klickbar ist */
+    opacity: 0.7; /* Verringert die Sichtbarkeit, um den deaktivierten Zustand anzuzeigen */
+  }
   
 
 /* Responsive Anpassungen */

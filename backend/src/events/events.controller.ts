@@ -108,11 +108,10 @@ export class EventsController {
   }
 
   @UseGuards(AuthGuard)
-  @Get('check-registration')
-  async checkRegistration(@Param('eventId') eventId: string,@Param('userId') userId: string ) {
+  @Get(':id/check-registration')
+  async checkRegistration(@Query('eventId') eventId: string,@Query('userId') userId: string ) {
+    console.log('checkRegistration aufgerufen mit userId:', userId, 'und eventId:', eventId);
     const isRegistered = await this.eventsService.isUserRegistered(userId, eventId);
     return { isRegistered };
   }
-
-
 }

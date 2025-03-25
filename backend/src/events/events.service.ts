@@ -591,11 +591,15 @@ export class EventsService {
   }
 
   async isUserRegistered(userId: string, eventId: string): Promise<boolean> {
+    console.log('Überprüfe Registrierung für Benutzer:', userId, 'und Event:', eventId);
     const result = await this.invitedUserRepository.query(
-      'SELECT COUNT(*) AS count FROM event_registrations WHERE user_id = ? AND event_id = ?',
+      'SELECT COUNT(*) AS count FROM invited_users WHERE userId = ? AND eventId = ?',
       [userId, eventId]
     );
+    console.log('Abfrageergebnis:', result);
     return result[0].count > 0;
+  }catch (error) {
+    console.error('Error executing query:', error);
+    throw new Error('Database query failed');
   }
-
 }

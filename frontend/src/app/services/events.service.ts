@@ -264,8 +264,8 @@ private handleError(error: any): Observable<never> {
 
   // Methode zur Überprüfung, ob der Benutzer für ein Event registriert ist
   checkRegistration(userId: string, eventId: string): Observable<{ isRegistered: boolean }> {
-    return this.http.get<{ isRegistered: boolean }>(`events/check-registration`, {
-      params: { userId, eventId },
+    return this.http.authenticatedGet<{ isRegistered: boolean }>(`events/${eventId}/check-registration`, {
+      params: { userId , eventId}
     }).pipe(
       catchError((error) => {
         console.error('Error checking registration:', error);

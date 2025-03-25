@@ -33,7 +33,7 @@ export class ProfileIdComponent implements OnInit {
       const profileId = params['id'];
       this.userID = params['id'];
       this.loadUserById(profileId);
-      
+
       const loggedInUserId = this.auth.getUserId();
       this.isOwnProfile = profileId === loggedInUserId;
 

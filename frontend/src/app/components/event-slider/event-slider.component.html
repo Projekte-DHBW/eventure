@@ -1,30 +1,33 @@
 @if (events.length > 0) {
-<div class="event-slider-section">
-  <h2>Nächste Events</h2>
-  @if (loading) {
-  <div class="loading-indicator">
-    <mat-spinner diameter="40"></mat-spinner>
-    <p>Lade Veranstaltungen...</p>
-  </div>
-  }
-  <button class="scroll-btn left" (click)="scrollLeft()">❮</button>
-  <button class="scroll-btn right" (click)="scrollRight()">❯</button>
-
-  <div class="event-slider" #eventSlider>
-    @for (event of events; track event) {
-    <div class="event-card">
-      <img [src]="images.getImageUrl(event.coverImageUrl, event.category)" alt="Event Image" />
-      <h3>{{ event.title }}</h3>
-      <p>
-        <mat-icon class="event-icon">event</mat-icon>
-        {{ event.eventDate | date: "dd MMM yyyy" }}
-      </p>
-      <p class="event-location">
-        <mat-icon class="event-icon">location_on</mat-icon>
-        {{ event.location || "NA" }}
-      </p>
-    </div>
+  <div class="event-slider-section">
+    <h2>Nächste Events</h2>
+    @if (loading) {
+      <div class="loading-indicator">
+        <mat-spinner diameter="40"></mat-spinner>
+        <p>Lade Veranstaltungen...</p>
+      </div>
     }
+    <button class="scroll-btn left" (click)="scrollLeft()">❮</button>
+    <button class="scroll-btn right" (click)="scrollRight()">❯</button>
+
+    <div class="event-slider" #eventSlider>
+      @for (event of events; track event) {
+        <div class="event-card">
+          <img
+            [src]="images.getImageUrl(event.coverImageUrl, event.category)"
+            alt="Event Image"
+          />
+          <h3>{{ event.title }}</h3>
+          <p>
+            <mat-icon class="event-icon">event</mat-icon>
+            {{ event.eventDate | date: "dd MMM yyyy" }}
+          </p>
+          <p class="event-location">
+            <mat-icon class="event-icon">location_on</mat-icon>
+            {{ event.location || "NA" }}
+          </p>
+        </div>
+      }
+    </div>
   </div>
-</div>
 }

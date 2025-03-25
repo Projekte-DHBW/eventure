@@ -32,8 +32,8 @@ export const routes: Routes = [
       userId: () => {
         const authService = inject(AuthService);
         return authService.getUserId();
-      }
-    }
+      },
+    },
   },
   { path: 'profile/:id', component: ProfileIdComponent },
   {

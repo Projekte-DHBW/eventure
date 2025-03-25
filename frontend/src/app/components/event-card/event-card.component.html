@@ -1,0 +1,48 @@
+<div class="event-item">
+  <div class="event-image">
+    @if (event.eventDate) {
+      <div class="event-month">
+        {{ getMonthAbbreviation(event.eventDate!) }}
+        {{ getDayFromDate(event.eventDate!) }}
+      </div>
+    }
+    <img
+      [src]="'http://localhost:3000/uploads/' + event.coverImageUrl"
+      [alt]="event.title"
+    />
+  </div>
+
+  <div class="event-content">
+    <h2 class="event-title">{{ event.title }}</h2>
+
+    <div class="event-location">
+      <mat-icon>place</mat-icon>
+      <span>{{
+        event.location ||
+          (event.isOnline ? "Online" : "Kein Standort angegeben")
+      }}</span>
+    </div>
+
+    <p class="event-description">{{ event.description }}</p>
+
+    <div class="event-tags">
+      <div class="event-tag">
+        {{ capitalizeFirstLetter(event.category) }}
+      </div>
+      <div class="event-tag">
+        {{ capitalizeFirstLetter(event.visibility) }}
+      </div>
+      @if (event.isOnline) {
+        <div class="event-tag">Online</div>
+      }
+    </div>
+
+    <div class="event-actions">
+      <button class="action-button details-button">DETAILS</button>
+      <button class="action-button save-button">
+        <mat-icon>bookmark</mat-icon>
+        <span>SPEICHERN</span>
+      </button>
+    </div>
+  </div>
+</div>

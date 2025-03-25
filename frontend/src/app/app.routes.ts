@@ -1,4 +1,4 @@
-import { Routes } from '@angular/router';
+import type { Routes } from '@angular/router';
 import { LoginComponent } from './pages/login/login.component';
 import { HomeComponent } from './pages/home/home.component';
 import { RegisterComponent } from './pages/register/register.component';
@@ -7,8 +7,11 @@ import { authGuard } from './auth/guards/auth.guard';
 import { EventsComponent } from './pages/events/id/events.component';
 import { SearchComponent } from './pages/search/search.component';
 import { CreateEventsComponent } from './pages/events/create/create-events.component';
-import { ProfileComponent } from './pages/profile/profile.component';
 import { EditEventsComponent } from './pages/events/edit/edit-events.component';
+import { profileGuard } from './auth/guards/profile.guard';
+import { ProfileIdComponent } from './pages/profile/id/profile-id.component';
+import { ErrorHandler, inject } from '@angular/core';
+import { AuthService } from './auth/services/auth.service';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -24,7 +27,18 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   { path: 'events/create', component: CreateEventsComponent },
-  { path: 'profile', component: ProfileComponent },
+  {
+    path: 'profile',
+    component: ProfileIdComponent,
+    canActivate: [profileGuard],
+    resolve: {
+      userId: () => {
+        const authService = inject(AuthService);
+        return authService.getUserId();
+      },
+    },
+  },
+  { path: 'profile/:id', component: ProfileIdComponent },
   {
     path: 'events/:id/edit',
     component: EditEventsComponent,

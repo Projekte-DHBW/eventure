@@ -5,6 +5,7 @@ import { Event } from '../../types/events';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { MatIcon } from '@angular/material/icon';
 import { ImageUtilsService } from '../../services/image-utils.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-event-slider',
@@ -20,6 +21,8 @@ export class EventSliderComponent {
 
   events: Event[] = [];
   loading = false;
+
+  constructor(private router: Router) {}
 
   ngOnInit(): void {
     this.loadLatestEvents();
@@ -47,5 +50,9 @@ export class EventSliderComponent {
 
   scrollRight() {
     this.eventSlider.nativeElement.scrollBy({ left: 300, behavior: 'smooth' });
+  }
+
+  navigateToEvent(eventId: string): void {
+    this.router.navigate(['/events', eventId]);
   }
 }

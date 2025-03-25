@@ -201,7 +201,7 @@ export class EventsService {
     // Find all occurrences with their locations
     const occurrences = await this.eventOccurrenceRepository.find({
       where: { event: { id } },
-      relations: ['locationDetails'], // Use the correct relation name
+      relations: ['locationDetails'],
       order: { startDate: 'ASC' },
     });
 
@@ -216,12 +216,27 @@ export class EventsService {
       where: { event: { id } },
     });
 
-    // Attach all related entities to the event
-    (event as any).occurrences = occurrences;
-    (event as any).managers = managers;
-    (event as any).invitations = invitations;
+    // Count attendees
+    const attendeeCount = await this.eventAttendeeRepository.count({
+      where: { eventId: id },
+    });
 
-    return event;
+    // Extract creator name from creatorObj
+    const creatorName = event.creatorObj
+      ? `${event.creatorObj.firstName} ${event.creatorObj.lastName}`
+      : 'Unknown';
+
+    // Attach all related entities and additional properties to the event
+    const eventWithDetails = {
+      ...event,
+      occurrences,
+      managers,
+      invitations,
+      attendeeCount,
+      creatorName,
+    };
+
+    return eventWithDetails as Event;
   }
 
   async findAll(filters: EventFiltersDto): Promise<[Event[], number]> {

@@ -39,6 +39,8 @@
   text-align: left;
   transition: transform 0.3s;
   flex-shrink: 0;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .event-icon {
@@ -50,6 +52,7 @@
 
 .event-card:hover {
   transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
 }
 
 .event-card img {

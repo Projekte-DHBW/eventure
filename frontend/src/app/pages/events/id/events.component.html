@@ -1,60 +1,153 @@
-<div class="events-container">
-    <mat-card class="form" *ngFor="let event of results">
-        <img *ngIf="event.coverImageUrl" [src]="event.coverImageUrl" alt="Event Bild" class="event-image" />
-        <h1>{{ event.title }} 
-            <span *ngIf="event.isOnline" matBadge="Online-Event" class="badge"></span>
-        </h1>
-        <h3>Beschreibung: </h3>
-            <p>{{ event.description || 'Ist noch nicht vorhanden.'}}</p>
+<div class="event-detail-container" *ngIf="results && results.length > 0">
+  <!-- Revised hero section with standalone image -->
+  <div class="event-hero">
+    <!-- Standalone image with full overlay -->
+    <div class="event-image-container">
+      <img *ngIf="event.coverImageUrl" [src]="images.getImageUrl(event.coverImageUrl, event.category)"
+        alt="{{ event.title }}" class="event-image">
+      <div class="event-fallback-image" *ngIf="!event.coverImageUrl"></div>
+      <div class="event-overlay"></div>
+    </div>
 
-        <h3>Kategorie: </h3>
-        <button mat-flat-button disabled class="category-button">{{ event.category || 'Keine Kategorie' }}</button>
-        
-        <h3>Datum: </h3>
-        <p>{{ event.eventDate ? (event.eventDate | date:'medium') : 'Ist noch nicht vorhanden.'}}</p>
+    <div class="event-hero-content">
+      <div class="event-badges">
+        <span class="event-badge" [ngClass]="event.visibility">{{ getVisibilityLabel(event.visibility) }}</span>
+        <span class="event-badge online" *ngIf="event.isOnline">Online Event</span>
+        <span class="event-badge category">{{ event.category | titlecase }}</span>
+      </div>
+      <h1 class="event-title">{{ event.title }}</h1>
+      <div class="event-meta">
+        <div class="event-meta-item" *ngIf="event.eventDate">
+          <mat-icon>event</mat-icon>
+          <span>{{ event.eventDate | date:'EEEE, d. MMMM y, HH:mm':'':'de' }}</span>
+        </div>
+        <div class="event-meta-item" *ngIf="!event.isOnline && event.location">
+          <mat-icon>place</mat-icon>
+          <span>{{ event.location }}</span>
+        </div>
+        <div class="event-meta-item" *ngIf="event.isOnline && event.meetingLink">
+          <mat-icon>videocam</mat-icon>
+          <span>Online Meeting</span>
+        </div>
+      </div>
+    </div>
+  </div>
 
-        <h3>Maximale Anzahl Besucher: </h3>
-        <p>{{ event.maxParticipants || 'Ist noch nicht vorhanden.'}}</p>
-        
-        <ng-container *ngIf="!event.isOnline">
-            <h3>Veranstaltungsort: </h3>
-            <p>{{ event.location || 'Ist noch nicht vorhanden.'}}</p>
-        </ng-container>
-        
-         <!-- Eventlink wird nur angezeigt, wenn event.isOnline wahr ist -->
-         <ng-container *ngIf="event.isOnline">
-            <h3>Eventlink: </h3>
-            <p>{{ event.meetingLink || 'Ist noch nicht vorhanden.'}}</p>
-        </ng-container>
-        
-        <section>
-            <div *ngIf="errorMessage" class="error-message">
-              {{ errorMessage }}
-            </div>
-            <div *ngIf="successMessage" class="success-message">
-              {{ successMessage }}
-            </div>
-            <div class="button-row">
-                <button (click)="onSubmit()"
-                  mat-flat-button
-                  color="primary"
-                  class="button"
-                  type="submit"
-                  [disabled]="signUpForm.invalid || isLoading || isRegistered"
-                >
-                {{ isLoading ? "Wird angemeldet..." : isRegistered ? "Bereits angemeldet" : "Anmelden" }}
-                </button>
+  <!-- Rest of the content remains the same -->
+  <div class="event-content">
+    <div class="event-main">
+      <mat-card class="event-description-card">
+        <mat-card-header>
+          <mat-card-title>Über dieses Event</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <p class="event-description">{{ event.description || 'Keine Beschreibung vorhanden.' }}</p>
+        </mat-card-content>
+      </mat-card>
 
-                <!-- Neuer Button zum Löschen der Anmeldung -->
-                <button *ngIf="isRegistered" (click)="onDeleteRegistration(event.id)"
-                mat-flat-button
-                color="primary" 
-                class="button delete-button"
-                >
-                  Abmeldung
-                </button>
+      <mat-card *ngIf="event.isOnline && event.meetingLink" class="event-link-card">
+        <mat-card-header>
+          <mat-card-title>Meeting Link</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <a [href]="event.meetingLink" target="_blank" class="meeting-link">
+            <mat-icon>open_in_new</mat-icon>
+            Online teilnehmen
+          </a>
+          <p class="meeting-notice">Der Link wird für angemeldete Teilnehmer freigeschaltet</p>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <div class="event-sidebar">
+      <!-- Registration card -->
+      <mat-card class="registration-card">
+        <mat-card-header>
+          <mat-card-title>Teilnahme</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="capacity-indicator" *ngIf="event.maxParticipants">
+            <div class="capacity-bar" [style.width.%]="getCapacityPercentage()"></div>
+            <span class="capacity-text">
+              {{ event.attendeeCount || 0 }} / {{ event.maxParticipants || 'Unbegrenzt' }}
+            </span>
+          </div>
+
+          <div *ngIf="errorMessage" class="error-message">
+            <mat-icon>error</mat-icon>
+            {{ errorMessage }}
+          </div>
+          <div *ngIf="successMessage" class="success-message">
+            <mat-icon>check_circle</mat-icon>
+            {{ successMessage }}
+          </div>
+
+          <div class="registration-actions">
+            <button (click)="onSubmit()" mat-raised-button color="primary" class="registration-button"
+              [disabled]="signUpForm.invalid || isLoading || isRegistered">
+              <mat-icon>{{ isRegistered ? 'how_to_reg' : 'person_add' }}</mat-icon>
+              {{ isLoading ? "Wird bearbeitet..." : isRegistered ? "Angemeldet" : "Teilnehmen" }}
+            </button>
+
+            <button *ngIf="isRegistered" (click)="onDeleteRegistration(event.id)" mat-stroked-button color="warn"
+              class="cancel-button" [disabled]="isLoading">
+              <mat-icon>cancel</mat-icon>
+              Abmelden
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Details card -->
+      <mat-card class="event-details-card">
+        <mat-card-header>
+          <mat-card-title>Details</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="event-detail-item">
+            <mat-icon>people</mat-icon>
+            <div class="detail-content">
+              <span class="detail-label">Kapazität</span>
+              <span class="detail-value">{{ event.maxParticipants ? event.maxParticipants + ' Personen' : 'Unbegrenzt'
+                }}</span>
             </div>
-          </section>
-        
-    </mat-card>
+          </div>
+
+          <div class="event-detail-item" *ngIf="event.creator">
+            <mat-icon>person</mat-icon>
+            <div class="detail-content">
+              <span class="detail-label">Veranstalter</span>
+              <a [routerLink]="['/users', event.creator, 'profile']" class="detail-value organizer-link">
+                {{ event.creatorName || 'Veranstalter anzeigen' }}
+              </a>
+            </div>
+          </div>
+
+          <div class="event-detail-item">
+            <mat-icon>visibility</mat-icon>
+            <div class="detail-content">
+              <span class="detail-label">Sichtbarkeit</span>
+              <span class="detail-value">{{ getVisibilityLabel(event.visibility) }}</span>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Attendees card -->
+      <mat-card *ngIf="isRegistered && event.attendeeCount !== undefined && event.attendeeCount > 1"
+        class="attendees-card">
+        <mat-card-header>
+          <mat-card-title>Andere Teilnehmer</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <p class="attendee-count">{{ (event.attendeeCount || 1) - 1 }} weitere Personen nehmen teil</p>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>
+
+<div class="event-loading" *ngIf="!results || results.length === 0">
+  <mat-spinner></mat-spinner>
+  <p>Event wird geladen...</p>
 </div>

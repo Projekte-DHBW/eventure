@@ -1,10 +1,6 @@
-import {
-  Injectable,
-  UnauthorizedException,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, ILike, Not, LessThan, MoreThanOrEqual } from 'typeorm';
+import { Repository, ILike, Not } from 'typeorm';
 import { User } from 'src/entity/User';
 import { EventAttendee } from 'src/entity/EventAttendee';
 import { UserProfileDto, UserEventDto } from './dto/user-profile.dto';
@@ -223,7 +219,7 @@ export class UsersService {
       id: user.id,
       firstName: user.firstName,
       lastName: user.lastName,
-      profilePictureUrl: null, // You'd need to add this field to your User entity
+      profilePictureUrl: undefined, // You'd need to add this field to your User entity
       joinedDate: user.createdAt,
       pastEvents,
       upcomingEvents,

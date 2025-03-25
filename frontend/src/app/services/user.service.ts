@@ -44,6 +44,10 @@ export class UserService {
     });
   }
 
+  getUserById(id: string): Observable<User> {
+    return this.http.authenticatedGet<User>(`users/${id}/profile`);
+  }
+
   /**
    * Invite a user by email
    * @param email The email to invite

@@ -4,7 +4,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Brackets } from 'typeorm';
+import { Repository, Brackets, In } from 'typeorm';
 import { Event } from '../entity/Event';
 import { EventLocation } from '../entity/EventLocation';
 import { EventOccurrence } from '../entity/EventOccurrence';
@@ -91,13 +91,22 @@ export class EventsService {
         locationEntity = await this.createEventLocation(occurrenceDto.location);
       }
 
-      // Create occurrence with proper relation reference
+      // Fixed: Use the entity reference instead of just IDs
       const occurrence = this.eventOccurrenceRepository.create({
-        eventId: event.id, // Use the ID directly
+        event: event, // Use entity reference instead of ID
         startDate: occurrenceDto.startDate,
         endDate: occurrenceDto.endDate,
-        locationId: locationEntity?.id || null, // Use the ID or null
+        // Use optional chaining for locationDetails to handle null values
+        ...(locationEntity ? { locationDetails: locationEntity } : {}),
       });
+
+      // Set the eventId field separately after creation
+      occurrence.eventId = event.id;
+
+      // Set locationId if available
+      if (locationEntity) {
+        occurrence.locationId = locationEntity.id;
+      }
 
       return this.eventOccurrenceRepository.save(occurrence);
     });
@@ -189,7 +198,7 @@ export class EventsService {
     // Find all occurrences with their locations
     const occurrences = await this.eventOccurrenceRepository.find({
       where: { event: { id } },
-      relations: ['location'],
+      relations: ['locationDetails'], // Use the correct relation name
       order: { startDate: 'ASC' },
     });
 
@@ -512,8 +521,44 @@ export class EventsService {
       );
     }
 
-    await this.eventRepository.update(id, updateEventDto);
-    return this.findOneById(id);
+    // Extract only direct Event properties for the update
+    const {
+      occurrences,
+      managers,
+      invitations,
+      removeOccurrences,
+      ...directEventProps
+    } = updateEventDto;
+
+    // Update only the direct properties of the event
+    await this.eventRepository.update(id, directEventProps);
+
+    // Handle occurrences if provided
+    if (occurrences && occurrences.length > 0) {
+      await this.updateEventOccurrences(event, occurrences);
+    }
+
+    // Handle manager updates if provided
+    if (managers && managers.length > 0) {
+      // Implement this method similar to createEventManagers
+      // await this.updateEventManagers(event, managers);
+    }
+
+    // Handle invitation updates if provided
+    if (invitations && invitations.length > 0) {
+      // Implement this method similar to createInvitations
+      // await this.updateInvitations(event, invitations);
+    }
+
+    // Handle occurrence removal if needed
+    if (removeOccurrences && removeOccurrences.length > 0) {
+      await this.eventOccurrenceRepository.delete({
+        id: In(removeOccurrences),
+        eventId: event.id,
+      });
+    }
+
+    return this.findOne(id);
   }
 
   async remove(id: string, userId: string): Promise<void> {
@@ -632,5 +677,77 @@ export class EventsService {
       eventId,
       userId,
     });
+  }
+
+  // Add this new method
+  private async updateEventOccurrences(
+    event: Event,
+    occurrences: UpdateEventDto['occurrences'],
+  ): Promise<void> {
+    if (!occurrences || occurrences.length === 0) return;
+
+    const occurrencePromises = occurrences.map(async (occurrenceDto) => {
+      let occurrence: EventOccurrence;
+
+      // If there's an ID, update existing occurrence
+      if (occurrenceDto.id) {
+        const foundOccurrence = await this.eventOccurrenceRepository.findOne({
+          where: {
+            id: occurrenceDto.id,
+            eventId: event.id,
+          },
+        });
+
+        if (!foundOccurrence) {
+          throw new NotFoundException(
+            `Occurrence with ID ${occurrenceDto.id} not found`,
+          );
+        }
+
+        occurrence = foundOccurrence;
+
+        // Update fields
+        occurrence.startDate = occurrenceDto.startDate;
+        if (occurrenceDto.endDate) occurrence.endDate = occurrenceDto.endDate;
+        if (occurrenceDto.title) occurrence.title = occurrenceDto.title;
+
+        // Handle location if provided
+        if (occurrenceDto.location) {
+          const locationEntity = await this.createEventLocation(
+            occurrenceDto.location,
+          );
+          occurrence.locationDetails = locationEntity;
+          occurrence.locationId = locationEntity.id;
+        }
+      } else {
+        // Create a new occurrence
+        // Create location if provided
+        let locationEntity: EventLocation | null = null;
+        if (occurrenceDto.location) {
+          locationEntity = await this.createEventLocation(
+            occurrenceDto.location,
+          );
+        }
+
+        // Create new occurrence
+        occurrence = this.eventOccurrenceRepository.create({
+          event: event,
+          startDate: occurrenceDto.startDate,
+          endDate: occurrenceDto.endDate,
+          title: occurrenceDto.title,
+        });
+
+        occurrence.eventId = event.id;
+
+        if (locationEntity) {
+          occurrence.locationDetails = locationEntity;
+          occurrence.locationId = locationEntity.id;
+        }
+      }
+
+      return this.eventOccurrenceRepository.save(occurrence);
+    });
+
+    await Promise.all(occurrencePromises);
   }
 }

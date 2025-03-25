@@ -11,6 +11,8 @@ import { User } from './User';
 import { Exclude } from 'class-transformer';
 import { EventOccurrence } from './EventOccurrence';
 import { EventAttendee } from './EventAttendee';
+import { EventManager } from './EventManager';
+import { Invitation } from './Invitation';
 
 @Entity()
 export class Event extends BaseEntity {
@@ -57,9 +59,19 @@ export class Event extends BaseEntity {
   @Column({ nullable: true })
   meetingLink?: string;
 
+  // Flag to indicate if the event is recurring (has multiple occurrences)
+  @Column({ default: false })
+  isRecurring: boolean;
+
   @OneToMany(() => EventOccurrence, (occurrence) => occurrence.event)
   occurrences: EventOccurrence[];
 
   @OneToMany(() => EventAttendee, (attendee) => attendee.event)
   attendees: EventAttendee[];
+
+  @OneToMany(() => EventManager, (manager) => manager.event)
+  managers: EventManager[];
+
+  @OneToMany(() => Invitation, (invitation) => invitation.event)
+  invitations: Invitation[];
 }

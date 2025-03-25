@@ -28,6 +28,8 @@ import { Location } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from '../../../components/confirm-dialog/confirm-dialog.component';
 import { MatDialogModule } from '@angular/material/dialog';
+import { FileUploadService } from '../../../services/file-upload.service';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 import { Event, UpdateEvent } from '../../../types/events';
 import { EventsService } from '../../../services/events.service';
@@ -36,6 +38,7 @@ import { UserSearchResult, UserService } from '../../../services/user.service';
 import { User } from '../../../types/user';
 import { OpenaiService } from '../../../services/openai.service';
 import { finalize, catchError, of } from 'rxjs';
+import { ImageUtilsService } from '../../../services/image-utils.service';
 
 @Component({
   selector: 'app-edit-events',
@@ -60,6 +63,8 @@ import { finalize, catchError, of } from 'rxjs';
     MatProgressSpinnerModule,
     UserSearchComponent,
     MatDialogModule,
+    MatProgressBarModule,
+    CommonModule,
   ],
   templateUrl: './edit-events.component.html',
   styleUrls: ['./edit-events.component.css'],
@@ -74,6 +79,8 @@ export class EditEventsComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private dialog = inject(MatDialog);
   private location = inject(Location);
+  private fileUploadService = inject(FileUploadService);
+  protected images = inject(ImageUtilsService);
 
   eventId: string = '';
   eventForm!: FormGroup;
@@ -84,6 +91,10 @@ export class EditEventsComponent implements OnInit {
   advancedMode = false;
   event: Event | null = null;
   formChanged = false;
+
+  selectedFile: File | null = null;
+  uploadProgress: number = 0;
+  imagePreview: string | null = null;
 
   categoryOptions = [
     { value: 'music', label: 'Musik' },
@@ -260,9 +271,80 @@ export class EditEventsComponent implements OnInit {
       });
   }
 
+  onFileSelected(event: any): void {
+    const file = event.target.files[0];
+    if (file && file.type.match(/image\/*/) && file.size <= 5 * 1024 * 1024) {
+      this.selectedFile = file;
+      // Create a preview
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.imagePreview = reader.result as string;
+        // Auto-upload the image after selection
+        this.uploadImage();
+      };
+      reader.readAsDataURL(file);
+    } else if (file && file.size > 5 * 1024 * 1024) {
+      this.snackBar.open('Bild ist zu groß. Maximale Größe: 5MB', 'Schließen', {
+        duration: 3000,
+      });
+    } else if (file && !file.type.match(/image\/*/)) {
+      this.snackBar.open(
+        'Bitte wähle ein unterstütztes Bildformat (JPG, PNG, GIF)',
+        'Schließen',
+        {
+          duration: 3000,
+        },
+      );
+    }
+  }
+
+  uploadImage(): void {
+    if (!this.selectedFile) {
+      return;
+    }
+
+    this.uploadProgress = 0;
+
+    this.fileUploadService.uploadImage(this.selectedFile).subscribe({
+      next: (response) => {
+        this.uploadProgress = 100;
+
+        // Get the backend image URL format
+        const imageUrl = this.images.getImageUrl(response.filename, '');
+
+        // Update form with the new image URL
+        this.eventForm.patchValue({
+          coverImageUrl: imageUrl,
+        });
+
+        // Clear the local image preview to ensure the server image is shown
+        this.imagePreview = null;
+
+        this.snackBar.open('Bild erfolgreich hochgeladen', 'Schließen', {
+          duration: 3000,
+        });
+        this.selectedFile = null;
+      },
+      error: (err) => {
+        this.uploadProgress = 0;
+        console.error('Upload failed:', err);
+        this.snackBar.open('Fehler beim Hochladen des Bildes', 'Schließen', {
+          duration: 3000,
+        });
+      },
+    });
+  }
+
   onSubmit(): void {
     if (this.eventForm.valid) {
       this.isLoading = true;
+
+      // If there's a file to upload, do that first
+      if (this.selectedFile) {
+        this.uploadImage();
+        return;
+      }
+
       const updateData: UpdateEvent = this.eventForm.value;
 
       // Clean up empty arrays to avoid backend validation issues
@@ -370,6 +452,21 @@ export class EditEventsComponent implements OnInit {
       this.router.navigate(['/events', this.eventId]);
     } else {
       this.location.back();
+    }
+  }
+
+  // Add this new method to the class
+  removeImage(): void {
+    this.selectedFile = null;
+    this.imagePreview = null;
+    this.eventForm.patchValue({ coverImageUrl: '' });
+  }
+
+  // Add drag and drop method
+  onFileDrop(event: DragEvent): void {
+    event.preventDefault();
+    if (event.dataTransfer?.files.length) {
+      this.onFileSelected({ target: { files: event.dataTransfer.files } });
     }
   }
 }

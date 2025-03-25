@@ -13,6 +13,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { EventsService } from '../../services/events.service';
 import { Event } from '../../types/events';
 import { Observable, debounceTime, switchMap, of, catchError, map } from 'rxjs';
+import { ImageUtilsService } from '../../services/image-utils.service';
 
 @Component({
   selector: 'app-search',
@@ -37,6 +38,7 @@ export class SearchComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private eventsService = inject(EventsService);
+  protected images = inject(ImageUtilsService);
 
   events: Event[] = [];
   totalEvents: number = 0;

@@ -218,4 +218,44 @@ export class EventsController {
     await this.eventsService.removeAttendee(id, user.id);
     return { success: true };
   }
+
+  @UseGuards(AuthGuard)
+  @Post(':id/signup')
+  async inviteUser(
+    @Param('id') eventId: string,
+    @GetUser() user: User,
+  ): Promise<{ success: boolean }> {
+    await this.eventsService.inviteUser(user.id, eventId);
+    return { success: true }; // Rückgabe des Erfolgsstatus
+  }
+
+  @UseGuards(AuthGuard)
+  @Get(':id/check-registration')
+  async checkRegistration(
+    @Query('eventId') eventId: string,
+    @Query('userId') userId: string,
+  ) {
+    console.log(
+      'checkRegistration aufgerufen mit userId:',
+      userId,
+      'und eventId:',
+      eventId,
+    );
+    const isRegistered = await this.eventsService.isUserRegistered(
+      userId,
+      eventId,
+    );
+    return { isRegistered };
+  }
+
+  @UseGuards(AuthGuard)
+  @Delete(':eventId/unregister')
+  async unregisterUser(
+    @Query('userId') userId: string,
+    @Param('eventId') eventId: string,
+  ) {
+    console.log('Unregistering user:', userId, 'from event:', eventId);
+    await this.eventsService.unregisterUser(userId, eventId);
+    return { message: 'User unregistered successfully' };
+  }
 }

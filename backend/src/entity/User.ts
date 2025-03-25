@@ -1,6 +1,7 @@
 import { Entity, Column, OneToMany } from 'typeorm';
 import { BaseEntity } from './BaseEntity';
 import { RefreshToken } from './RefreshToken';
+import { InvitedUsers } from './InvitedUsers';
 
 @Entity()
 export class User extends BaseEntity {
@@ -23,4 +24,7 @@ export class User extends BaseEntity {
     cascade: true,
   })
   refreshTokens: RefreshToken[];
+
+  @OneToMany(() => InvitedUsers, (invitedUser) => invitedUser.user)
+  invitedUsers: InvitedUsers[];
 }

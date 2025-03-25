@@ -12,7 +12,7 @@
 
     <div class="event-slider" #eventSlider>
       @for (event of events; track event) {
-        <div class="event-card">
+        <div class="event-card" (click)="navigateToEvent(event.id)">
           <img
             [src]="images.getImageUrl(event.coverImageUrl, event.category)"
             alt="Event Image"

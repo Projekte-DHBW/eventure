@@ -15,6 +15,7 @@ import { CreateEventDto, EventLocationDto } from './dto/CreateEvent';
 import { EventFiltersDto } from './dto/EventFilters';
 import { UpdateEventDto } from './dto/UpdateEvent';
 import { EventAttendee } from '../entity/EventAttendee';
+import { InvitedUsers } from 'src/entity/InvitedUsers';
 
 @Injectable()
 export class EventsService {
@@ -33,6 +34,8 @@ export class EventsService {
     private userRepository: Repository<User>,
     @InjectRepository(EventAttendee)
     private eventAttendeeRepository: Repository<EventAttendee>,
+    @InjectRepository(InvitedUsers)
+    private invitedUserRepository: Repository<InvitedUsers>,
   ) {}
 
   async createEvent(
@@ -631,6 +634,52 @@ export class EventsService {
       );
 
     return locations;
+  }
+
+  async inviteUser(userId: string, eventId: string): Promise<InvitedUsers> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    const event = await this.eventRepository.findOne({
+      where: { id: eventId },
+    });
+
+    if (!user || !event) {
+      throw new Error('User or Event not found');
+    }
+
+    const invitedUser = this.invitedUserRepository.create({
+      user,
+      event,
+      invitedAt: new Date(),
+      status: 'pending',
+    });
+
+    return await this.invitedUserRepository.save(invitedUser);
+  }
+
+  async isUserRegistered(userId: string, eventId: string): Promise<boolean> {
+    console.log(
+      'Überprüfe Registrierung für Benutzer:',
+      userId,
+      'und Event:',
+      eventId,
+    );
+    const result = await this.invitedUserRepository.query(
+      'SELECT COUNT(*) AS count FROM invited_users WHERE userId = ? AND eventId = ?',
+      [userId, eventId],
+    );
+    console.log('Abfrageergebnis:', result);
+    return result[0].count > 0;
+  }
+  catch(error) {
+    console.error('Error executing query:', error);
+    throw new Error('Database query failed');
+  }
+
+  async unregisterUser(userId: string, eventId: string): Promise<void> {
+    await this.invitedUserRepository.query(
+      'DELETE FROM invited_users WHERE userId = ? AND eventId = ?',
+      [userId, eventId],
+    );
   }
 
   /**

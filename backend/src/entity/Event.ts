@@ -13,6 +13,7 @@ import { EventOccurrence } from './EventOccurrence';
 import { EventAttendee } from './EventAttendee';
 import { EventManager } from './EventManager';
 import { Invitation } from './Invitation';
+import { InvitedUsers } from './InvitedUsers';
 
 @Entity()
 export class Event extends BaseEntity {
@@ -74,4 +75,7 @@ export class Event extends BaseEntity {
 
   @OneToMany(() => Invitation, (invitation) => invitation.event)
   invitations: Invitation[];
+
+  @OneToMany(() => InvitedUsers, (invitedUser) => invitedUser.event)
+  invitedUsers: InvitedUsers[];
 }

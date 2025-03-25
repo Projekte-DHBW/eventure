@@ -114,4 +114,13 @@ export class EventsController {
     const isRegistered = await this.eventsService.isUserRegistered(userId, eventId);
     return { isRegistered };
   }
+
+  @UseGuards(AuthGuard)
+  @Delete(':eventId/unregister')
+  async unregisterUser(@Query('userId') userId: string, @Param('eventId') eventId: string) {
+    console.log('Unregistering user:', userId, 'from event:', eventId);
+    await this.eventsService.unregisterUser(userId, eventId);
+    return { message: 'User unregistered successfully' };
+  }
+
 }

@@ -602,4 +602,12 @@ export class EventsService {
     console.error('Error executing query:', error);
     throw new Error('Database query failed');
   }
+
+  async unregisterUser(userId: string, eventId: string): Promise<void> {
+    await this.invitedUserRepository.query(
+      'DELETE FROM invited_users WHERE userId = ? AND eventId = ?',
+      [userId, eventId]
+    );
+  }
+
 }

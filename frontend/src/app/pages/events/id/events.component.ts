@@ -129,4 +129,25 @@ export class EventsComponent implements OnInit{
     });
   }
 
+  onDeleteRegistration(eventId: string): void {
+    this.isLoading = true;
+    this.errorMessage = null;
+    this.successMessage = null;
+  
+    const userID = this.authService.getUserId() as string;
+  
+    this.eventsService.deleteRegistration(userID, eventId).subscribe({
+      next: () => {
+        this.successMessage = 'Sie haben sich erfolgreich abgemeldet!';
+        this.isRegistered = false; // Setze den Registrierungsstatus zurück
+      },
+      error: (error) => {
+        this.errorMessage = 'Fehler bei der Abmeldung: ' + error.message;
+      },
+      complete: () => {
+        this.isLoading = false;
+      },
+    });
+  }
+
 }

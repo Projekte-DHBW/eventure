@@ -274,5 +274,11 @@ private handleError(error: any): Observable<never> {
     );
   }
 
+  deleteRegistration(userId: string, eventId: string): Observable<any> {
+    return this.http.authenticatedDelete(`events/${eventId}/unregister`, {
+      params: { userId },
+    });
+  }
+
 }
 

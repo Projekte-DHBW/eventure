@@ -44,6 +44,15 @@
                 >
                 {{ isLoading ? "Wird angemeldet..." : isRegistered ? "Bereits angemeldet" : "Anmelden" }}
                 </button>
+
+                <!-- Neuer Button zum Löschen der Anmeldung -->
+                <button *ngIf="isRegistered" (click)="onDeleteRegistration(event.id)"
+                mat-flat-button
+                color="primary" 
+                class="button delete-button"
+                >
+                  Abmeldung
+                </button>
             </div>
           </section>
         

@@ -16,6 +16,9 @@ export class User extends BaseEntity {
   @Column()
   passwordHash: string;
 
+  @Column({ nullable: true })
+  profilePictureUrl: string;
+
   @OneToMany(() => RefreshToken, (refreshToken) => refreshToken.user, {
     cascade: true,
   })

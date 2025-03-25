@@ -6,7 +6,7 @@ import { MatCardModule } from '@angular/material/card';
 import { RouterModule } from '@angular/router';
 import { EventsSearchResult, EventsService } from '../../../services/events.service';
 import { Event } from '../../../types/events';
-import { FormControl, FormGroup, FormBuilder } from '@angular/forms';
+import { FormControl, FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatButtonModule } from '@angular/material/button';
@@ -39,17 +39,18 @@ export class EventsComponent implements OnInit{
   results: EventsSearchResult[] = [];
 
   isLoading = false;
-  isRegistered = false;
+  isRegistered: boolean = false;
   errorMessage: string | null = null;
   successMessage: string | null = null;
+
 
   users: User[] = [];
 
   constructor(private route: ActivatedRoute, private eventsService: EventsService) {}
 
   signUpForm: FormGroup = this.fb.group({
-    userID: '',
-    eventID: '',
+    userID: ['', Validators.required],
+    eventID: ['', Validators.required],
   })
 
 
@@ -58,11 +59,14 @@ export class EventsComponent implements OnInit{
     const id = this.route.snapshot.paramMap.get('id');
     console.log('Extrahierte ID:', id); // Debug-Ausgabe hinzufügen
 
-    const { userID, eventID } = this.signUpForm.value;
+    //const { userID, eventID } = this.signUpForm.value;
+
+    const userID = this.authService.getUserId() as string;
+    console.log('UserID: ', userID);
   
 
-    if (id) { // Überprüfen, ob eventID nicht null ist
-      this.signUpForm.patchValue({ eventID: id }); 
+    if (id && userID) { // Überprüfen, ob eventID und userid nicht null ist
+      this.signUpForm.patchValue({ eventID: id , userID: userID}); 
       this.eventsService.findOne(id).subscribe(
         (result) => {
           // Hier können Sie die API-Daten anpassen, falls nötig
@@ -78,8 +82,10 @@ export class EventsComponent implements OnInit{
       // Überprüfung der Registrierung
       this.eventsService.checkRegistration(userID, id).subscribe(
         (response) => {
-          this.signUpForm.patchValue({ userID: userID });
+          //this.signUpForm.patchValue({ userID: userID });
           this.isRegistered = response.isRegistered;
+          console.log('Is Registered:', this.isRegistered); // Debug-Ausgabe
+          this.errorMessage = 'Sie sind bereits angemeldet.';
         },
         (error) => {
           this.errorMessage = 'Fehler beim Überprüfen der Registrierung';

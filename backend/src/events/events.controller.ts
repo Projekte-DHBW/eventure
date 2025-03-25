@@ -107,10 +107,10 @@ export class EventsController {
     return { success: true }; // Rückgabe des Erfolgsstatus
   }
 
-
+  @UseGuards(AuthGuard)
   @Get('check-registration')
-  async checkRegistration(@Query('eventId') eventId: string,@GetUser() user: User ) {
-    const isRegistered = await this.eventsService.isUserRegistered(user.id, eventId);
+  async checkRegistration(@Param('eventId') eventId: string,@Param('userId') userId: string ) {
+    const isRegistered = await this.eventsService.isUserRegistered(userId, eventId);
     return { isRegistered };
   }
 

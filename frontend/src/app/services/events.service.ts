@@ -198,12 +198,6 @@ export class EventsService {
     });
   }
 
-  findOne(id: string): Observable<EventsSearchResult> {
-    return this.http.authenticatedGet<EventsSearchResult>(`events/${id}`, {
-      params: { id },
-    });
-  }
-
   createEvent(data: CreateEvent): Observable<Event> {
     return this.http.authenticatedPost<Event>('events', data);
   }

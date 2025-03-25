@@ -15,6 +15,7 @@ import {
   MinLength,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { EventOccurrenceDto } from './UpdateEvent';
 
 // DTO for creating event locations
 export class EventLocationDto {
@@ -57,33 +58,6 @@ export class EventLocationDto {
   @IsNumber()
   @IsOptional()
   longitude?: number;
-}
-
-// DTO for creating event occurrences
-export class EventOccurrenceDto {
-  @ApiProperty({ description: 'Start date and time of the event occurrence' })
-  @IsDate()
-  @Type(() => Date)
-  startDate: Date;
-
-  @ApiProperty({
-    description: 'End date and time of the event occurrence',
-    required: false,
-  })
-  @IsDate()
-  @IsOptional()
-  @Type(() => Date)
-  endDate?: Date;
-
-  @ApiProperty({
-    description: 'Location details for this specific occurrence',
-    required: false,
-    type: EventLocationDto,
-  })
-  @IsOptional()
-  @ValidateNested()
-  @Type(() => EventLocationDto)
-  location?: EventLocationDto;
 }
 
 // DTO for event managers (by user ID)

@@ -4,6 +4,7 @@ import { EventsService } from '../../services/events.service';
 import { Event } from '../../types/events';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { MatIcon } from '@angular/material/icon';
+import { ImageUtilsService } from '../../services/image-utils.service';
 
 @Component({
   selector: 'app-event-slider',
@@ -13,6 +14,7 @@ import { MatIcon } from '@angular/material/icon';
 })
 export class EventSliderComponent {
   private eventsService = inject(EventsService);
+  protected images = inject(ImageUtilsService);
 
   @ViewChild('eventSlider', { static: false }) eventSlider!: ElementRef;
 

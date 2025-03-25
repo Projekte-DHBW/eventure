@@ -13,6 +13,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { EventsService } from '../../services/events.service';
 import { AuthService } from '../../auth/services/auth.service';
 import { Event } from '../../types/events';
+import { ImageUtilsService } from '../../services/image-utils.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -36,6 +37,7 @@ export class DashboardComponent implements OnInit {
   private eventsService = inject(EventsService);
   private authService = inject(AuthService);
   private router = inject(Router);
+  protected images = inject(ImageUtilsService);
 
   myEvents: Event[] = [];
   attendingEvents: Event[] = [];

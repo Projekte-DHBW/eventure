@@ -274,11 +274,11 @@ h4 {
 
 .enhance-button {
   position: absolute;
-  right: 1rem; 
-  top: 1.25rem; 
-  width: 2.25rem; 
-  height: 2.25rem; 
-  box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.15); 
+  right: 1rem;
+  top: 1.25rem;
+  width: 2.25rem;
+  height: 2.25rem;
+  box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.15);
   transition: all 0.3s ease;
 }
 
@@ -341,13 +341,13 @@ h4 {
     text-align: center;
     justify-content: center;
   }
-  
+
   .enhance-button {
     right: 3%;
     width: 2rem;
     height: 2rem;
   }
-  
+
   .enhance-button .mat-icon {
     font-size: 1rem;
     width: 1rem;

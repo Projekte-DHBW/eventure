@@ -1,0 +1,33 @@
+.user-search {
+  display: flex;
+  flex-direction: column;
+}
+.search-field {
+  width: 100%;
+}
+.selected-user {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  background-color: #e3f2fd;
+  border-radius: 4px;
+  margin-top: 8px;
+}
+.user-name {
+  font-weight: 500;
+}
+mat-icon {
+  animation: none;
+}
+mat-icon.spinning {
+  animation: spin 1s infinite linear;
+}
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

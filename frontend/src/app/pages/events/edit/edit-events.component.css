@@ -1,0 +1,273 @@
+.edit-event-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.edit-event-header {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.edit-event-header h1 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.edit-event-header p {
+  color: #666;
+  font-size: 1.1rem;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+}
+
+.loading-container p {
+  margin-top: 1rem;
+  color: #666;
+}
+
+mat-card {
+  margin-bottom: 2rem;
+}
+
+.form-row {
+  margin-bottom: 1.5rem;
+}
+
+.full-width {
+  width: 100%;
+}
+
+h2 {
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  color: #444;
+  font-size: 1.4rem;
+}
+
+h3 {
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: #555;
+  font-size: 1.2rem;
+}
+
+.two-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.manager-row,
+.invitation-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+}
+
+.manager-search {
+  flex-grow: 1;
+}
+
+.manager-info {
+  min-width: 200px;
+  padding: 0 1rem;
+}
+
+.manager-info p {
+  margin: 0;
+}
+
+.manager-email {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.advanced-options {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px dashed #ddd;
+}
+
+mat-card-actions {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem !important;
+  flex-wrap: wrap;
+  /* Ermöglicht das Umbrechen auf kleineren Bildschirmen */
+}
+
+mat-card-actions button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: auto;
+  /* Erlaubt dem Button, auf die tatsächliche Breite des Inhalts zu schrumpfen */
+}
+
+mat-card-actions button mat-icon {
+  margin-right: 8px;
+  /* Konsistenter Abstand zwischen Icon und Text */
+}
+
+/* Add to edit-events.component.css */
+.image-upload-container {
+  width: 100%;
+  margin-bottom: 1.5rem;
+}
+
+.upload-controls {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.image-preview {
+  margin-top: 1rem;
+}
+
+.preview-img {
+  max-width: 100%;
+  max-height: 300px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+
+mat-progress-bar {
+  margin-top: 1rem;
+}
+
+/* Add these styles */
+.upload-area {
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  padding: 2rem;
+  text-align: center;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.3s ease;
+  background-color: #fafafa;
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.upload-area:hover {
+  border-color: #3f51b5;
+  background-color: #f5f5f5;
+}
+
+.upload-area.has-image {
+  border-style: solid;
+  border-color: #e0e0e0;
+  cursor: default;
+}
+
+.upload-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.upload-placeholder mat-icon {
+  font-size: 3rem;
+  height: 3rem;
+  width: 3rem;
+  color: #757575;
+}
+
+.upload-hint {
+  font-size: 0.8rem;
+  color: #757575;
+  margin-top: 0.5rem;
+}
+
+.image-preview,
+.cover-image-preview {
+  width: 100%;
+  position: relative;
+}
+
+.preview-img,
+.preview-image {
+  max-width: 100%;
+  max-height: 300px;
+  border-radius: 4px;
+  display: block;
+  margin: 0 auto;
+}
+
+.image-actions {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  gap: 8px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.image-preview:hover .image-actions,
+.cover-image-preview:hover .image-actions {
+  opacity: 1;
+}
+
+.upload-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  color: #4caf50;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .two-cols {
+    grid-template-columns: 1fr;
+  }
+
+  .manager-row,
+  .invitation-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .manager-info {
+    width: 100%;
+    padding: 0.5rem 0;
+  }
+}
+
+/* Zusätzliche responsive Anpassungen */
+@media (max-width: 600px) {
+  mat-card-actions {
+    flex-direction: column;
+    /* Buttons untereinander anordnen auf sehr kleinen Bildschirmen */
+    align-items: stretch;
+  }
+
+  mat-card-actions button {
+    margin-bottom: 8px;
+    /* Vertikaler Abstand zwischen Buttons */
+    padding: 0 16px;
+    /* Horizontalen Innenabstand anpassen */
+  }
+
+  .form-row {
+    margin-bottom: 1rem;
+    /* Etwas reduzierter Abstand auf Mobilgeräten */
+  }
+}

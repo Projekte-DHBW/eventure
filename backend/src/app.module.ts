@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ServeStaticModule } from '@nestjs/serve-static'; // Add this import
+import { join } from 'path';
 import { AppService } from './app.service';
 import { Invitation } from './entity/Invitation';
 import { Notification } from './entity/Notification';
@@ -15,8 +17,8 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import * as path from 'path';
 import { EventsModule } from './events/events.module';
-import { OpenaiController } from './openai/openai.controller';
 import { OpenAiModule } from './openai/openai.model';
+import { UploadsModule } from './uploads/uploads.module';
 
 @Module({
   imports: [
@@ -26,6 +28,14 @@ import { OpenAiModule } from './openai/openai.model';
       autoLoadEntities: true,
       autoSave: true,
       synchronize: true, // Set to false in production, use migrations instead
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'uploads'),
+      serveRoot: '/uploads', // This will serve files under the /uploads URL path
+      serveStaticOptions: {
+        index: false, // Don't serve index.html for directory requests
+        maxAge: 86400000, // Cache for 1 day (in milliseconds)
+      },
     }),
     TypeOrmModule.forFeature([
       User,
@@ -43,6 +53,7 @@ import { OpenAiModule } from './openai/openai.model';
     UsersModule,
     EventsModule,
     OpenAiModule,
+    UploadsModule,
   ],
   controllers: [],
   providers: [AppService],

@@ -1,5 +1,4 @@
-import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -30,12 +29,15 @@ import { UserSearchResult, UserService } from '../../../services/user.service';
 import { User } from '../../../types/user';
 import { OpenaiService } from '../../../services/openai.service';
 import { finalize } from 'rxjs';
+import { FileUploadService } from '../../../services/file-upload.service';
+import { ImageUtilsService } from '../../../services/image-utils.service';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-create-events',
   standalone: true,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     MatFormFieldModule,
     MatInputModule,
@@ -51,11 +53,22 @@ import { finalize } from 'rxjs';
     MatDividerModule,
     MatTooltipModule,
     UserSearchComponent,
+    MatProgressBarModule,
+    CommonModule,
   ],
   templateUrl: './create-events.component.html',
   styleUrls: ['./create-events.component.css'],
 })
 export class CreateEventsComponent implements OnInit {
+  private fb = inject(FormBuilder);
+  private snackBar = inject(MatSnackBar);
+  private eventsService = inject(EventsService);
+  private userService = inject(UserService);
+  private openaiService = inject(OpenaiService);
+  private router = inject(Router);
+  private fileUploadService = inject(FileUploadService);
+  protected images = inject(ImageUtilsService);
+
   eventForm!: FormGroup;
   users: User[] = [];
   isLoading = false;
@@ -77,14 +90,10 @@ export class CreateEventsComponent implements OnInit {
   isOnline = new FormControl(false);
   meetingLink = new FormControl('');
 
-  constructor(
-    private fb: FormBuilder,
-    private snackBar: MatSnackBar,
-    private eventsService: EventsService,
-    private userService: UserService,
-    private openaiService: OpenaiService,
-    private router: Router,
-  ) {}
+  // File upload properties
+  selectedFile: File | null = null;
+  uploadProgress: number = 0;
+  imagePreview: string | null = null;
 
   ngOnInit(): void {
     this.initForm();
@@ -193,51 +202,104 @@ export class CreateEventsComponent implements OnInit {
 
   enhanceDescription(): void {
     const currentText = this.description.value;
-    
+
     if (!currentText || currentText.trim() === '') {
       this.snackBar.open(
         'Bitte geben Sie zuerst eine Beschreibung ein!',
         'Schließen',
-        { duration: 3000 }
+        { duration: 3000 },
       );
       return;
     }
 
     this.isEnhancingDescription = true;
-    
-    this.openaiService.enhance(
-      currentText, 
-      this.title.value!, 
-      this.category.value!
-    )
-    .pipe(
-      finalize(() => {
-        this.isEnhancingDescription = false;
-      })
-    )
-    .subscribe({
-      next: (enhancedText) => {
-        console.log('Enhanced description:', enhancedText);
-        this.description.setValue(enhancedText);
-        this.snackBar.open(
-          'Fertig',
-          'Schließen',
-          { duration: 3000 }
-        );
+
+    this.openaiService
+      .enhance(currentText, this.title.value!, this.category.value!)
+      .pipe(
+        finalize(() => {
+          this.isEnhancingDescription = false;
+        }),
+      )
+      .subscribe({
+        next: (enhancedText) => {
+          console.log('Enhanced description:', enhancedText);
+          this.description.setValue(enhancedText);
+          this.snackBar.open('Fertig', 'Schließen', { duration: 3000 });
+        },
+        error: (error) => {
+          console.error('Error enhancing description:', error);
+          this.snackBar.open('Fehler bei der Anfrage', 'Schließen', {
+            duration: 5000,
+          });
+        },
+      });
+  }
+
+  onFileSelected(event: any): void {
+    const file = event.target.files[0];
+    if (file && file.type.match(/image\/*/) && file.size <= 5 * 1024 * 1024) {
+      this.selectedFile = file;
+      // Create a preview
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.imagePreview = reader.result as string;
+        // Auto-upload the image after selection
+        this.uploadImage();
+      };
+      reader.readAsDataURL(file);
+    } else if (file && file.size > 5 * 1024 * 1024) {
+      this.snackBar.open('Bild ist zu groß. Maximale Größe: 5MB', 'Schließen', {
+        duration: 3000,
+      });
+    } else if (file && !file.type.match(/image\/*/)) {
+      this.snackBar.open(
+        'Bitte wähle ein unterstütztes Bildformat (JPG, PNG, GIF)',
+        'Schließen',
+        {
+          duration: 3000,
+        },
+      );
+    }
+  }
+
+  uploadImage(): void {
+    if (!this.selectedFile) {
+      return;
+    }
+
+    this.uploadProgress = 0;
+
+    this.fileUploadService.uploadImage(this.selectedFile).subscribe({
+      next: (response) => {
+        this.uploadProgress = 100;
+        // Just store the filename or path, not the full URL
+        this.eventForm.patchValue({
+          coverImageUrl: response.filename, // or response.imageUrl if you prefer the full path
+        });
+        this.snackBar.open('Bild erfolgreich hochgeladen', 'Schließen', {
+          duration: 3000,
+        });
+        this.selectedFile = null;
       },
-      error: (error) => {
-        console.error('Error enhancing description:', error);
-        this.snackBar.open(
-          'Fehler bei der Anfrage',
-          'Schließen',
-          { duration: 5000 }
-        );
-      }
+      error: (err) => {
+        this.uploadProgress = 0;
+        console.error('Upload failed:', err);
+        this.snackBar.open('Fehler beim Hochladen des Bildes', 'Schließen', {
+          duration: 3000,
+        });
+      },
     });
   }
 
   onSubmit(): void {
     if (this.eventForm.valid) {
+      if (this.selectedFile) {
+        // If there's a file selected but not uploaded yet, upload it first
+        this.uploadImage();
+        return;
+      }
+
       this.isLoading = true;
       const newEvent: CreateEvent = this.eventForm.value;
 
@@ -331,5 +393,20 @@ export class CreateEventsComponent implements OnInit {
       return 'Die Teilnehmerzahl muss mindestens 1 sein';
     }
     return '';
+  }
+
+  // Add this new method to the class
+  removeImage(): void {
+    this.selectedFile = null;
+    this.imagePreview = null;
+    this.coverImageUrl.setValue('');
+  }
+
+  // Add drag and drop method
+  onFileDrop(event: DragEvent): void {
+    event.preventDefault();
+    if (event.dataTransfer?.files.length) {
+      this.onFileSelected({ target: { files: event.dataTransfer.files } });
+    }
   }
 }

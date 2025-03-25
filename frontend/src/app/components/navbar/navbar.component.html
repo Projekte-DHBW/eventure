@@ -33,41 +33,62 @@
       </button>
     </mat-menu>
   }
-  <div class="hamburger" (click)="toggleMobileMenu()">
+  <!-- Hamburger-Button mit verbessertem Klick-Handler -->
+  <div class="hamburger" (click)="toggleMobileMenu($event)">
     <span></span>
     <span></span>
     <span></span>
   </div>
 </div>
 
-<div class="mobile-menu" [class.active]="mobileMenuOpen">
-  <div class="mobile-links">
-    <a class="mobile-link" routerLink="/search" (click)="closeMobileMenu()"
-      >Suche</a
-    >
+<!-- Optimiertes Mobile-Menü -->
+<div
+  class="mobile-menu"
+  [class.active]="mobileMenuOpen"
+  (click)="closeMobileMenu()"
+>
+  <!-- Stoppt die Event-Propagation, damit das Menü nicht geschlossen wird -->
+  <div class="mobile-menu-content" (click)="$event.stopPropagation()">
+    <div class="mobile-links">
+      <a class="mobile-link" routerLink="/search" (click)="closeMobileMenu()">
+        Suche
+      </a>
+    </div>
+
+    @if (!auth.isAuthenticated()) {
+      <div class="mobile-auth">
+        <a class="mobile-link" routerLink="/login" (click)="closeMobileMenu()">
+          Anmelden
+        </a>
+        <a
+          class="mobile-link highlight"
+          routerLink="/register"
+          (click)="closeMobileMenu()"
+        >
+          Registrieren
+        </a>
+      </div>
+    } @else {
+      <div class="mobile-user">
+        <p class="user-name">{{ fullName }}</p>
+        <a
+          class="mobile-link"
+          routerLink="/profile"
+          (click)="closeMobileMenu()"
+        >
+          Profile
+        </a>
+        <a
+          class="mobile-link"
+          routerLink="/dashboard"
+          (click)="closeMobileMenu()"
+        >
+          Dashboard
+        </a>
+        <a class="mobile-link" (click)="logout(); closeMobileMenu()">
+          Logout
+        </a>
+      </div>
+    }
   </div>
-  @if (!auth.isAuthenticated()) {
-    <div class="mobile-auth">
-      <a class="mobile-link" routerLink="/login" (click)="closeMobileMenu()"
-        >Anmelden</a
-      >
-      <a
-        class="mobile-link highlight"
-        routerLink="/register"
-        (click)="closeMobileMenu()"
-        >Registrieren</a
-      >
-    </div>
-  } @else {
-    <div class="mobile-user">
-      <p class="user-name">{{ fullName }}</p>
-      <a class="mobile-link" routerLink="/profile" (click)="closeMobileMenu()"
-        >Profile</a
-      >
-      <a class="mobile-link" routerLink="/dashboard" (click)="closeMobileMenu()"
-        >Dashboard</a
-      >
-      <a class="mobile-link" (click)="logout(); closeMobileMenu()">Logout</a>
-    </div>
-  }
 </div>

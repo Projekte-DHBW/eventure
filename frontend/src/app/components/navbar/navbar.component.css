@@ -169,12 +169,19 @@
 
 /* Hamburger Menu */
 .hamburger {
-  display: none;
   cursor: pointer;
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
   width: 30px;
-  height: 22px;
+  height: 24px;
   position: relative;
-  z-index: 100;
+  padding: 10px;
+  /* Erweiterter Klickbereich */
+  margin: -10px;
+  /* Rücksetzung des visuellen Raums */
+  z-index: 1000;
+  /* Sicherstellen, dass es über allem liegt */
 }
 
 .hamburger span {
@@ -188,6 +195,7 @@
   left: 0;
   transform: rotate(0deg);
   transition: all 0.25s ease-in-out;
+  transition: all 0.3s ease;
 }
 
 .hamburger span:nth-child(1) {
@@ -206,17 +214,20 @@
   top: 9px;
   transform: rotate(135deg);
   background: var(--primary);
+  transition: all 0.3s ease;
 }
 
 .hamburger.active span:nth-child(2) {
   opacity: 0;
   left: -60px;
+  transition: all 0.3s ease;
 }
 
 .hamburger.active span:nth-child(3) {
   top: 9px;
   transform: rotate(-135deg);
   background: var(--primary);
+  transition: all 0.3s ease;
 }
 
 /* Mobile Menu */
@@ -229,14 +240,19 @@
   bottom: 0;
   background: rgba(255, 255, 255, 0.98);
   backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  /* Safari-Support */
   flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 5rem 2rem 2rem;
-  z-index: 99;
+  z-index: 999;
+  /* Unter dem Hamburger-Button, aber über allem anderen */
   transition: all 0.3s ease;
   opacity: 0;
   visibility: hidden;
+  overflow-y: auto;
+  /* Erlaubt Scrollen bei zu vielen Elementen */
 }
 
 .mobile-menu.active {
@@ -262,6 +278,14 @@
   font-weight: 600;
   position: relative;
   transition: all 0.3s ease;
+  padding: 15px 20px;
+  /* Größerer Klickbereich */
+  margin: -5px 0;
+  /* Rücksetzung des visuellen Abstands */
+  display: block;
+  width: 100%;
+  text-align: center;
+  border-radius: 8px;
 }
 
 .mobile-link:hover,
@@ -277,11 +301,43 @@
   box-shadow: 0 0.25rem 0.9375rem rgba(65, 105, 225, 0.2);
 }
 
+.mobile-link:active {
+  background-color: rgba(0, 0, 0, 0.05);
+  /* Feedbackeffekt bei Berührung */
+  transform: scale(0.98);
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Container für Mobilmenü-Inhalte */
+.mobile-menu-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+  padding: 2rem;
+  overflow-y: auto;
+}
+
 .user-name {
   font-weight: 700;
   color: var(--primary);
   font-size: 1.5rem;
   margin-bottom: 0.5rem;
+}
+
+/* Verbesserung der mobilen Benutzeranmeldung */
+.mobile-user,
+.mobile-auth {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 280px;
+  /* Bessere Breite für mobile Geräte */
+  gap: 0.8rem;
+  /* Reduzierter Abstand für bessere Nutzbarkeit */
 }
 
 /* Media Query for Mobile */
@@ -294,13 +350,18 @@
   }
 
   .hamburger {
-    display: block;
+    display: flex;
   }
 
   .navbar {
     padding: 1rem;
     border-radius: 0;
     margin-top: 0;
+    justify-content: space-between;
+    position: relative;
+    z-index: 1000;
+    background-color: #fff;
+    /* Hintergrund hinzufügen */
   }
 
   .logo {
@@ -314,4 +375,19 @@
 [mat-menu-item] {
   font-family: inherit;
   line-height: normal;
+}
+
+/* Stoppt Scrollverhalten im Body wenn Mobile-Menü geöffnet ist */
+body.menu-open {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+}
+
+/* iOS Safari Fixes */
+@supports (-webkit-touch-callout: none) {
+  .mobile-menu {
+    height: -webkit-fill-available;
+  }
 }

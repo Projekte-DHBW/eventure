@@ -1,10 +1,8 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { CreateEvent, UpdateEvent, Event } from '../types/events';
 import { HttpClientService } from './httpClient.service';
 import { Observable, throwError, map, catchError, of } from 'rxjs';
 import { environment } from '../../environments/environment';
-
 
 export interface EventsSearchResult {
   id: string; // Add this property
@@ -25,19 +23,13 @@ export interface EventsSearchResult {
     firstName: string;
     lastName: string;
   };
-    
 }
-  
 
 @Injectable({
   providedIn: 'root',
 })
 export class EventsService {
-
-  //private http = inject(HttpClient);
-  //private apiUrl = `${environment.apiUrl}`;
-  
-  constructor(private http: HttpClientService) {}
+  private http = inject(HttpClientService);
 
   // Get events with filters
   getEvents(filters: any = {}): Observable<[Event[], number]> {
@@ -64,6 +56,11 @@ export class EventsService {
       // Stellen wir sicher, dass das Datum als String übergeben wird
       params.date = String(filters.date);
       console.log(`Setting date param to: ${params.date}`);
+    }
+
+    // Add attending filter if provided
+    if (filters.attending === true) {
+      params.attending = 'true';
     }
 
     console.log('Sending API request with params:', params);
@@ -112,23 +109,30 @@ export class EventsService {
   }
 
   // Methode zum Einladen eines Benutzers zu einem Event
-  inviteUser(userId: string, eventId: string): Observable<{ success: boolean }> {
+  inviteUser(
+    userId: string,
+    eventId: string,
+  ): Observable<{ success: boolean }> {
     const token = localStorage.getItem('accessToken'); // Holen Sie das Token aus dem Local Storage
     console.log('Token:', token); // Überprüfen Sie, ob das Token vorhanden ist
-  
+
     // Spezielle Header-Flag für den HttpClientService hinzufügen
     const headers = {
       Authorization: `Bearer ${token}`,
       Accept: 'application/json',
     };
-  
+
     // Verwenden Sie den injizierten HttpClientService für die Anfrage
-    return this.http.post<{ success: boolean }>(`events/${eventId}/signup`, { userId }, { headers }).pipe(
-      catchError((error) => {
-        console.error('Error inviting user:', error);
-        return of({ success: false }); // Fallback bei Fehler
-      })
-    );
+    return this.http
+      .post<{
+        success: boolean;
+      }>(`events/${eventId}/signup`, { userId }, { headers })
+      .pipe(
+        catchError((error) => {
+          console.error('Error inviting user:', error);
+          return of({ success: false }); // Fallback bei Fehler
+        }),
+      );
   }
 
   // Get events by category
@@ -185,9 +189,8 @@ export class EventsService {
 
   // Get event by ID
   getEvent(id: string): Observable<Event> {
-    return this.http.get(`events/${id}`);
+    return this.http.authenticatedGet(`events/${id}`);
   }
-
 
   findOne(id: string): Observable<EventsSearchResult> {
     return this.http.authenticatedGet<EventsSearchResult>(`events/${id}`, {
@@ -195,26 +198,30 @@ export class EventsService {
     });
   }
 
-   
+  findOne(id: string): Observable<EventsSearchResult> {
+    return this.http.authenticatedGet<EventsSearchResult>(`events/${id}`, {
+      params: { id },
+    });
+  }
 
   createEvent(data: CreateEvent): Observable<Event> {
-    return this.http.post<Event>('events', data);
+    return this.http.authenticatedPost<Event>('events', data);
   }
 
   updateEvent(id: string, data: UpdateEvent): Observable<Event> {
-    return this.http.patch<Event>(`events/${id}`, data);
+    return this.http.authenticatedPatch<Event>(`events/${id}`, data);
   }
 
   deleteEvent(id: string): Observable<void> {
-    return this.http.delete<void>(`events/${id}`);
+    return this.http.authenticatedDelete<void>(`events/${id}`);
   }
 
   joinEvent(id: string): Observable<any> {
-    return this.http.post<any>(`events/${id}/join`, {});
+    return this.http.authenticatedPost<any>(`events/${id}/join`, {});
   }
 
   leaveEvent(id: string): Observable<any> {
-    return this.http.post<any>(`events/${id}/leave`, {});
+    return this.http.authenticatedPost<any>(`events/${id}/leave`, {});
   }
 
   /**
@@ -232,8 +239,7 @@ export class EventsService {
     });
   }
 
-
-private handleError(error: any): Observable<never> {
+  private handleError(error: any): Observable<never> {
     let errorMessage = '';
     if (error.error instanceof ErrorEvent) {
       // Client-side error
@@ -244,7 +250,6 @@ private handleError(error: any): Observable<never> {
     }
     return throwError(() => new Error(errorMessage));
   }
-
 
   /**
    * Search events with advanced filters
@@ -262,16 +267,69 @@ private handleError(error: any): Observable<never> {
     return this.getEvents(searchParams);
   }
 
-  // Methode zur Überprüfung, ob der Benutzer für ein Event registriert ist
-  checkRegistration(userId: string, eventId: string): Observable<{ isRegistered: boolean }> {
-    return this.http.authenticatedGet<{ isRegistered: boolean }>(`events/${eventId}/check-registration`, {
-      params: { userId , eventId}
-    }).pipe(
+  /**
+   * Get events created by the current user
+   */
+  getMyEvents(): Observable<Event[]> {
+    return this.http.authenticatedGet<any[]>('events/my').pipe(
+      map((events) => this.normalizeEvents(events || [])),
       catchError((error) => {
-        console.error('Error checking registration:', error);
-        return of({ isRegistered: false }); // Fallback bei Fehler
-      })
+        console.error('Error loading my events:', error);
+        return of([]);
+      }),
     );
+  }
+
+  /**
+   * Get events the user is attending
+   */
+  getAttendingEvents(): Observable<Event[]> {
+    return this.http.authenticatedGet<any[]>('events/attending').pipe(
+      map((events) => this.normalizeEvents(events || [])),
+      catchError((error) => {
+        console.error('Error loading attending events:', error);
+        return of([]);
+      }),
+    );
+  }
+
+  /**
+   * Stellt sicher, dass Event-Daten die richtigen Typen haben
+   */
+  private normalizeEvent(event: any): Event {
+    return {
+      ...event,
+      eventDate: event.eventDate || null,
+      createdAt: event.createdAt || null,
+      updatedAt: event.updatedAt || null,
+    };
+  }
+
+  /**
+   * Normalisiert eine Liste von Events
+   */
+  private normalizeEvents(events: any[]): Event[] {
+    return events.map((event) => this.normalizeEvent(event));
+  }
+
+  // Methode zur Überprüfung, ob der Benutzer für ein Event registriert ist
+  checkRegistration(
+    userId: string,
+    eventId: string,
+  ): Observable<{ isRegistered: boolean }> {
+    return this.http
+      .authenticatedGet<{ isRegistered: boolean }>(
+        `events/${eventId}/check-registration`,
+        {
+          params: { userId, eventId },
+        },
+      )
+      .pipe(
+        catchError((error) => {
+          console.error('Error checking registration:', error);
+          return of({ isRegistered: false }); // Fallback bei Fehler
+        }),
+      );
   }
 
   deleteRegistration(userId: string, eventId: string): Observable<any> {
@@ -279,6 +337,4 @@ private handleError(error: any): Observable<never> {
       params: { userId },
     });
   }
-
 }
-

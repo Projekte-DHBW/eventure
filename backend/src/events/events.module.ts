@@ -4,6 +4,7 @@ import { Event } from '../entity/Event';
 import { EventLocation } from '../entity/EventLocation';
 import { EventOccurrence } from '../entity/EventOccurrence';
 import { EventManager } from '../entity/EventManager';
+import { EventAttendee } from '../entity/EventAttendee';
 import { Invitation } from '../entity/Invitation';
 import { User } from '../entity/User';
 import { EventsService } from './events.service';
@@ -20,6 +21,7 @@ import { InvitedUsers } from 'src/entity/InvitedUsers';
       EventLocation,
       EventOccurrence,
       EventManager,
+      EventAttendee,
       Invitation,
       User,
       InvitedUsers,

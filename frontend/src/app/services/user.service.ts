@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { HttpClientService } from './httpClient.service';
 import { User } from '../types/user';
@@ -7,6 +7,8 @@ export interface UserSearchResult {
   id: string;
   firstName: string;
   lastName: string;
+  email: string; // Fehlende Property hinzufügen
+  // ...andere Properties
 }
 
 export interface UserInviteResult {
@@ -18,7 +20,7 @@ export interface UserInviteResult {
   providedIn: 'root',
 })
 export class UserService {
-  constructor(private http: HttpClientService) {}
+  private http = inject(HttpClientService);
 
   /**
    * Get all users (admin access only, should be restricted)

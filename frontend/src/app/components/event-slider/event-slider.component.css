@@ -1,0 +1,135 @@
+.event-slider-section {
+  position: relative;
+  max-width: 75rem;
+  margin: 3rem auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.event-slider-section h2 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.event-slider {
+  display: flex;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  gap: 1rem;
+  padding: 1rem 0;
+  white-space: nowrap;
+  scrollbar-width: none;
+  width: 100%;
+  max-width: 75rem;
+}
+
+.event-slider::-webkit-scrollbar {
+  display: none;
+}
+
+.event-card {
+  background: white;
+  border-radius: 10px;
+  padding: 1rem;
+  width: 250px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: left;
+  transition: transform 0.3s;
+  flex-shrink: 0;
+}
+
+.event-icon {
+  font-size: 1rem;
+  color: #007bff;
+  vertical-align: middle;
+  margin-right: 5px;
+}
+
+.event-card:hover {
+  transform: translateY(-5px);
+}
+
+.event-card img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.event-card h3 {
+  margin: 0.5rem 0;
+  font-size: 1rem;
+  color: #007bff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 90%;
+  text-align: center;
+}
+
+.event-card p {
+  font-size: 1rem;
+  color: #555;
+}
+
+.event-location {
+  font-size: 0.9rem;
+  color: #666;
+  margin-top: 0.25rem;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+  max-width: 100%;
+}
+
+@media (max-width: 768px) {
+  .event-slider {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    white-space: normal;
+    overflow-x: hidden;
+  }
+
+  .event-card {
+    width: 90%;
+    max-width: 400px;
+  }
+
+  .scroll-btn {
+    display: none;
+  }
+}
+
+.scroll-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(0, 0, 0, 0.6);
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  cursor: pointer;
+  font-size: 1.5rem;
+  border-radius: 50%;
+  transition:
+    background 0.3s,
+    opacity 0.3s;
+  opacity: 1;
+  z-index: 10;
+}
+
+.scroll-btn:hover {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+.scroll-btn.left {
+  left: 10px;
+}
+
+.scroll-btn.right {
+  right: 10px;
+}

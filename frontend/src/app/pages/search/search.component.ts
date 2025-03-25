@@ -1,5 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, input, inject } from '@angular/core';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -14,12 +13,12 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { EventsService } from '../../services/events.service';
 import { Event } from '../../types/events';
 import { Observable, debounceTime, switchMap, of, catchError, map } from 'rxjs';
+import { ImageUtilsService } from '../../services/image-utils.service';
 
 @Component({
   selector: 'app-search',
   standalone: true,
   imports: [
-    CommonModule,
     RouterModule,
     ReactiveFormsModule,
     MatButtonModule,
@@ -36,6 +35,11 @@ import { Observable, debounceTime, switchMap, of, catchError, map } from 'rxjs';
   styleUrl: './search.component.css',
 })
 export class SearchComponent implements OnInit {
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private eventsService = inject(EventsService);
+  protected images = inject(ImageUtilsService);
+
   events: Event[] = [];
   totalEvents: number = 0;
   searchParams: {
@@ -73,7 +77,7 @@ export class SearchComponent implements OnInit {
     Konferenz: 'other',
   };
 
-  @Input() types = [
+  readonly types = input([
     'Konzert',
     'Festival',
     'Sport',
@@ -81,9 +85,9 @@ export class SearchComponent implements OnInit {
     'Ausstellung',
     'Workshop',
     'Konferenz',
-  ];
+  ]);
 
-  @Input() locations = [
+  readonly locations = input([
     'Berlin',
     'Hamburg',
     'München',
@@ -102,15 +106,15 @@ export class SearchComponent implements OnInit {
     'Freiburg',
     'Heidelberg',
     'Augsburg',
-  ];
+  ]);
 
-  @Input() dates = [
+  readonly dates = input([
     'Heute',
     'Morgen',
     'Diese Woche',
     'Diesen Monat',
     'Dieses Jahr',
-  ];
+  ]);
 
   // Properties for location filter
   showAllLocations = false;
@@ -122,12 +126,6 @@ export class SearchComponent implements OnInit {
 
   // Add date picker control
   specificDateControl = new FormControl<Date | null>(null);
-
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private eventsService: EventsService,
-  ) {}
 
   ngOnInit(): void {
     // Lade initial die neuesten Events
@@ -243,8 +241,8 @@ export class SearchComponent implements OnInit {
   // Angezeigte Standorte
   get displayedLocations(): string[] {
     return this.showAllLocations
-      ? this.locations
-      : this.locations.slice(0, this.initialLocationCount);
+      ? this.locations()
+      : this.locations().slice(0, this.initialLocationCount);
   }
 
   // Umschalten der Standortanzeige
@@ -592,14 +590,14 @@ export class SearchComponent implements OnInit {
       debounceTime(300),
       switchMap((value) => {
         if (!value || typeof value !== 'string' || value.length < 2) {
-          return of(this.locations);
+          return of(this.locations());
         }
 
         return this.eventsService.searchCities(value).pipe(
           map((response) => response.cities),
           catchError(() => {
             console.error('Fehler beim Abrufen der Städte');
-            return of(this.locations);
+            return of(this.locations());
           }),
         );
       }),

@@ -5,6 +5,7 @@ import { Event } from '../../types/events';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { MatIcon } from '@angular/material/icon';
 import { ImageUtilsService } from '../../services/image-utils.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-event-slider',
@@ -15,6 +16,7 @@ import { ImageUtilsService } from '../../services/image-utils.service';
 export class EventSliderComponent {
   private eventsService = inject(EventsService);
   protected images = inject(ImageUtilsService);
+  private router = inject(Router);
 
   @ViewChild('eventSlider', { static: false }) eventSlider!: ElementRef;
 
@@ -39,6 +41,10 @@ export class EventSliderComponent {
         this.loading = false;
       },
     });
+  }
+
+  navigateToEvent(eventId: string): void {
+    this.router.navigate(['/events', eventId]);
   }
 
   scrollLeft() {

@@ -117,7 +117,7 @@
             <mat-icon>person</mat-icon>
             <div class="detail-content">
               <span class="detail-label">Veranstalter</span>
-              <a [routerLink]="['/users', event.creator, 'profile']" class="detail-value organizer-link">
+              <a [routerLink]="['/profile', event.creator]" class="detail-value organizer-link">
                 {{ event.creatorName || 'Veranstalter anzeigen' }}
               </a>
             </div>

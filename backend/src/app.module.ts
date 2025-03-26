@@ -22,7 +22,8 @@ import { UploadsModule } from './uploads/uploads.module';
   imports: [
     TypeOrmModule.forRoot({
       type: 'sqljs',
-      location: path.join(__dirname, '..', 'database.db'),
+      location:
+        process.env.DATABASE_PATH || path.join(__dirname, '..', 'database.db'),
       autoLoadEntities: true,
       autoSave: true,
       synchronize: true, // Set to false in production, use migrations instead

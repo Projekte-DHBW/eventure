@@ -23,7 +23,7 @@ export class EventSliderComponent {
   events: Event[] = [];
   loading = false;
 
-  constructor(private router: Router) {}
+  constructor() {}
 
   ngOnInit(): void {
     this.loadLatestEvents();
@@ -55,9 +55,5 @@ export class EventSliderComponent {
 
   scrollRight() {
     this.eventSlider.nativeElement.scrollBy({ left: 300, behavior: 'smooth' });
-  }
-
-  navigateToEvent(eventId: string): void {
-    this.router.navigate(['/events', eventId]);
   }
 }

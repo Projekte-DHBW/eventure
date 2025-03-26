@@ -14,7 +14,6 @@ import { EventsService } from '../../services/events.service';
 import { AuthService } from '../../auth/services/auth.service';
 import { Event } from '../../types/events';
 import { ImageUtilsService } from '../../services/image-utils.service';
-import { EventCardComponent } from '../../components/event-card/event-card.component';
 
 @Component({
   selector: 'app-dashboard',
@@ -30,7 +29,6 @@ import { EventCardComponent } from '../../components/event-card/event-card.compo
     MatProgressSpinnerModule,
     MatBadgeModule,
     MatChipsModule,
-    EventCardComponent,
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css',

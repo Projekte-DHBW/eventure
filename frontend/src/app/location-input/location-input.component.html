@@ -1,0 +1,45 @@
+<div class="location-input-container">
+    @if(!multiple) {
+    <mat-form-field [appearance]="appearance" class="location-field">
+        <mat-label>{{label}}</mat-label>
+        <input type="text" matInput [formControl]="locationControl" [placeholder]="placeholder" [matAutocomplete]="auto"
+            [disabled]="disabled" (blur)="onTouched()">
+        <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayCity"
+            (optionSelected)="onOptionSelected($event)">
+            @if (isLoading) {
+            <mat-option disabled>
+                <div class="loading-indicator">
+                    <mat-icon>sync</mat-icon> Städte werden geladen...
+                </div>
+            </mat-option>
+            }
+            @for (city of (filteredCities | async) || []; track city) {
+            <mat-option [value]="city">{{ city }}</mat-option>
+            }
+        </mat-autocomplete>
+        <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+    }
+
+    @if(multiple) {
+    <mat-form-field [appearance]="appearance" class="location-field">
+        <mat-label>{{label}}</mat-label>
+        <input type="text" matInput [formControl]="locationControl" [placeholder]="placeholder" [matAutocomplete]="auto"
+            [disabled]="disabled">
+        <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayCity"
+            (optionSelected)="onOptionSelected($event)">
+            @if (isLoading) {
+            <mat-option disabled>
+                <div class="loading-indicator">
+                    <mat-icon>sync</mat-icon> Städte werden geladen...
+                </div>
+            </mat-option>
+            }
+            @for (city of (filteredCities | async) || []; track city) {
+            <mat-option [value]="city">{{ city }}</mat-option>
+            }
+        </mat-autocomplete>
+        <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+    }
+</div>

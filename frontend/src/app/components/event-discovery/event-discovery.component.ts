@@ -1,29 +1,19 @@
-import { Component, type OnInit, input, inject } from '@angular/core';
+import { Component, inject, input } from '@angular/core';
 import {
   FormBuilder,
-  type FormGroup,
+  FormGroup,
   FormControl,
   ReactiveFormsModule,
 } from '@angular/forms';
 import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { CommonModule } from '@angular/common';
-import { type Observable, of } from 'rxjs';
-import {
-  debounceTime,
-  distinctUntilChanged,
-  switchMap,
-  tap,
-  catchError,
-  startWith,
-  filter,
-  map,
-} from 'rxjs/operators';
+import { LocationInputComponent } from '../../location-input/location-input.component';
 import { EventsService } from '../../services/events.service';
 
 @Component({
@@ -38,95 +28,58 @@ import { EventsService } from '../../services/events.service';
     MatInputModule,
     MatAutocompleteModule,
     ReactiveFormsModule,
+    LocationInputComponent,
   ],
   templateUrl: './event-discovery.component.html',
   styleUrl: './event-discovery.component.css',
 })
-export class EventDiscoveryComponent implements OnInit {
+export class EventDiscoveryComponent {
   private fb = inject(FormBuilder);
   private router = inject(Router);
   private eventsService = inject(EventsService);
 
-  readonly types = input([
-    'Konzert',
-    'Festival',
-    'Theater',
-    'Sport',
-    'Kunst',
-    'Kultur',
-  ]);
+  readonly types = input(['Musik', 'Sport', 'Kultur', 'Anderes']);
 
-  readonly locations = input(['Berlin', 'München', 'Heidenheim', 'Köln']);
+  readonly locations = ['Berlin', 'München', 'Heidenheim', 'Köln'];
 
-  readonly dates = input([
+  readonly dates = [
     'Heute',
     'Morgen',
     'Diese Woche',
     'Diesen Monat',
     'Dieses Jahr',
-  ]);
+  ];
 
   eventSearchForm: FormGroup;
   locationControl = new FormControl('');
-  filteredCities: Observable<string[]> | undefined;
   isLoading = false;
 
   constructor() {
     this.eventSearchForm = this.fb.group({
       eventType: [''],
-      location: this.locationControl,
+      location: [''],
       date: [''],
     });
-  }
-
-  ngOnInit(): void {
-    this.filteredCities = this.locationControl.valueChanges.pipe(
-      startWith(''),
-      debounceTime(300),
-      distinctUntilChanged(),
-      filter((query) => typeof query === 'string'),
-      tap(() => (this.isLoading = true)),
-      switchMap((query) => {
-        if (!query || query.length < 2) {
-          return of(this.locations());
-        }
-
-        return this.eventsService.searchCities(query).pipe(
-          tap((res) => console.log('Cities API response:', res)),
-          map((response) => response.cities),
-          catchError(() => {
-            console.error('Error fetching cities');
-            return of(this.locations());
-          }),
-        );
-      }),
-      tap(() => (this.isLoading = false)),
-    );
   }
 
   searchEvents(): void {
     if (this.eventSearchForm.valid) {
       const formValues = this.eventSearchForm.value;
-
-      interface QueryParams {
-        type?: string;
-        location?: string;
-        date?: string;
-      }
-
-      const queryParams: QueryParams = {};
+      const queryParams: any = {};
 
       if (formValues.eventType) {
-        queryParams.type = formValues.eventType;
+        queryParams.types = [formValues.eventType];
       }
 
       if (formValues.location) {
-        queryParams.location = formValues.location;
+        queryParams.locations = [formValues.location];
       }
 
       if (formValues.date) {
-        queryParams.date = formValues.date;
+        queryParams.date = formValues.date.toLowerCase();
       }
+
+      console.log('Navigating to search with params:', queryParams);
 
       this.router.navigate(['/search'], {
         queryParams: queryParams,
@@ -134,7 +87,7 @@ export class EventDiscoveryComponent implements OnInit {
     }
   }
 
-  displayCity(city: string): string {
-    return city ? city : '';
+  onLocationSelected(location: string): void {
+    this.eventSearchForm.get('location')?.setValue(location);
   }
 }

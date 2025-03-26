@@ -35,16 +35,20 @@ export class EventFiltersDto {
   types?: ('music' | 'sports' | 'culture' | 'other')[];
 
   @ApiProperty({
-    description: 'Liste von Standorten zur Filterung',
     required: false,
-    isArray: true,
+    type: [String],
+    description: 'Liste von Standorten zur Filterung',
   })
   @IsOptional()
+  @IsString({ each: true })
   @Transform(({ value }) => {
-    if (typeof value === 'string') {
-      return value.split(',');
-    }
-    return value;
+    // If it's already an array, return it
+    if (Array.isArray(value)) return value;
+    // If it's a string but has commas, split it
+    if (typeof value === 'string' && value.includes(','))
+      return value.split(',').map((v) => v.trim());
+    // Otherwise, make it an array
+    return typeof value === 'string' ? [value] : value;
   })
   locations?: string[];
 

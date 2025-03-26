@@ -16,6 +16,23 @@ import { UpdateEventDto } from './dto/UpdateEvent';
 import { EventAttendee } from '../entity/EventAttendee';
 import { InvitedUsers } from 'src/entity/InvitedUsers';
 
+interface EventWithDetails extends Omit<Event, 'occurrences'> {
+  occurrences: Array<{
+    id: string;
+    startDate: Date;
+    endDate?: Date;
+    title?: string;
+    isOnline?: boolean;
+    meetingLink?: string;
+    eventId: string;
+    locationId?: string;
+    location: string | object;
+  }>;
+  invitations: Invitation[];
+  attendeeCount: number;
+  creatorName: string;
+}
+
 @Injectable()
 export class EventsService {
   constructor(
@@ -149,6 +166,40 @@ export class EventsService {
       relations: ['locationDetails'],
       order: { startDate: 'ASC' },
     });
+
+    // Transform occurrences to include location data properly
+    const transformedOccurrences = occurrences.map((occurrence) => {
+      let locationData: string | object;
+
+      // If we have detailed location info, use that directly
+      if (occurrence.locationDetails) {
+        locationData = {
+          address: occurrence.locationDetails.address,
+          city: occurrence.locationDetails.city,
+          state: occurrence.locationDetails.state,
+          country: occurrence.locationDetails.country,
+          postalCode: occurrence.locationDetails.postalCode,
+          latitude: occurrence.locationDetails.latitude,
+          longitude: occurrence.locationDetails.longitude,
+        };
+      } else {
+        // Otherwise, use the string location if available
+        locationData = occurrence.location || '';
+      }
+
+      return {
+        id: occurrence.id,
+        startDate: occurrence.startDate,
+        endDate: occurrence.endDate,
+        title: occurrence.title,
+        isOnline: occurrence.isOnline,
+        meetingLink: occurrence.meetingLink,
+        eventId: occurrence.eventId,
+        locationId: occurrence.locationId,
+        location: locationData,
+      };
+    });
+
     const invitations = await this.invitationRepository.find({
       where: { event: { id } },
     });
@@ -163,13 +214,13 @@ export class EventsService {
 
     const eventWithDetails = {
       ...event,
-      occurrences,
+      occurrences: transformedOccurrences,
       invitations,
       attendeeCount,
       creatorName,
     };
 
-    return eventWithDetails as Event;
+    return eventWithDetails as unknown as Event;
   }
 
   async findAll(filters: EventFiltersDto): Promise<[Event[], number]> {
@@ -224,8 +275,74 @@ export class EventsService {
         query.andWhere('event.category IN (:...types)', { types });
       }
 
+      // Replace the location filtering part in findAll method
       if (locations && Array.isArray(locations) && locations.length > 0) {
-        query.andWhere('event.location IN (:...locations)', { locations });
+        console.log('Filtering by locations:', locations);
+
+        query.andWhere(
+          new Brackets((qb) => {
+            // Match event location directly
+            qb.where('event.location IN (:...locations)', { locations });
+
+            // Match event location with LIKE for fuzzy matching
+            locations.forEach((loc, index) => {
+              qb.orWhere(`LOWER(event.location) LIKE LOWER(:loc${index})`, {
+                [`loc${index}`]: `%${loc}%`,
+              });
+            });
+
+            // Match locations in event occurrences (join with occurrences and location tables)
+            if (
+              !query.expressionMap.joinAttributes.some(
+                (join) => join.entityOrProperty === 'event.occurrences',
+              )
+            ) {
+              query.leftJoinAndSelect('event.occurrences', 'occurrences');
+            }
+
+            if (
+              !query.expressionMap.joinAttributes.some(
+                (join) =>
+                  join.entityOrProperty === 'occurrences.locationDetails',
+              )
+            ) {
+              query.leftJoin('occurrences.locationDetails', 'locationDetails');
+            }
+
+            // Check for city match in location details
+            qb.orWhere('locationDetails.city IN (:...locations)', {
+              locations,
+            });
+
+            // Fuzzy match in location details
+            locations.forEach((loc, index) => {
+              qb.orWhere(
+                `LOWER(locationDetails.city) LIKE LOWER(:locCity${index})`,
+                { [`locCity${index}`]: `%${loc}%` },
+              );
+              qb.orWhere(
+                `LOWER(locationDetails.address) LIKE LOWER(:locAddr${index})`,
+                { [`locAddr${index}`]: `%${loc}%` },
+              );
+            });
+
+            // Match occurrence's simple location field
+            qb.orWhere('occurrences.location IN (:...locations)', {
+              locations,
+            });
+
+            // Fuzzy match in occurrence location
+            locations.forEach((loc, index) => {
+              qb.orWhere(
+                `LOWER(occurrences.location) LIKE LOWER(:occLoc${index})`,
+                { [`occLoc${index}`]: `%${loc}%` },
+              );
+            });
+          }),
+        );
+
+        // Add debugging
+        console.log('Query with location filters applied');
       }
 
       if (date) {
@@ -459,42 +576,89 @@ export class EventsService {
   }
 
   /**
-   * Search for cities matching the provided query using Event location field
+   * Search for cities matching the provided query using both Event location field and EventOccurrence locations
+   * Implements fuzzy matching for better search results
    * @param query Search string for city name
    * @param limit Maximum number of results to return
    * @returns List of unique cities matching the query
    */
-  async searchCities(query: string, limit: number = 10): Promise<string[]> {
+  async searchCities(query: string, limit: number = 10) {
     try {
       if (!query || query.trim().length < 2) {
-        return [];
+        return { cities: [] };
       }
 
-      const results = await this.eventRepository
+      const searchQuery = `%${query.trim().toLowerCase()}%`;
+
+      // Get locations from events table
+      const eventLocations = await this.eventRepository
         .createQueryBuilder('event')
         .where('LOWER(event.location) LIKE LOWER(:query)', {
-          query: `%${query.trim()}%`,
+          query: searchQuery,
         })
         .select('event.location', 'location')
         .distinct(true)
-        .orderBy('event.location', 'ASC')
-        .limit(limit)
         .getRawMany();
 
-      const locations = results
-        .map((result) => result.location)
-        .filter(
-          (location) =>
-            location !== null &&
-            location !== undefined &&
-            location.trim() !== '',
-        );
+      // Get locations from event_location table
+      const locationDetails = await this.eventRepository
+        .createQueryBuilder()
+        .select('DISTINCT city')
+        .from('event_location', 'location')
+        .where('LOWER(location.city) LIKE LOWER(:query)', {
+          query: searchQuery,
+        })
+        .getRawMany();
 
-      return locations;
+      // Combine and process all results
+      const allCities = new Set<string>();
+
+      // Add event locations
+      eventLocations.forEach((result) => {
+        if (result.location && result.location.trim() !== '') {
+          const city = this.extractCityFromAddress(result.location);
+          if (city) allCities.add(city);
+        }
+      });
+
+      // Add location details
+      locationDetails.forEach((result) => {
+        if (result.city && result.city.trim() !== '') {
+          allCities.add(result.city.trim());
+        }
+      });
+
+      // Convert set to array, sort, and limit results
+      const cities = Array.from(allCities)
+        .sort((a, b) => {
+          // Prioritize results that start with the query
+          const startsWithA = a.toLowerCase().startsWith(query.toLowerCase());
+          const startsWithB = b.toLowerCase().startsWith(query.toLowerCase());
+
+          if (startsWithA && !startsWithB) return -1;
+          if (!startsWithA && startsWithB) return 1;
+
+          return a.localeCompare(b);
+        })
+        .slice(0, limit);
+
+      return cities;
     } catch (error) {
-      console.error('Fehler bei der Städtesuche:', error);
-      return [];
+      console.error('Error searching cities:', error);
+      return { cities: [] };
     }
+  }
+
+  // Helper method to extract city from address
+  private extractCityFromAddress(address: string): string | null {
+    if (!address) return null;
+    // Simple algorithm to extract city from address
+    // Assuming city is after a comma or is the whole string
+    const parts = address.split(',');
+    if (parts.length > 1) {
+      return parts[1].trim();
+    }
+    return address.trim();
   }
 
   async inviteUser(userId: string, eventId: string): Promise<InvitedUsers> {

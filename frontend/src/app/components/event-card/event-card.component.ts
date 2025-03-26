@@ -1,9 +1,10 @@
-import { Component, Input } from '@angular/core';
+import { Component, inject, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { RouterModule } from '@angular/router';
 import { Event } from '../../types/events';
+import { ImageUtilsService } from '../../services/image-utils.service';
 
 @Component({
   selector: 'app-event-card',
@@ -14,6 +15,7 @@ import { Event } from '../../types/events';
 })
 export class EventCardComponent {
   @Input() event!: Event;
+  protected images = inject(ImageUtilsService);
 
   ngOnInit(): void {
     console.log(this.event);

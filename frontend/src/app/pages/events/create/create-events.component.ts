@@ -84,6 +84,7 @@ export class CreateEventsComponent implements OnInit {
   // Simple event properties
   location = new FormControl('');
   eventDate = new FormControl();
+  eventTime = new FormControl('12:00'); // Default-Wert 12:00 Uhr
 
   // Online event properties
   isOnline = new FormControl(false);
@@ -125,6 +126,7 @@ export class CreateEventsComponent implements OnInit {
       maxParticipants: this.maxParticipants,
       location: this.location,
       eventDate: this.eventDate,
+      eventTime: this.eventTime, // Neues Formularfeld
       isOnline: this.isOnline,
       meetingLink: this.meetingLink,
       occurrences: this.fb.array([]),
@@ -281,13 +283,44 @@ export class CreateEventsComponent implements OnInit {
       }
 
       this.isLoading = true;
-      const newEvent: CreateEvent = this.eventForm.value;
+
+      // Erstellen einer Kopie der Formulardaten
+      const formValues = this.eventForm.value;
+      const newEvent: CreateEvent = { ...formValues };
+
+      // Kombiniere Datum und Uhrzeit zu einem einzigen Zeitstempel
+      if (newEvent.eventDate && newEvent.eventTime) {
+        try {
+          const dateObj = new Date(newEvent.eventDate);
+
+          // Zeit aus dem Zeit-String extrahieren
+          const [hours, minutes] = (newEvent.eventTime as string)
+            .split(':')
+            .map(Number);
+
+          // Setzen der Stunden und Minuten auf das Datum
+          dateObj.setHours(hours, minutes, 0, 0);
+
+          // Aktualisiere das Datum im Event-Objekt
+          newEvent.eventDate = dateObj;
+
+          // Entferne das separate Zeitfeld, bevor wir die Daten ans Backend senden
+          delete (newEvent as any).eventTime;
+        } catch (error) {
+          console.error('Fehler beim Umwandeln des Datums:', error);
+          this.snackBar.open('Ungültiges Datum oder Zeit', 'Schließen', {
+            duration: 3000,
+          });
+          this.isLoading = false;
+          return;
+        }
+      }
 
       // Clean up empty arrays to avoid backend validation issues
       if (newEvent.occurrences?.length === 0) delete newEvent.occurrences;
       if (newEvent.invitations?.length === 0) delete newEvent.invitations;
 
-      console.log('Event being created:', newEvent);
+      console.log('Event wird erstellt:', newEvent);
 
       this.eventsService.createEvent(newEvent).subscribe({
         next: (response: Event) => {
@@ -321,6 +354,7 @@ export class CreateEventsComponent implements OnInit {
     this.eventForm.reset({
       visibility: 'public',
       isOnline: false,
+      eventTime: '12:00', // Standardzeit wieder setzen
     });
 
     // Clear form arrays

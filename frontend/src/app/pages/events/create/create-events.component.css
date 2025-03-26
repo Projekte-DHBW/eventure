@@ -352,3 +352,29 @@ h4 {
     height: 1rem;
   }
 }
+
+/* Am Ende der Datei hinzufügen */
+.date-time-row {
+  display: flex;
+  gap: 5%;
+  align-items: flex-start;
+}
+
+.date-time-row mat-form-field {
+  flex: 1;
+}
+
+/* Verbessertes Styling für die Zeitauswahl */
+input[type="time"] {
+  font-family: inherit;
+  font-size: inherit;
+  padding: 0.5rem 0;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .date-time-row {
+    flex-direction: column;
+    gap: 0;
+  }
+}

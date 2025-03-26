@@ -214,6 +214,26 @@ mat-progress-bar {
   color: #4caf50;
 }
 
+/* Ergänze diese Styles, falls sie noch nicht vorhanden sind */
+
+.date-time-row {
+  display: flex;
+  gap: 5%;
+  align-items: flex-start;
+}
+
+.date-time-row mat-form-field {
+  flex: 1;
+}
+
+/* Verbessertes Styling für die Zeitauswahl */
+input[type="time"] {
+  font-family: inherit;
+  font-size: inherit;
+  padding: 0.5rem 0;
+  width: 100%;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .two-cols {
@@ -225,6 +245,10 @@ mat-progress-bar {
     align-items: flex-start;
   }
 
+  .date-time-row {
+    flex-direction: column;
+    gap: 0;
+  }
 }
 
 /* Zusätzliche responsive Anpassungen */

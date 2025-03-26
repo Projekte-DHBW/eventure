@@ -24,14 +24,30 @@ export type CreateEvent = {
   description: string;
   visibility: 'public' | 'private' | 'unlisted';
   category: 'music' | 'sports' | 'culture' | 'other';
-  coverImageUrl?: string;
   maxParticipants?: number;
+  coverImageUrl?: string;
   location?: string;
   eventDate?: Date;
+  eventTime?: string; // Hinzugefügt für das Zeitfeld im Formular
   isOnline?: boolean;
   meetingLink?: string;
-  occurrences?: EventOccurrence[];
-  invitations?: Invitation[];
+  occurrences?: Array<{
+    startDate: Date;
+    endDate?: Date;
+    location: {
+      address: string;
+      city: string;
+      state: string;
+      country: string;
+      postalCode?: string;
+      latitude?: number;
+      longitude?: number;
+    };
+  }>;
+  invitations?: Array<{
+    email: string;
+    message?: string;
+  }>;
 };
 
 export interface Event {
@@ -61,6 +77,7 @@ export interface UpdateEvent {
   coverImageUrl?: string;
   maxParticipants?: number;
   eventDate?: string | Date;
+  eventTime?: string; // Hinzugefügt für das Zeitfeld im Formular
   location?: string;
   isOnline?: boolean;
   meetingLink?: string;

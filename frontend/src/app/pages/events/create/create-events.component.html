@@ -159,13 +159,22 @@
                   <mat-label>Ort</mat-label>
                   <input matInput formControlName="location" placeholder="z.B. Berlin, Alexanderplatz" />
                 </mat-form-field>
+              </div>
 
+              <div class="form-row date-time-row">
                 <mat-form-field appearance="outline">
-                  <mat-label>Datum & Uhrzeit</mat-label>
+                  <mat-label>Datum</mat-label>
                   <input matInput [matDatepicker]="picker" formControlName="eventDate" />
                   <mat-hint>TT.MM.JJJJ</mat-hint>
                   <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                   <mat-datepicker #picker></mat-datepicker>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Uhrzeit</mat-label>
+                  <input matInput type="time" formControlName="eventTime" />
+                  <mat-hint>HH:MM (24h-Format)</mat-hint>
+                  <mat-icon matSuffix>access_time</mat-icon>
                 </mat-form-field>
               </div>
               }

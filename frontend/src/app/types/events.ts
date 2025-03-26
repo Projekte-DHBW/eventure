@@ -14,10 +14,6 @@ export type EventOccurrence = {
   location?: EventLocation;
 };
 
-export type EventManager = {
-  userId: string;
-};
-
 export type Invitation = {
   email: string;
   message?: string;
@@ -35,7 +31,6 @@ export type CreateEvent = {
   isOnline?: boolean;
   meetingLink?: string;
   occurrences?: EventOccurrence[];
-  managers?: EventManager[];
   invitations?: Invitation[];
 };
 
@@ -69,11 +64,6 @@ export interface UpdateEvent {
   location?: string;
   isOnline?: boolean;
   meetingLink?: string;
-  managers?: Array<{
-    userId: string;
-    userName?: string;
-    email?: string;
-  }>;
   invitations?: Array<{
     email: string;
   }>;

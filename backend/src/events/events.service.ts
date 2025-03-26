@@ -8,7 +8,6 @@ import { Repository, Brackets, In } from 'typeorm';
 import { Event } from '../entity/Event';
 import { EventLocation } from '../entity/EventLocation';
 import { EventOccurrence } from '../entity/EventOccurrence';
-import { EventManager } from '../entity/EventManager';
 import { Invitation } from '../entity/Invitation';
 import { User } from 'src/entity/User';
 import { CreateEventDto, EventLocationDto } from './dto/CreateEvent';
@@ -26,8 +25,6 @@ export class EventsService {
     private eventLocationRepository: Repository<EventLocation>,
     @InjectRepository(EventOccurrence)
     private eventOccurrenceRepository: Repository<EventOccurrence>,
-    @InjectRepository(EventManager)
-    private eventManagerRepository: Repository<EventManager>,
     @InjectRepository(Invitation)
     private invitationRepository: Repository<Invitation>,
     @InjectRepository(User)
@@ -64,11 +61,6 @@ export class EventsService {
     // 2. Process Event Occurrences if provided
     if (createEventDto.occurrences && createEventDto.occurrences.length > 0) {
       await this.createEventOccurrences(savedEvent, createEventDto.occurrences);
-    }
-
-    // 3. Process Event Managers if provided
-    if (createEventDto.managers && createEventDto.managers.length > 0) {
-      await this.createEventManagers(savedEvent, createEventDto.managers);
     }
 
     // 4. Process Invitations if provided
@@ -134,37 +126,6 @@ export class EventsService {
     return this.eventLocationRepository.save(location);
   }
 
-  // Helper method to create event managers
-  private async createEventManagers(
-    event: Event,
-    managers: CreateEventDto['managers'],
-  ): Promise<void> {
-    if (!managers || managers.length === 0) return;
-
-    const managerPromises = managers.map(async (managerDto) => {
-      // Check if user exists
-      const user = await this.userRepository.findOne({
-        where: { id: managerDto.userId },
-      });
-
-      if (!user) {
-        throw new NotFoundException(
-          `User with ID ${managerDto.userId} not found`,
-        );
-      }
-
-      // Create manager relation
-      const manager = this.eventManagerRepository.create({
-        event,
-        user,
-      });
-
-      return this.eventManagerRepository.save(manager);
-    });
-
-    await Promise.all(managerPromises);
-  }
-
   // Helper method to create invitations
   private async createInvitations(
     event: Event,
@@ -204,13 +165,6 @@ export class EventsService {
       relations: ['locationDetails'],
       order: { startDate: 'ASC' },
     });
-
-    // Find all managers with their user info
-    const managers = await this.eventManagerRepository.find({
-      where: { event: { id } },
-      relations: ['user'],
-    });
-
     // Find all invitations
     const invitations = await this.invitationRepository.find({
       where: { event: { id } },
@@ -230,7 +184,6 @@ export class EventsService {
     const eventWithDetails = {
       ...event,
       occurrences,
-      managers,
       invitations,
       attendeeCount,
       creatorName,
@@ -450,10 +403,11 @@ export class EventsService {
   async findOneById(id: string): Promise<Event> {
     const event = await this.eventRepository.findOne({
       where: { id },
+      relations: ['occurrences'], // Stellen Sie sicher, dass occurrences geladen werden
     });
 
     if (!event) {
-      throw new NotFoundException(`Event with ID ${id} not found`);
+      throw new NotFoundException(`Event mit ID ${id} nicht gefunden`);
     }
 
     return event;
@@ -480,13 +434,8 @@ export class EventsService {
     }
 
     // Extract only direct Event properties for the update
-    const {
-      occurrences,
-      managers,
-      invitations,
-      removeOccurrences,
-      ...directEventProps
-    } = updateEventDto;
+    const { occurrences, invitations, removeOccurrences, ...directEventProps } =
+      updateEventDto;
 
     // Update only the direct properties of the event
     await this.eventRepository.update(id, directEventProps);
@@ -494,12 +443,6 @@ export class EventsService {
     // Handle occurrences if provided
     if (occurrences && occurrences.length > 0) {
       await this.updateEventOccurrences(event, occurrences);
-    }
-
-    // Handle manager updates if provided
-    if (managers && managers.length > 0) {
-      // Implement this method similar to createEventManagers
-      // await this.updateEventManagers(event, managers);
     }
 
     // Handle invitation updates if provided

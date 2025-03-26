@@ -45,6 +45,46 @@
         </mat-card-content>
       </mat-card>
 
+      <!-- Neue Komponente für Event-Vorkommen -->
+      <mat-card *ngIf="event.occurrences && event.occurrences.length > 0" class="event-occurrences-card">
+        <mat-card-header>
+          <mat-card-title>
+            <div class="card-title-with-icon">
+              <mat-icon>event_repeat</mat-icon>
+              <span>Termine</span>
+            </div>
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="occurrences-list">
+            <div *ngFor="let occurrence of event.occurrences" class="occurrence-item">
+              <div class="occurrence-date-container">
+                <div class="occurrence-date">
+                  <span class="date-day">{{ occurrence.startDate | date:'dd':'':'de' }}</span>
+                  <span class="date-month">{{ occurrence.startDate | date:'MMM':'':'de' }}</span>
+                </div>
+                <div class="occurrence-time">
+                  {{ occurrence.startDate | date:'HH:mm':'':'de' }} -
+                  {{ occurrence.endDate ? (occurrence.endDate | date:'HH:mm':'':'de') : '?' }}
+                </div>
+              </div>
+              <div class="occurrence-details">
+                <div class="occurrence-day-name">
+                  {{ occurrence.startDate | date:'EEEE':'':'de' }}
+                </div>
+                <div class="occurrence-location" *ngIf="occurrence.location">
+                  <mat-icon>place</mat-icon>
+                  <span>{{ occurrence.location }}</span>
+                </div>
+                <div class="occurrence-status" [ngClass]="getOccurrenceStatus(occurrence)">
+                  {{ getStatusLabel(occurrence) }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
       <mat-card *ngIf="event.isOnline && event.meetingLink" class="event-link-card">
         <mat-card-header>
           <mat-card-title>Meeting Link</mat-card-title>
@@ -54,7 +94,6 @@
             <mat-icon>open_in_new</mat-icon>
             Online teilnehmen
           </a>
-          <p class="meeting-notice">Der Link wird für angemeldete Teilnehmer freigeschaltet</p>
         </mat-card-content>
       </mat-card>
     </div>

@@ -24,6 +24,12 @@ export interface EventsSearchResult {
   };
   attendeeCount?: number;
   creatorName?: string;
+  occurrences?: Array<{
+    id: string;
+    startDate: string;
+    endDate?: string;
+    location?: string;
+  }>;
 }
 
 @Injectable({

@@ -30,6 +30,13 @@ import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
+interface EventOccurrence {
+  id: string;
+  startDate: string;
+  endDate?: string;
+  location?: string;
+}
+
 @Component({
   selector: 'app-events',
   imports: [
@@ -107,6 +114,9 @@ export class EventsComponent implements OnInit {
           // Hier können Sie die API-Daten anpassen, falls nötig
           this.results = [result];
           console.log('Ergebnisse:', this.results); // Debug-Ausgabe
+
+          // Vorkommen sortieren, falls vorhanden
+          this.sortOccurrences();
         },
         (error) => {
           this.errorMessage = 'Fehler beim Laden der Eventdaten';
@@ -282,5 +292,73 @@ export class EventsComponent implements OnInit {
       `https://www.facebook.com/sharer/sharer.php?u=${url}`,
       '_blank',
     );
+  }
+
+  // Ermittelt den Status eines Vorkommens (bevorstehend, aktiv, vergangen)
+  getOccurrenceStatus(occurrence: EventOccurrence): string {
+    const now = new Date();
+    const startDate = new Date(occurrence.startDate);
+    const endDate = occurrence.endDate ? new Date(occurrence.endDate) : null;
+
+    if (endDate && now > endDate) {
+      return 'past';
+    } else if (now >= startDate && (!endDate || now <= endDate)) {
+      return 'active';
+    } else {
+      return 'upcoming';
+    }
+  }
+
+  // Gibt ein lesbares Label für den Status zurück
+  getStatusLabel(occurrence: EventOccurrence): string {
+    const status = this.getOccurrenceStatus(occurrence);
+
+    switch (status) {
+      case 'upcoming':
+        return 'Bevorstehend';
+      case 'active':
+        return 'Aktuell';
+      case 'past':
+        return 'Vergangen';
+      default:
+        return '';
+    }
+  }
+
+  // Formatiert die Zeit in einem lesbaren Format
+  formatTimeRange(occurrence: EventOccurrence): string {
+    if (!occurrence.startDate) return '';
+
+    const startTime = new Date(occurrence.startDate).toLocaleTimeString(
+      'de-DE',
+      {
+        hour: '2-digit',
+        minute: '2-digit',
+      },
+    );
+
+    if (!occurrence.endDate) return startTime;
+
+    const endTime = new Date(occurrence.endDate).toLocaleTimeString('de-DE', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+
+    return `${startTime} - ${endTime}`;
+  }
+
+  // Optional: Sortiere die Vorkommen nach Datum
+  sortOccurrences(): void {
+    if (
+      this.event &&
+      this.event.occurrences &&
+      this.event.occurrences.length > 0
+    ) {
+      this.event.occurrences.sort((a, b) => {
+        return (
+          new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
+        );
+      });
+    }
   }
 }

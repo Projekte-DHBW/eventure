@@ -61,7 +61,6 @@ import { ImageUtilsService } from '../../../services/image-utils.service';
     MatDividerModule,
     MatTooltipModule,
     MatProgressSpinnerModule,
-    UserSearchComponent,
     MatDialogModule,
     MatProgressBarModule,
     CommonModule,
@@ -142,7 +141,6 @@ export class EditEventsComponent implements OnInit {
       meetingLink: [''],
       coverImageUrl: [''],
       maxParticipants: [null],
-      managers: this.fb.array([]),
       invitations: this.fb.array([]),
     });
 
@@ -194,29 +192,13 @@ export class EditEventsComponent implements OnInit {
       maxParticipants: event.maxParticipants || null,
     });
 
-    // Manager-Daten könnten hier hinzugefügt werden, wenn sie im Event-Objekt verfügbar sind
-    // Ebenso Einladungen
-
     setTimeout(() => {
       this.formChanged = false;
     });
   }
 
-  get managersArray(): FormArray {
-    return this.eventForm.get('managers') as FormArray;
-  }
-
   get invitationsArray(): FormArray {
     return this.eventForm.get('invitations') as FormArray;
-  }
-
-  addManager(): void {
-    const managerGroup = this.fb.group({
-      userId: ['', Validators.required],
-      userName: [''],
-      email: [''],
-    });
-    this.managersArray.push(managerGroup);
   }
 
   addInvitation(): void {
@@ -224,10 +206,6 @@ export class EditEventsComponent implements OnInit {
       email: ['', [Validators.required, Validators.email]],
     });
     this.invitationsArray.push(invitationGroup);
-  }
-
-  removeManager(index: number): void {
-    this.managersArray.removeAt(index);
   }
 
   removeInvitation(index: number): void {
@@ -349,7 +327,6 @@ export class EditEventsComponent implements OnInit {
 
       // Clean up empty arrays to avoid backend validation issues
       if (updateData.occurrences?.length === 0) delete updateData.occurrences;
-      if (updateData.managers?.length === 0) delete updateData.managers;
       if (updateData.invitations?.length === 0) delete updateData.invitations;
 
       console.log('Event being updated:', updateData);
@@ -407,18 +384,6 @@ export class EditEventsComponent implements OnInit {
   handleError(message: string): void {
     this.snackBar.open(message, 'Schließen', { duration: 5000 });
     this.router.navigate(['/dashboard']);
-  }
-
-  // Benutzersuche für Manager
-  onUserSelected(user: UserSearchResult | null, index: number): void {
-    if (!user) return;
-
-    const managerGroup = this.managersArray.at(index);
-    managerGroup.patchValue({
-      userId: user.id,
-      userName: `${user.firstName} ${user.lastName}`,
-      email: user.email,
-    });
   }
 
   cancel(): void {

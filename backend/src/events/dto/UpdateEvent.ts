@@ -11,11 +11,7 @@ import {
   IsUrl,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  EventLocationDto,
-  EventManagerDto,
-  InvitationDto,
-} from './CreateEvent';
+import { EventLocationDto, InvitationDto } from './CreateEvent';
 
 export class EventOccurrenceDto {
   @ApiProperty({ description: 'ID of the occurrence', required: false })
@@ -136,17 +132,6 @@ export class UpdateEventDto {
   @IsOptional()
   @IsString({ each: true })
   removeOccurrences?: string[];
-
-  @ApiProperty({
-    description: 'List of managers',
-    required: false,
-    type: [EventManagerDto],
-  })
-  @IsArray()
-  @IsOptional()
-  @ValidateNested({ each: true })
-  @Type(() => EventManagerDto)
-  managers?: EventManagerDto[];
 
   @ApiProperty({
     description: 'List of invitations',

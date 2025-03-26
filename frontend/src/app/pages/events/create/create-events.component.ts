@@ -52,7 +52,6 @@ import { CommonModule } from '@angular/common';
     MatTabsModule,
     MatDividerModule,
     MatTooltipModule,
-    UserSearchComponent,
     MatProgressBarModule,
     CommonModule,
   ],
@@ -129,7 +128,6 @@ export class CreateEventsComponent implements OnInit {
       isOnline: this.isOnline,
       meetingLink: this.meetingLink,
       occurrences: this.fb.array([]),
-      managers: this.fb.array([]),
       invitations: this.fb.array([]),
     });
   }
@@ -137,10 +135,6 @@ export class CreateEventsComponent implements OnInit {
   // Getters for form arrays
   get occurrences(): FormArray {
     return this.eventForm.get('occurrences') as FormArray;
-  }
-
-  get managers(): FormArray {
-    return this.eventForm.get('managers') as FormArray;
   }
 
   get invitations(): FormArray {
@@ -165,16 +159,6 @@ export class CreateEventsComponent implements OnInit {
     this.occurrences.push(occurrenceForm);
   }
 
-  // Modified addManager method
-  addManager(): void {
-    this.managers.push(
-      this.fb.group({
-        userId: ['', Validators.required],
-        displayName: [''], // This is just for display purposes
-      }),
-    );
-  }
-
   addInvitation(): void {
     this.invitations.push(
       this.fb.group({
@@ -186,10 +170,6 @@ export class CreateEventsComponent implements OnInit {
 
   removeOccurrence(index: number): void {
     this.occurrences.removeAt(index);
-  }
-
-  removeManager(index: number): void {
-    this.managers.removeAt(index);
   }
 
   removeInvitation(index: number): void {
@@ -305,7 +285,6 @@ export class CreateEventsComponent implements OnInit {
 
       // Clean up empty arrays to avoid backend validation issues
       if (newEvent.occurrences?.length === 0) delete newEvent.occurrences;
-      if (newEvent.managers?.length === 0) delete newEvent.managers;
       if (newEvent.invitations?.length === 0) delete newEvent.invitations;
 
       console.log('Event being created:', newEvent);
@@ -348,9 +327,7 @@ export class CreateEventsComponent implements OnInit {
     while (this.occurrences.length) {
       this.occurrences.removeAt(0);
     }
-    while (this.managers.length) {
-      this.managers.removeAt(0);
-    }
+
     while (this.invitations.length) {
       this.invitations.removeAt(0);
     }
@@ -363,14 +340,6 @@ export class CreateEventsComponent implements OnInit {
         this.markFormGroupTouched(control as FormGroup);
       }
     });
-  }
-
-  // Add methods to handle user selection
-  onManagerSelected(user: UserSearchResult | null, index: number): void {
-    if (user) {
-      const managerFormGroup = this.managers.at(index) as FormGroup;
-      managerFormGroup.get('userId')?.setValue(user.id);
-    }
   }
 
   // Error message methods

@@ -67,6 +67,13 @@ export class EventsController {
   })
   @Get()
   async findAll(@Query() filters: EventFiltersDto) {
+    console.log('Raw filters received in controller:', filters);
+
+    // Handle conversion of types parameter
+    if (filters.types && !Array.isArray(filters.types)) {
+      filters.types = [filters.types];
+    }
+
     // Ensure locations is always handled as array
     if (filters.locations && typeof filters.locations === 'string') {
       filters.locations = [filters.locations];

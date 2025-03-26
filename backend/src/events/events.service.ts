@@ -238,6 +238,14 @@ export class EventsService {
         locations,
       } = filters;
 
+      console.log('Backend received filters:', {
+        types,
+        category,
+        locations,
+        search,
+        date,
+      });
+
       let query = this.eventRepository
         .createQueryBuilder('event')
         .where('event.visibility = :visibility', { visibility: 'public' });
@@ -270,9 +278,63 @@ export class EventsService {
       }
 
       if (category) {
-        query.andWhere('event.category = :category', { category });
-      } else if (types && types.length > 0) {
-        query.andWhere('event.category IN (:...types)', { types });
+        console.log('Filtering by single category:', category);
+        query.andWhere('LOWER(event.category) = LOWER(:category)', {
+          category,
+        });
+      } else if (types) {
+        console.log('Filtering by types/categories:', types);
+
+        try {
+          // Handle both string and array formats to make it more robust
+          let typesArray: string[];
+
+          if (Array.isArray(types)) {
+            typesArray = types;
+          } else if (typeof types === 'string') {
+            typesArray = types.includes(',') ? types.split(',') : [types];
+          } else {
+            typesArray = [];
+          }
+
+          console.log('Types array:', typesArray);
+
+          if (typesArray.length > 0) {
+            // Map frontend types to backend categories if needed
+            const typeMapping: Record<string, string> = {
+              musik: 'music',
+              sport: 'sports',
+              kultur: 'culture',
+              anderes: 'other',
+            };
+
+            const normalizedTypes = typesArray.map((type) => {
+              const lowerType = String(type).toLowerCase();
+              return typeMapping[lowerType] || lowerType;
+            });
+
+            console.log('Normalized types for filtering:', normalizedTypes);
+
+            // Use OR for each type instead of IN for better compatibility
+            query.andWhere(
+              new Brackets((qb) => {
+                normalizedTypes.forEach((type, index) => {
+                  if (index === 0) {
+                    qb.where('LOWER(event.category) = LOWER(:type0)', {
+                      type0: type,
+                    });
+                  } else {
+                    qb.orWhere(`LOWER(event.category) = LOWER(:type${index})`, {
+                      [`type${index}`]: type,
+                    });
+                  }
+                });
+              }),
+            );
+          }
+        } catch (error) {
+          console.error('Error processing types filter:', error);
+        }
       }
 
       // Replace the location filtering part in findAll method
@@ -629,7 +691,8 @@ export class EventsService {
       });
 
       // Convert set to array, sort, and limit results
-      const cities = Array.from(allCities)
+      //@ts-expect-error stupid typescript error
+      const citiesArray = Array.from(allCities)
         .sort((a, b) => {
           // Prioritize results that start with the query
           const startsWithA = a.toLowerCase().startsWith(query.toLowerCase());
@@ -642,7 +705,7 @@ export class EventsService {
         })
         .slice(0, limit);
 
-      return cities;
+      return { cities: citiesArray }; // Fix the object structure
     } catch (error) {
       console.error('Error searching cities:', error);
       return { cities: [] };

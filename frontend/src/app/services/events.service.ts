@@ -290,7 +290,12 @@ export class EventsService {
     }
 
     if (filters.types && filters.types.length) {
-      params = params.set('types', filters.types.join(','));
+      console.log('Sending type filters to backend:', filters.types);
+
+      // For multiple types, handle each type individually
+      filters.types.forEach((type, index) => {
+        params = params.append('types', type);
+      });
     }
 
     if (filters.locations) {

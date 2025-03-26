@@ -174,29 +174,25 @@ export class SearchComponent implements OnInit {
       limit: this.searchParams.limit || 20,
     };
 
-    if (this.searchParams.search?.trim()) {
-      backendFilters.search = this.searchParams.search.trim();
+    if (this.searchParams.search) {
+      backendFilters.search = this.searchParams.search;
     }
 
-    if (this.searchParams.sort) {
-      backendFilters.sort = this.searchParams.sort;
-    }
-
-    // Handle event type filtering correctly
     if (this.searchParams.types?.length) {
       // Map the frontend types to backend categories
       const categories = this.searchParams.types
-        .map((type) => this.typeToCategory[type])
+        .map((type) => {
+          const category = this.typeToCategory[type];
+          console.log(`Mapping type "${type}" to category "${category}"`);
+          return category;
+        })
         .filter((category) => !!category);
 
+      console.log('Frontend types:', this.searchParams.types);
+      console.log('Mapped to backend categories:', categories);
+
       if (categories.length > 0) {
-        if (categories.length === 1) {
-          // If only one category, use 'category' parameter
-          backendFilters.category = categories[0];
-        } else {
-          // If multiple categories, use 'types' parameter (what backend expects)
-          backendFilters.types = categories;
-        }
+        backendFilters.types = categories;
       }
     }
 
@@ -208,6 +204,10 @@ export class SearchComponent implements OnInit {
       backendFilters.date =
         this.dateToBackendFormat[this.searchParams.date] ||
         this.searchParams.date;
+    }
+
+    if (this.searchParams.sort) {
+      backendFilters.sort = this.searchParams.sort;
     }
 
     console.log('Sending filters to backend:', backendFilters);

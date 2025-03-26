@@ -27,10 +27,25 @@ export class EventFiltersDto {
   })
   @IsOptional()
   @Transform(({ value }) => {
+    console.log('Raw types value before transform:', value);
+
+    // Handle string (single value or comma-separated)
     if (typeof value === 'string') {
-      return value.split(',');
+      const result = value.includes(',')
+        ? value.split(',').map((v) => v.trim())
+        : [value.trim()];
+      console.log('Transformed types from string:', result);
+      return result;
     }
-    return value;
+
+    // Handle array
+    if (Array.isArray(value)) {
+      console.log('Types already an array:', value);
+      return value.map((v) => String(v).trim());
+    }
+
+    // Default fallback
+    return value ? [String(value)] : [];
   })
   types?: ('music' | 'sports' | 'culture' | 'other')[];
 

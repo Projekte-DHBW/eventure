@@ -99,7 +99,7 @@
         <div class="form-row date-time-row">
           <mat-form-field appearance="outline">
             <mat-label>Datum</mat-label>
-            <input matInput [matDatepicker]="picker" formControlName="eventDate" />
+            <input matInput [matDatepicker]="picker" formControlName="eventDate" placeholder="Datum auswählen" />
             <mat-hint>TT.MM.JJJJ</mat-hint>
             <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
             <mat-datepicker #picker></mat-datepicker>
@@ -108,7 +108,7 @@
 
           <mat-form-field appearance="outline">
             <mat-label>Uhrzeit</mat-label>
-            <input matInput type="time" formControlName="eventTime" />
+            <input matInput type="time" formControlName="eventTime" placeholder="Uhrzeit auswählen" />
             <mat-hint>HH:MM (24h-Format)</mat-hint>
             <mat-icon matSuffix>access_time</mat-icon>
           </mat-form-field>

@@ -36,7 +36,6 @@ import { EventsService } from '../../services/events.service';
 export class EventDiscoveryComponent {
   private fb = inject(FormBuilder);
   private router = inject(Router);
-  private eventsService = inject(EventsService);
 
   readonly types = input(['Musik', 'Sport', 'Kultur', 'Anderes']);
 
@@ -54,13 +53,6 @@ export class EventDiscoveryComponent {
   locationControl = new FormControl('');
   isLoading = false;
 
-  private typeToCategory: Record<string, string> = {
-    Musik: 'music',
-    Sport: 'sports',
-    Kultur: 'culture',
-    Anderes: 'other',
-  };
-
   constructor() {
     this.eventSearchForm = this.fb.group({
       eventType: [''],
@@ -75,7 +67,6 @@ export class EventDiscoveryComponent {
       const queryParams: any = {};
 
       if (formValues.eventType) {
-        // Pass the original German type name, NOT the mapped backend category
         queryParams.types = [formValues.eventType];
       }
 

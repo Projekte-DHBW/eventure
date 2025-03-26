@@ -164,7 +164,7 @@
               <div class="form-row date-time-row">
                 <mat-form-field appearance="outline">
                   <mat-label>Datum</mat-label>
-                  <input matInput [matDatepicker]="picker" formControlName="eventDate" />
+                  <input matInput [matDatepicker]="picker" formControlName="eventDate" placeholder="Datum auswählen" />
                   <mat-hint>TT.MM.JJJJ</mat-hint>
                   <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                   <mat-datepicker #picker></mat-datepicker>
@@ -172,7 +172,7 @@
 
                 <mat-form-field appearance="outline">
                   <mat-label>Uhrzeit</mat-label>
-                  <input matInput type="time" formControlName="eventTime" />
+                  <input matInput type="time" formControlName="eventTime" placeholder="Uhrzeit auswählen" />
                   <mat-hint>HH:MM (24h-Format)</mat-hint>
                   <mat-icon matSuffix>access_time</mat-icon>
                 </mat-form-field>
@@ -204,14 +204,16 @@
                     <div class="form-row">
                       <mat-form-field appearance="outline">
                         <mat-label>Startdatum & Zeit</mat-label>
-                        <input matInput [matDatepicker]="startPicker" formControlName="startDate" required />
+                        <input matInput [matDatepicker]="startPicker" formControlName="startDate"
+                          placeholder="Startdatum auswählen" required />
                         <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
                         <mat-datepicker #startPicker></mat-datepicker>
                       </mat-form-field>
 
                       <mat-form-field appearance="outline">
                         <mat-label>Enddatum & Zeit (optional)</mat-label>
-                        <input matInput [matDatepicker]="endPicker" formControlName="endDate" />
+                        <input matInput [matDatepicker]="endPicker" formControlName="endDate"
+                          placeholder="Enddatum auswählen" />
                         <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
                         <mat-datepicker #endPicker></mat-datepicker>
                       </mat-form-field>

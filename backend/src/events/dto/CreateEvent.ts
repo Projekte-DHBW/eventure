@@ -60,13 +60,6 @@ export class EventLocationDto {
   longitude?: number;
 }
 
-// DTO for event managers (by user ID)
-export class EventManagerDto {
-  @ApiProperty({ description: 'User ID of the event manager' })
-  @IsUUID()
-  userId: string;
-}
-
 // DTO for invitations
 export class InvitationDto {
   @ApiProperty({ description: 'Email address of the invited user' })
@@ -166,17 +159,6 @@ export class CreateEventDto {
   @ValidateNested({ each: true })
   @Type(() => EventOccurrenceDto)
   occurrences?: EventOccurrenceDto[];
-
-  @ApiProperty({
-    description: 'List of event managers',
-    required: false,
-    type: [EventManagerDto],
-  })
-  @IsArray()
-  @IsOptional()
-  @ValidateNested({ each: true })
-  @Type(() => EventManagerDto)
-  managers?: EventManagerDto[];
 
   @ApiProperty({
     description: 'List of invitations to send',

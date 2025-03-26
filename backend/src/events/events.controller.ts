@@ -26,6 +26,7 @@ import {
   ApiBearerAuth,
   ApiParam,
   ApiQuery,
+  getSchemaPath,
 } from '@nestjs/swagger';
 import { Event } from '../entity/Event';
 import { EventResponseDto } from './dto/EventResponse.dto';
@@ -50,11 +51,24 @@ export class EventsController {
     return this.eventsService.createEvent(createEventDto, user);
   }
 
-  @ApiOperation({ summary: 'Get all events with filters' })
-  @ApiResponse({ status: 200, description: 'List of events', type: [Event] })
+  @ApiOperation({ summary: 'Alle Events mit Filtern abrufen' })
+  @ApiResponse({
+    status: 200,
+    description: 'Liste der gefilterten Events',
+    schema: {
+      properties: {
+        events: {
+          type: 'array',
+          items: { $ref: getSchemaPath(Event) },
+        },
+        total: { type: 'number' },
+      },
+    },
+  })
   @Get()
-  findAll(@Query() filters: EventFiltersDto) {
-    return this.eventsService.findAll(filters);
+  async findAll(@Query() filters: EventFiltersDto) {
+    const [events, total] = await this.eventsService.findAll(filters);
+    return { events, total };
   }
 
   @ApiOperation({ summary: 'Get latest events' })
@@ -140,11 +154,18 @@ export class EventsController {
     return this.eventsService.findAttendingEvents(user.id);
   }
 
-  @ApiOperation({ summary: 'Search for cities' })
+  @ApiOperation({ summary: 'Nach Städten suchen' })
   @ApiResponse({
     status: 200,
-    description: 'List of matching city names',
-    type: Object,
+    description: 'Liste der passenden Städtenamen',
+    schema: {
+      properties: {
+        cities: {
+          type: 'array',
+          items: { type: 'string' },
+        },
+      },
+    },
   })
   @Get('cities/search')
   async searchCities(@Query() searchDto: CitySearchDto) {

@@ -52,7 +52,6 @@ import { CommonModule } from '@angular/common';
     MatTabsModule,
     MatDividerModule,
     MatTooltipModule,
-    UserSearchComponent,
     MatProgressBarModule,
     CommonModule,
   ],
@@ -85,6 +84,7 @@ export class CreateEventsComponent implements OnInit {
   // Simple event properties
   location = new FormControl('');
   eventDate = new FormControl();
+  eventTime = new FormControl('12:00'); // Default-Wert 12:00 Uhr
 
   // Online event properties
   isOnline = new FormControl(false);
@@ -126,10 +126,10 @@ export class CreateEventsComponent implements OnInit {
       maxParticipants: this.maxParticipants,
       location: this.location,
       eventDate: this.eventDate,
+      eventTime: this.eventTime, // Neues Formularfeld
       isOnline: this.isOnline,
       meetingLink: this.meetingLink,
       occurrences: this.fb.array([]),
-      managers: this.fb.array([]),
       invitations: this.fb.array([]),
     });
   }
@@ -137,10 +137,6 @@ export class CreateEventsComponent implements OnInit {
   // Getters for form arrays
   get occurrences(): FormArray {
     return this.eventForm.get('occurrences') as FormArray;
-  }
-
-  get managers(): FormArray {
-    return this.eventForm.get('managers') as FormArray;
   }
 
   get invitations(): FormArray {
@@ -165,16 +161,6 @@ export class CreateEventsComponent implements OnInit {
     this.occurrences.push(occurrenceForm);
   }
 
-  // Modified addManager method
-  addManager(): void {
-    this.managers.push(
-      this.fb.group({
-        userId: ['', Validators.required],
-        displayName: [''], // This is just for display purposes
-      }),
-    );
-  }
-
   addInvitation(): void {
     this.invitations.push(
       this.fb.group({
@@ -186,10 +172,6 @@ export class CreateEventsComponent implements OnInit {
 
   removeOccurrence(index: number): void {
     this.occurrences.removeAt(index);
-  }
-
-  removeManager(index: number): void {
-    this.managers.removeAt(index);
   }
 
   removeInvitation(index: number): void {
@@ -301,14 +283,44 @@ export class CreateEventsComponent implements OnInit {
       }
 
       this.isLoading = true;
-      const newEvent: CreateEvent = this.eventForm.value;
+
+      // Erstellen einer Kopie der Formulardaten
+      const formValues = this.eventForm.value;
+      const newEvent: CreateEvent = { ...formValues };
+
+      // Kombiniere Datum und Uhrzeit zu einem einzigen Zeitstempel
+      if (newEvent.eventDate && newEvent.eventTime) {
+        try {
+          const dateObj = new Date(newEvent.eventDate);
+
+          // Zeit aus dem Zeit-String extrahieren
+          const [hours, minutes] = (newEvent.eventTime as string)
+            .split(':')
+            .map(Number);
+
+          // Setzen der Stunden und Minuten auf das Datum
+          dateObj.setHours(hours, minutes, 0, 0);
+
+          // Aktualisiere das Datum im Event-Objekt
+          newEvent.eventDate = dateObj;
+
+          // Entferne das separate Zeitfeld, bevor wir die Daten ans Backend senden
+          delete (newEvent as any).eventTime;
+        } catch (error) {
+          console.error('Fehler beim Umwandeln des Datums:', error);
+          this.snackBar.open('Ungültiges Datum oder Zeit', 'Schließen', {
+            duration: 3000,
+          });
+          this.isLoading = false;
+          return;
+        }
+      }
 
       // Clean up empty arrays to avoid backend validation issues
       if (newEvent.occurrences?.length === 0) delete newEvent.occurrences;
-      if (newEvent.managers?.length === 0) delete newEvent.managers;
       if (newEvent.invitations?.length === 0) delete newEvent.invitations;
 
-      console.log('Event being created:', newEvent);
+      console.log('Event wird erstellt:', newEvent);
 
       this.eventsService.createEvent(newEvent).subscribe({
         next: (response: Event) => {
@@ -342,15 +354,14 @@ export class CreateEventsComponent implements OnInit {
     this.eventForm.reset({
       visibility: 'public',
       isOnline: false,
+      eventTime: '12:00', // Standardzeit wieder setzen
     });
 
     // Clear form arrays
     while (this.occurrences.length) {
       this.occurrences.removeAt(0);
     }
-    while (this.managers.length) {
-      this.managers.removeAt(0);
-    }
+
     while (this.invitations.length) {
       this.invitations.removeAt(0);
     }
@@ -363,14 +374,6 @@ export class CreateEventsComponent implements OnInit {
         this.markFormGroupTouched(control as FormGroup);
       }
     });
-  }
-
-  // Add methods to handle user selection
-  onManagerSelected(user: UserSearchResult | null, index: number): void {
-    if (user) {
-      const managerFormGroup = this.managers.at(index) as FormGroup;
-      managerFormGroup.get('userId')?.setValue(user.id);
-    }
   }
 
   // Error message methods

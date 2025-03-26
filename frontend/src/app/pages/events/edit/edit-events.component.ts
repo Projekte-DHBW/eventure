@@ -61,7 +61,6 @@ import { ImageUtilsService } from '../../../services/image-utils.service';
     MatDividerModule,
     MatTooltipModule,
     MatProgressSpinnerModule,
-    UserSearchComponent,
     MatDialogModule,
     MatProgressBarModule,
     CommonModule,
@@ -138,15 +137,15 @@ export class EditEventsComponent implements OnInit {
       visibility: ['public', Validators.required],
       location: [''],
       eventDate: [null, Validators.required],
+      eventTime: ['12:00'], // Neues Formularfeld für die Uhrzeit
       isOnline: [false],
       meetingLink: [''],
       coverImageUrl: [''],
       maxParticipants: [null],
-      managers: this.fb.array([]),
       invitations: this.fb.array([]),
     });
 
-    // Zeige den Meeting-Link-Feld nur, wenn es sich um ein Online-Event handelt
+    // Rest der Methode bleibt unverändert
     this.eventForm.get('isOnline')?.valueChanges.subscribe((isOnline) => {
       const meetingLinkControl = this.eventForm.get('meetingLink');
       if (isOnline) {
@@ -180,6 +179,15 @@ export class EditEventsComponent implements OnInit {
   }
 
   populateForm(event: Event): void {
+    // Zeitkomponente aus eventDate extrahieren, falls vorhanden
+    let timeString = '12:00'; // Standard-Uhrzeit
+    if (event.eventDate) {
+      const eventDateTime = new Date(event.eventDate);
+      const hours = eventDateTime.getHours().toString().padStart(2, '0');
+      const minutes = eventDateTime.getMinutes().toString().padStart(2, '0');
+      timeString = `${hours}:${minutes}`;
+    }
+
     // Grundlegende Felder
     this.eventForm.patchValue({
       title: event.title,
@@ -188,35 +196,20 @@ export class EditEventsComponent implements OnInit {
       visibility: event.visibility,
       location: event.location,
       eventDate: event.eventDate ? new Date(event.eventDate) : null,
+      eventTime: timeString, // Extrahierte Uhrzeitkomponente setzen
       isOnline: event.isOnline || false,
       meetingLink: event.meetingLink || '',
       coverImageUrl: event.coverImageUrl || '',
       maxParticipants: event.maxParticipants || null,
     });
 
-    // Manager-Daten könnten hier hinzugefügt werden, wenn sie im Event-Objekt verfügbar sind
-    // Ebenso Einladungen
-
     setTimeout(() => {
       this.formChanged = false;
     });
   }
 
-  get managersArray(): FormArray {
-    return this.eventForm.get('managers') as FormArray;
-  }
-
   get invitationsArray(): FormArray {
     return this.eventForm.get('invitations') as FormArray;
-  }
-
-  addManager(): void {
-    const managerGroup = this.fb.group({
-      userId: ['', Validators.required],
-      userName: [''],
-      email: [''],
-    });
-    this.managersArray.push(managerGroup);
   }
 
   addInvitation(): void {
@@ -224,10 +217,6 @@ export class EditEventsComponent implements OnInit {
       email: ['', [Validators.required, Validators.email]],
     });
     this.invitationsArray.push(invitationGroup);
-  }
-
-  removeManager(index: number): void {
-    this.managersArray.removeAt(index);
   }
 
   removeInvitation(index: number): void {
@@ -345,19 +334,51 @@ export class EditEventsComponent implements OnInit {
         return;
       }
 
-      const updateData: UpdateEvent = this.eventForm.value;
+      const formValues = this.eventForm.value;
+      const updateData: UpdateEvent = { ...formValues };
 
-      // Clean up empty arrays to avoid backend validation issues
+      // Datum und Uhrzeit kombinieren, falls beide vorhanden sind
+      if (updateData.eventDate && updateData.eventTime) {
+        try {
+          const dateObj = new Date(updateData.eventDate);
+
+          // Zeitkomponenten extrahieren
+          const [hours, minutes] = (updateData.eventTime as string)
+            .split(':')
+            .map(Number);
+
+          // Stunden und Minuten im Date-Objekt setzen
+          dateObj.setHours(hours, minutes, 0, 0);
+
+          // Datum im Event-Objekt aktualisieren
+          updateData.eventDate = dateObj;
+
+          // Separates Zeitfeld entfernen, bevor es ans Backend gesendet wird
+          delete (updateData as any).eventTime;
+        } catch (error) {
+          console.error('Fehler beim Kombinieren von Datum und Zeit:', error);
+          this.snackBar.open(
+            'Ungültiges Datums- oder Zeitformat',
+            'Schließen',
+            {
+              duration: 3000,
+            },
+          );
+          this.isLoading = false;
+          return;
+        }
+      }
+
+      // Rest der Methode bleibt unverändert
       if (updateData.occurrences?.length === 0) delete updateData.occurrences;
-      if (updateData.managers?.length === 0) delete updateData.managers;
       if (updateData.invitations?.length === 0) delete updateData.invitations;
 
-      console.log('Event being updated:', updateData);
+      console.log('Event wird aktualisiert:', updateData);
 
       this.eventsService.updateEvent(this.eventId, updateData).subscribe({
         next: (response: Event) => {
           this.isLoading = false;
-          this.formChanged = false; // Zurücksetzen nach erfolgreicher Speicherung
+          this.formChanged = false;
           this.snackBar.open(
             'Event wurde erfolgreich aktualisiert!',
             'Schließen',
@@ -407,18 +428,6 @@ export class EditEventsComponent implements OnInit {
   handleError(message: string): void {
     this.snackBar.open(message, 'Schließen', { duration: 5000 });
     this.router.navigate(['/dashboard']);
-  }
-
-  // Benutzersuche für Manager
-  onUserSelected(user: UserSearchResult | null, index: number): void {
-    if (!user) return;
-
-    const managerGroup = this.managersArray.at(index);
-    managerGroup.patchValue({
-      userId: user.id,
-      userName: `${user.firstName} ${user.lastName}`,
-      email: user.email,
-    });
   }
 
   cancel(): void {

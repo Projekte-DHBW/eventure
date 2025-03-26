@@ -3,7 +3,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Event } from '../entity/Event';
 import { EventLocation } from '../entity/EventLocation';
 import { EventOccurrence } from '../entity/EventOccurrence';
-import { EventManager } from '../entity/EventManager';
 import { EventAttendee } from '../entity/EventAttendee';
 import { Invitation } from '../entity/Invitation';
 import { User } from '../entity/User';
@@ -20,7 +19,6 @@ import { InvitedUsers } from 'src/entity/InvitedUsers';
       Event,
       EventLocation,
       EventOccurrence,
-      EventManager,
       EventAttendee,
       Invitation,
       User,

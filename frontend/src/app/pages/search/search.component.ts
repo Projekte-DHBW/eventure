@@ -1,5 +1,5 @@
-import { Component, OnInit, input, inject } from '@angular/core';
-import { RouterModule, ActivatedRoute, Router } from '@angular/router';
+import { Component, OnInit, inject, input } from '@angular/core';
+import { RouterModule } from '@angular/router';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -10,11 +10,32 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
-import { EventsService } from '../../services/events.service';
-import { Event } from '../../types/events';
-import { Observable, debounceTime, switchMap, of, catchError, map } from 'rxjs';
-import { ImageUtilsService } from '../../services/image-utils.service';
 import { EventCardComponent } from '../../components/event-card/event-card.component';
+import { ActivatedRoute, Router } from '@angular/router';
+import { EventsService } from '../../services/events.service';
+import { ImageUtilsService } from '../../services/image-utils.service';
+import {
+  Observable,
+  debounceTime,
+  distinctUntilChanged,
+  switchMap,
+  of,
+} from 'rxjs';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { AsyncPipe } from '@angular/common';
+import { MatChipListbox, MatChipsModule } from '@angular/material/chips';
+import { Event } from '../../types/events';
+
+interface SearchParams {
+  search?: string;
+  types?: string[];
+  locations?: string[];
+  date?: string;
+  page?: number;
+  limit?: number;
+  category?: string;
+  sort?: 'newest' | 'popular' | 'upcoming';
+}
 
 @Component({
   selector: 'app-search',
@@ -32,6 +53,8 @@ import { EventCardComponent } from '../../components/event-card/event-card.compo
     MatDatepickerModule,
     MatNativeDateModule,
     EventCardComponent,
+    MatAutocompleteModule,
+    MatChipsModule,
   ],
   templateUrl: './search.component.html',
   styleUrl: './search.component.css',
@@ -44,16 +67,7 @@ export class SearchComponent implements OnInit {
 
   events: Event[] = [];
   totalEvents: number = 0;
-  searchParams: {
-    search?: string;
-    types?: string[];
-    locations?: string[];
-    date?: string;
-    page?: number;
-    limit?: number;
-    category?: string;
-    sort?: 'newest' | 'popular' | 'upcoming';
-  } = {
+  searchParams: SearchParams = {
     page: 1,
     limit: 20,
     sort: 'newest',
@@ -125,95 +139,21 @@ export class SearchComponent implements OnInit {
   specificDateControl = new FormControl<Date | null>(null);
 
   ngOnInit(): void {
-    this.loadLatestEvents();
-
     this.route.queryParamMap.subscribe((params) => {
-      console.log('Query params changed:', params);
-
       this.searchParams = {
-        page: 1,
-        limit: 20,
-        sort: 'newest',
+        search: params.get('search') || undefined,
+        types: params.getAll('types'),
+        locations: params.getAll('locations'),
+        date: params.get('date') || undefined,
+        page: Number(params.get('page')) || 1,
+        limit: Number(params.get('limit')) || 20,
+        sort:
+          (params.get('sort') as 'newest' | 'popular' | 'upcoming') || 'newest',
       };
-
-      if (params.has('search')) {
-        const searchValue = params.get('search');
-        if (searchValue && searchValue.trim().length > 0) {
-          this.searchParams.search = searchValue;
-          this.searchInput.setValue(searchValue, { emitEvent: false });
-        }
-      } else {
-        this.searchInput.setValue('', { emitEvent: false });
-      }
-
-      const types = params.getAll('types');
-      if (types && types.length > 0) {
-        this.searchParams.types = types;
-      }
-
-      const locations = params.getAll('locations');
-      if (locations && locations.length > 0) {
-        this.searchParams.locations = locations;
-      }
-
-      if (params.has('date')) {
-        this.searchParams.date = params.get('date') || undefined;
-      }
-
-      if (params.has('page')) {
-        const page = parseInt(params.get('page') || '1', 10);
-        if (!isNaN(page) && page > 0) {
-          this.searchParams.page = page;
-        }
-      }
-
-      if (params.has('limit')) {
-        const limit = parseInt(params.get('limit') || '20', 10);
-        if (!isNaN(limit) && limit > 0) {
-          this.searchParams.limit = limit;
-        }
-      }
-
-      if (params.has('sort')) {
-        const sort = params.get('sort');
-        if (sort === 'newest' || sort === 'popular' || sort === 'upcoming') {
-          this.searchParams.sort = sort;
-        }
-      }
-
-      if (this.hasSearchParams) {
-        this.performSearch();
-      } else {
-        this.loadLatestEvents();
-      }
+      this.performSearch();
     });
 
     this.setupLocationAutocomplete();
-  }
-
-  loadLatestEvents(): void {
-    this.loading = true;
-
-    this.eventsService
-      .getLatestEvents(this.searchParams.limit || 20)
-      .subscribe({
-        next: (events) => {
-          if (Array.isArray(events)) {
-            this.events = events;
-            this.totalEvents = events.length;
-          } else {
-            this.events = [];
-            this.totalEvents = 0;
-          }
-          this.loading = false;
-        },
-        error: (err) => {
-          console.error('Fehler beim Laden der Events:', err);
-          this.events = [];
-          this.totalEvents = 0;
-          this.loading = false;
-        },
-      });
   }
 
   get displayedLocations(): string[] {
@@ -243,7 +183,7 @@ export class SearchComponent implements OnInit {
     };
 
     if (this.searchParams.search?.trim()) {
-      backendFilters.search = this.searchParams.search.trim().toLowerCase();
+      backendFilters.search = this.searchParams.search.trim();
     }
 
     if (this.searchParams.sort) {
@@ -251,37 +191,19 @@ export class SearchComponent implements OnInit {
     }
 
     if (this.searchParams.types?.length) {
-      const categories = this.searchParams.types.map(
-        (type) => this.typeToCategory[type],
+      backendFilters.types = this.searchParams.types.map(
+        (type) => this.typeToCategory[type] || type,
       );
-      const categoryCounts: Record<string, number> = {};
-
-      categories.forEach((category) => {
-        if (category) {
-          categoryCounts[category] = (categoryCounts[category] || 0) + 1;
-        }
-      });
-
-      const uniqueCategories = Object.keys(categoryCounts);
-      if (uniqueCategories.length === 1) {
-        backendFilters.category = uniqueCategories[0];
-      } else {
-        backendFilters.types = this.searchParams.types;
-      }
     }
 
     if (this.searchParams.locations?.length) {
-      backendFilters.locations = this.searchParams.locations.join(',');
+      backendFilters.locations = this.searchParams.locations;
     }
 
     if (this.searchParams.date) {
-      if (
-        Object.keys(this.dateToBackendFormat).includes(this.searchParams.date)
-      ) {
-        backendFilters.date = this.dateToBackendFormat[this.searchParams.date];
-      } else if (this.searchParams.date.match(/^\d{4}-\d{2}-\d{2}$/)) {
-        backendFilters.date = this.searchParams.date;
-      }
+      backendFilters.date =
+        this.dateToBackendFormat[this.searchParams.date] ||
+        this.searchParams.date;
     }
 
     return backendFilters;
@@ -289,21 +211,18 @@ export class SearchComponent implements OnInit {
 
   performSearch(): void {
     this.loading = true;
-    const backendFilters = this.convertFiltersToBackend();
+    const filters = this.convertFiltersToBackend();
 
-    this.eventsService.getEvents(backendFilters).subscribe({
-      next: ([events, totalCount]) => {
-        if (!events || !Array.isArray(events)) {
-          this.events = [];
-          this.totalEvents = 0;
-        } else {
-          this.events = events;
-          this.totalEvents = totalCount || events.length;
-        }
+    this.eventsService.getEvents(filters).subscribe({
+      next: (response) => {
+        // Direkt die Felder aus dem Response-Objekt verwenden
+        this.events = response.events || [];
+        this.totalEvents = response.total || 0;
         this.loading = false;
       },
       error: (err) => {
-        console.error('Fehler bei der Suche:', err);
+        console.error('Error fetching events:', err);
+        // Bei Fehlern leere Arrays initialisieren
         this.events = [];
         this.totalEvents = 0;
         this.loading = false;
@@ -312,76 +231,34 @@ export class SearchComponent implements OnInit {
   }
 
   applyFilter(type: string, value: string): void {
-    switch (type) {
-      case 'types':
-        if (!this.searchParams.types) {
-          this.searchParams.types = [];
-        }
-        if (this.searchParams.types.includes(value)) {
-          this.searchParams.types = this.searchParams.types.filter(
-            (t) => t !== value,
-          );
-          if (this.searchParams.types.length === 0) {
-            this.searchParams.types = undefined;
-          }
-        } else {
-          this.searchParams.types.push(value);
-        }
-        break;
-
-      case 'locations':
-        if (!this.searchParams.locations) {
-          this.searchParams.locations = [];
-        }
-        if (this.searchParams.locations.includes(value)) {
-          this.searchParams.locations = this.searchParams.locations.filter(
-            (l) => l !== value,
-          );
-          if (this.searchParams.locations.length === 0) {
-            this.searchParams.locations = undefined;
-          }
-        } else {
-          this.searchParams.locations.push(value);
-        }
-        break;
-
-      case 'date':
-        this.searchParams.date =
-          this.searchParams.date === value ? undefined : value;
-        break;
+    if (type === 'types') {
+      this.searchParams.types = this.searchParams.types || [];
+      if (!this.searchParams.types.includes(value)) {
+        this.searchParams.types.push(value);
+      }
+    } else if (type === 'locations') {
+      this.searchParams.locations = this.searchParams.locations || [];
+      if (!this.searchParams.locations.includes(value)) {
+        this.searchParams.locations.push(value);
+      }
+    } else if (type === 'date') {
+      this.searchParams.date = value;
     }
 
-    this.searchParams.page = 1;
     this.updateUrl();
   }
 
   removeFilter(type: string, value?: string): void {
-    switch (type) {
-      case 'types':
-        if (value && this.searchParams.types) {
-          this.searchParams.types = this.searchParams.types.filter(
-            (t) => t !== value,
-          );
-          if (this.searchParams.types.length === 0) {
-            this.searchParams.types = undefined;
-          }
-        }
-        break;
-
-      case 'locations':
-        if (value && this.searchParams.locations) {
-          this.searchParams.locations = this.searchParams.locations.filter(
-            (l) => l !== value,
-          );
-          if (this.searchParams.locations.length === 0) {
-            this.searchParams.locations = undefined;
-          }
-        }
-        break;
-
-      case 'date':
-        this.searchParams.date = undefined;
-        break;
+    if (type === 'types' && value) {
+      this.searchParams.types = this.searchParams.types?.filter(
+        (t) => t !== value,
+      );
+    } else if (type === 'locations' && value) {
+      this.searchParams.locations = this.searchParams.locations?.filter(
+        (l) => l !== value,
+      );
+    } else if (type === 'date') {
+      this.searchParams.date = undefined;
     }
 
     this.updateUrl();
@@ -393,94 +270,55 @@ export class SearchComponent implements OnInit {
       limit: 20,
       sort: 'newest',
     };
-
-    this.searchInput.setValue('', { emitEvent: false });
-
-    this.router
-      .navigate([], {
-        relativeTo: this.route,
-        queryParams: {},
-        replaceUrl: true,
-        queryParamsHandling: '',
-      })
-      .then(() => {
-        this.loadLatestEvents();
-      });
+    this.updateUrl();
   }
 
   onSearch(): void {
-    const searchValue = this.searchInput.value?.trim() || '';
+    this.searchParams.search = this.searchInput.value || undefined;
+    this.updateUrl();
+  }
 
-    if (searchValue.length > 0) {
-      this.searchParams.search = searchValue;
+  onSpecificDateSelected(event: any): void {
+    const date = event.value;
+    if (date) {
+      const formattedDate = date.toISOString().split('T')[0];
+      this.searchParams.date = formattedDate;
     } else {
-      this.searchParams.search = undefined;
+      this.searchParams.date = undefined;
     }
-
-    this.searchParams.page = 1;
     this.updateUrl();
   }
 
   private updateUrl(): void {
-    const queryParams: any = {};
-
-    if (this.searchParams.search) {
-      queryParams.search = this.searchParams.search;
-    }
-
-    if (this.searchParams.types?.length) {
-      queryParams.types = this.searchParams.types;
-    }
-
-    if (this.searchParams.locations?.length) {
-      queryParams.locations = this.searchParams.locations;
-    }
-
-    if (this.searchParams.date) {
-      queryParams.date = this.searchParams.date;
-    }
-
-    if (this.searchParams.page !== 1) {
-      queryParams.page = this.searchParams.page;
-    }
-
-    if (this.searchParams.limit !== 20) {
-      queryParams.limit = this.searchParams.limit;
-    }
-
-    if (this.searchParams.sort !== 'newest') {
-      queryParams.sort = this.searchParams.sort;
-    }
-
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: queryParams,
-      replaceUrl: true,
-      queryParamsHandling: '',
+    this.router.navigate(['/search'], {
+      queryParams: {
+        search: this.searchParams.search,
+        types: this.searchParams.types,
+        locations: this.searchParams.locations,
+        date: this.searchParams.date,
+        page: this.searchParams.page,
+        limit: this.searchParams.limit,
+        sort: this.searchParams.sort,
+      },
+      queryParamsHandling: 'merge',
     });
   }
 
   private setupLocationAutocomplete(): void {
     this.filteredLocations = this.searchInput.valueChanges.pipe(
-      debounceTime(300),
+      debounceTime(200),
+      distinctUntilChanged(),
       switchMap((value) => {
-        if (!value || typeof value !== 'string' || value.length < 2) {
-          return of(this.locations());
-        }
-
-        return this.eventsService.searchCities(value).pipe(
-          map((response) => response.cities),
-          catchError(() => {
-            console.error('Fehler beim Abrufen der Städte');
-            return of(this.locations());
-          }),
+        const filterValue = value!.toLowerCase();
+        const filtered = this.locations().filter((location) =>
+          location.toLowerCase().includes(filterValue),
         );
+        return of(filtered);
       }),
     );
   }
 
   capitalizeFirstLetter(str: string): string {
-    if (!str) return '';
     return str.charAt(0).toUpperCase() + str.slice(1);
   }
 }

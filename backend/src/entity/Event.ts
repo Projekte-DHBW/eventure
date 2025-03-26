@@ -11,7 +11,6 @@ import { User } from './User';
 import { Exclude } from 'class-transformer';
 import { EventOccurrence } from './EventOccurrence';
 import { EventAttendee } from './EventAttendee';
-import { EventManager } from './EventManager';
 import { Invitation } from './Invitation';
 import { InvitedUsers } from './InvitedUsers';
 
@@ -69,9 +68,6 @@ export class Event extends BaseEntity {
 
   @OneToMany(() => EventAttendee, (attendee) => attendee.event)
   attendees: EventAttendee[];
-
-  @OneToMany(() => EventManager, (manager) => manager.event)
-  managers: EventManager[];
 
   @OneToMany(() => Invitation, (invitation) => invitation.event)
   invitations: Invitation[];

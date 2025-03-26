@@ -45,6 +45,46 @@
         </mat-card-content>
       </mat-card>
 
+      <!-- Neue Komponente für Event-Vorkommen -->
+      <mat-card *ngIf="event.occurrences && event.occurrences.length > 0" class="event-occurrences-card">
+        <mat-card-header>
+          <mat-card-title>
+            <div class="card-title-with-icon">
+              <mat-icon>event_repeat</mat-icon>
+              <span>Termine</span>
+            </div>
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="occurrences-list">
+            <div *ngFor="let occurrence of event.occurrences" class="occurrence-item">
+              <div class="occurrence-date-container">
+                <div class="occurrence-date">
+                  <span class="date-day">{{ occurrence.startDate | date:'dd':'':'de' }}</span>
+                  <span class="date-month">{{ occurrence.startDate | date:'MMM':'':'de' }}</span>
+                </div>
+                <div class="occurrence-time">
+                  {{ occurrence.startDate | date:'HH:mm':'':'de' }} -
+                  {{ occurrence.endDate ? (occurrence.endDate | date:'HH:mm':'':'de') : '?' }}
+                </div>
+              </div>
+              <div class="occurrence-details">
+                <div class="occurrence-day-name">
+                  {{ occurrence.startDate | date:'EEEE':'':'de' }}
+                </div>
+                <div class="occurrence-location" *ngIf="occurrence.location">
+                  <mat-icon>place</mat-icon>
+                  <span>{{ occurrence.location }}</span>
+                </div>
+                <div class="occurrence-status" [ngClass]="getOccurrenceStatus(occurrence)">
+                  {{ getStatusLabel(occurrence) }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
       <mat-card *ngIf="event.isOnline && event.meetingLink" class="event-link-card">
         <mat-card-header>
           <mat-card-title>Meeting Link</mat-card-title>
@@ -54,7 +94,6 @@
             <mat-icon>open_in_new</mat-icon>
             Online teilnehmen
           </a>
-          <p class="meeting-notice">Der Link wird für angemeldete Teilnehmer freigeschaltet</p>
         </mat-card-content>
       </mat-card>
     </div>
@@ -129,6 +168,50 @@
               <span class="detail-label">Sichtbarkeit</span>
               <span class="detail-value">{{ getVisibilityLabel(event.visibility) }}</span>
             </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+
+      <mat-card class="share-card">
+        <mat-card-header>
+          <mat-card-title>Event teilen</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <p class="share-description">Teile dieses Event mit Freunden und Kollegen</p>
+
+          <div class="share-buttons">
+            <button mat-stroked-button color="primary" (click)="copyEventLink()" class="share-button">
+              <mat-icon>content_copy</mat-icon>
+              <span>Link kopieren</span>
+            </button>
+
+            <button mat-stroked-button color="primary" (click)="shareViaEmail()" class="share-button">
+              <mat-icon>email</mat-icon>
+              <span>Per E-Mail teilen</span>
+            </button>
+
+            <div class="social-share-buttons">
+              <button mat-mini-fab class="custom-share-button whatsapp-button" (click)="shareToWhatsApp()"
+                matTooltip="Via WhatsApp teilen">
+                <mat-icon svgIcon="whatsapp"></mat-icon>
+              </button>
+
+              <button mat-mini-fab class="custom-share-button twitter-button" (click)="shareToTwitter()"
+                matTooltip="Via Twitter teilen">
+                <mat-icon svgIcon="twitter"></mat-icon>
+              </button>
+
+              <button mat-mini-fab class="custom-share-button facebook-button" (click)="shareToFacebook()"
+                matTooltip="Via Facebook teilen">
+                <mat-icon svgIcon="facebook"></mat-icon>
+              </button>
+            </div>
+          </div>
+
+          <div *ngIf="linkCopied" class="copied-message">
+            <mat-icon color="primary">check_circle</mat-icon>
+            <span>Link in Zwischenablage kopiert!</span>
           </div>
         </mat-card-content>
       </mat-card>

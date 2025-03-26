@@ -88,7 +88,7 @@ mat-card-content {
   flex-wrap: nowrap;
 }
 
-.form-row > mat-form-field {
+.form-row>mat-form-field {
   flex: 1;
   min-width: 0;
 }
@@ -101,9 +101,7 @@ mat-card-content {
   color: #dadce0;
 }
 
-::ng-deep
-  .mat-form-field-appearance-outline.mat-focused
-  .mat-form-field-outline-thick {
+::ng-deep .mat-form-field-appearance-outline.mat-focused .mat-form-field-outline-thick {
   color: var(--primary, #4169e1);
 }
 
@@ -215,7 +213,6 @@ button[mat-raised-button]:hover:not([disabled]) {
   padding: 0 1.5em 1.5em !important;
 }
 
-.manager-item,
 .invitation-item {
   margin-bottom: 1.5em;
   padding: 1.5em;
@@ -252,6 +249,7 @@ h4 {
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -352,5 +350,31 @@ h4 {
     font-size: 1rem;
     width: 1rem;
     height: 1rem;
+  }
+}
+
+/* Am Ende der Datei hinzufügen */
+.date-time-row {
+  display: flex;
+  gap: 5%;
+  align-items: flex-start;
+}
+
+.date-time-row mat-form-field {
+  flex: 1;
+}
+
+/* Verbessertes Styling für die Zeitauswahl */
+input[type="time"] {
+  font-family: inherit;
+  font-size: inherit;
+  padding: 0.5rem 0;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .date-time-row {
+    flex-direction: column;
+    gap: 0;
   }
 }

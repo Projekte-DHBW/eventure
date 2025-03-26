@@ -1,4 +1,4 @@
-import { Component, ViewChild, ElementRef, inject } from '@angular/core';
+import { Component, ViewChild, ElementRef, inject, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { EventsService } from '../../services/events.service';
 import { Event } from '../../types/events';
@@ -9,33 +9,41 @@ import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-event-slider',
+  standalone: true,
   imports: [CommonModule, MatProgressSpinner, MatIcon],
   templateUrl: './event-slider.component.html',
   styleUrl: './event-slider.component.css',
 })
-export class EventSliderComponent {
+export class EventSliderComponent implements AfterViewInit {
   private eventsService = inject(EventsService);
   protected images = inject(ImageUtilsService);
   private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
 
-  @ViewChild('eventSlider', { static: false }) eventSlider!: ElementRef;
+  @ViewChild('eventSlider') eventSlider?: ElementRef;
 
   events: Event[] = [];
   loading = false;
 
-  constructor() {}
-
   ngOnInit(): void {
     this.loadLatestEvents();
+  }
+
+  ngAfterViewInit(): void {
+    setTimeout(() => {
+      if (this.eventSlider?.nativeElement) {
+        this.eventSlider.nativeElement.scrollLeft = 0;
+      }
+    }, 100);
   }
 
   loadLatestEvents(): void {
     this.loading = true;
     this.eventsService.getLatestEvents(10).subscribe({
       next: (events) => {
-        console.log('Loaded events:', events);
         this.events = events || [];
         this.loading = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Error fetching events:', err);
@@ -49,11 +57,15 @@ export class EventSliderComponent {
     this.router.navigate(['/events', eventId]);
   }
 
-  scrollLeft() {
-    this.eventSlider.nativeElement.scrollBy({ left: -300, behavior: 'smooth' });
+  scrollLeft(): void {
+    if (this.eventSlider?.nativeElement) {
+      this.eventSlider.nativeElement.scrollBy({ left: -300, behavior: 'smooth' });
+    }
   }
 
-  scrollRight() {
-    this.eventSlider.nativeElement.scrollBy({ left: 300, behavior: 'smooth' });
+  scrollRight(): void {
+    if (this.eventSlider?.nativeElement) {
+      this.eventSlider.nativeElement.scrollBy({ left: 300, behavior: 'smooth' });
+    }
   }
 }

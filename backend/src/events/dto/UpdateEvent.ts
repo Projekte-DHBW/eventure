@@ -35,7 +35,11 @@ export class EventOccurrenceDto {
   @IsOptional()
   title?: string;
 
-  @ApiProperty({ description: 'Location of the occurrence', required: false })
+  @ApiProperty({
+    description: 'Location of the occurrence',
+    required: false,
+    type: () => EventLocationDto, // ✅ lazy resolver
+  })
   @ValidateNested()
   @IsOptional()
   @Type(() => EventLocationDto)

@@ -596,13 +596,31 @@ export class EventsService {
    * Find events that a user is attending
    */
   async findAttendingEvents(userId: string): Promise<Event[]> {
-    const attendeeRecords = await this.eventAttendeeRepository.find({
-      where: { userId },
+    // Verwende invitedUserRepository statt eventAttendeeRepository
+    const invitedRecords = await this.invitedUserRepository.find({
+      where: { user: { id: userId } },
       relations: ['event'],
     });
 
-    // Extract the events from the attendee records
-    return attendeeRecords.map((record) => record.event);
+    if (!invitedRecords || invitedRecords.length === 0) {
+      return [];
+    }
+
+    // Extrahiere die Events aus den invited_users-Datensätzen
+    const events = invitedRecords
+      .filter((record) => record.event) // Nur gültige Event-Einträge behalten
+      .map((record) => record.event);
+
+    // Optional: Lade zusätzliche Event-Details
+    if (events.length > 0) {
+      const eventIds = events.map((event) => event.id);
+      return this.eventRepository.find({
+        where: { id: In(eventIds) },
+        relations: ['creatorObj'], // Weitere benötigte Relationen hinzufügen
+      });
+    }
+
+    return events;
   }
 
   /**

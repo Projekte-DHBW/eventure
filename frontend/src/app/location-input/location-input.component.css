@@ -13,6 +13,7 @@
 }
 
 .loading-indicator mat-icon {
+    -webkit-animation: rotate 1s linear infinite;
     animation: rotate 1s linear infinite;
 }
 
@@ -67,12 +68,26 @@
     line-height: 16px;
 }
 
-@keyframes rotate {
+@-webkit-keyframes rotate {
     from {
+        -webkit-transform: rotate(0deg);
         transform: rotate(0deg);
     }
 
     to {
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes rotate {
+    from {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+
+    to {
+        -webkit-transform: rotate(360deg);
         transform: rotate(360deg);
     }
 }

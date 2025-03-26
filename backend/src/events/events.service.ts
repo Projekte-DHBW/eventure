@@ -300,7 +300,6 @@ export class EventsService {
           console.log('Types array:', typesArray);
 
           if (typesArray.length > 0) {
-            // Map frontend types to backend categories if needed
             const typeMapping: Record<string, string> = {
               musik: 'music',
               sport: 'sports',
@@ -315,7 +314,6 @@ export class EventsService {
 
             console.log('Normalized types for filtering:', normalizedTypes);
 
-            // Use OR for each type instead of IN for better compatibility
             query.andWhere(
               new Brackets((qb) => {
                 normalizedTypes.forEach((type, index) => {
@@ -337,7 +335,6 @@ export class EventsService {
         }
       }
 
-      // Replace the location filtering part in findAll method
       if (locations && Array.isArray(locations) && locations.length > 0) {
         console.log('Filtering by locations:', locations);
 
@@ -691,7 +688,7 @@ export class EventsService {
       });
 
       // Convert set to array, sort, and limit results
-      //@ts-expect-error stupid typescript error
+
       const citiesArray = Array.from(allCities)
         .sort((a, b) => {
           // Prioritize results that start with the query

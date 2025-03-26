@@ -56,6 +56,7 @@
           </mat-card-title>
         </mat-card-header>
         <mat-card-content>
+          <!-- Updated occurrences section in event-occurrences-card -->
           <div class="occurrences-list">
             <div *ngFor="let occurrence of event.occurrences" class="occurrence-item">
               <div class="occurrence-date-container">
@@ -64,17 +65,18 @@
                   <span class="date-month">{{ occurrence.startDate | date:'MMM':'':'de' }}</span>
                 </div>
                 <div class="occurrence-time">
-                  {{ occurrence.startDate | date:'HH:mm':'':'de' }} -
-                  {{ occurrence.endDate ? (occurrence.endDate | date:'HH:mm':'':'de') : '?' }}
+                  {{ formatTimeRange(occurrence) }}
                 </div>
               </div>
               <div class="occurrence-details">
                 <div class="occurrence-day-name">
-                  {{ occurrence.startDate | date:'EEEE':'':'de' }}
+                  {{ occurrence.startDate | date:'EEEE, d. MMMM y':'':'de' }}
                 </div>
                 <div class="occurrence-location" *ngIf="occurrence.location">
                   <mat-icon>place</mat-icon>
-                  <span>{{ occurrence.location }}</span>
+                  <span>{{
+                    getLocationDisplay(occurrence.location)
+                    }}</span>
                 </div>
                 <div class="occurrence-status" [ngClass]="getOccurrenceStatus(occurrence)">
                   {{ getStatusLabel(occurrence) }}

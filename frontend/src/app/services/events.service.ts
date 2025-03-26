@@ -2,7 +2,8 @@ import { Injectable, inject } from '@angular/core';
 import { CreateEvent, UpdateEvent, Event } from '../types/events';
 import { HttpClientService } from './httpClient.service';
 import { Observable, throwError, map, catchError, of } from 'rxjs';
-import { environment } from '../../environments/environment';
+import { HttpParams } from '@angular/common/http';
+import { EventFilters } from '../types/EventFilter.model';
 
 export interface EventsSearchResult {
   id: string;
@@ -39,30 +40,7 @@ export class EventsService {
   private http = inject(HttpClientService);
 
   getEvents(filters: any = {}): Observable<{ events: Event[]; total: number }> {
-    const params: any = {};
-
-    if (filters.search) params.search = filters.search;
-    if (filters.category) params.category = filters.category;
-    if (filters.sort) params.sort = filters.sort;
-    if (filters.page) params.page = filters.page.toString();
-    if (filters.limit) params.limit = filters.limit.toString();
-    if (filters.types) params.types = filters.types;
-
-    if (filters.locations) {
-      if (typeof filters.locations === 'string') {
-        params.locations = filters.locations;
-      } else if (Array.isArray(filters.locations)) {
-        params.locations = filters.locations.join(',');
-      }
-    }
-
-    if (filters.date) {
-      params.date = String(filters.date);
-    }
-
-    if (filters.attending === true) {
-      params.attending = 'true';
-    }
+    const params = this.buildQueryParams(filters);
 
     const options = {
       params,
@@ -136,7 +114,7 @@ export class EventsService {
   }
 
   getPopularEvents(limit: number = 10): Observable<Event[]> {
-    const params = { limit: limit.toString() };
+    let params = new HttpParams().set('limit', limit.toString());
     return this.http.get<any>('events/popular', { params }).pipe(
       map((response) => {
         if (Array.isArray(response)) {
@@ -199,8 +177,12 @@ export class EventsService {
     query: string,
     limit: number = 10,
   ): Observable<{ cities: string[] }> {
+    let params = new HttpParams()
+      .set('query', query)
+      .set('limit', limit.toString());
+
     return this.http.get<{ cities: string[] }>(`events/cities/search`, {
-      params: { query, limit },
+      params,
     });
   }
 
@@ -297,6 +279,68 @@ export class EventsService {
   deleteRegistration(userId: string, eventId: string): Observable<any> {
     return this.http.authenticatedDelete(`events/${eventId}/unregister`, {
       params: { userId },
+    });
+  }
+
+  private buildQueryParams(filters: EventFilters): HttpParams {
+    let params = new HttpParams();
+
+    if (filters.search) {
+      params = params.set('search', filters.search);
+    }
+
+    if (filters.types && filters.types.length) {
+      params = params.set('types', filters.types.join(','));
+    }
+
+    if (filters.locations) {
+      // Handle different formats of locations
+      if (typeof filters.locations === 'string') {
+        params = params.set('locations', filters.locations);
+      } else if (Array.isArray(filters.locations)) {
+        // Send each location as a separate query parameter with the same name
+        // This allows the backend to receive them as an array
+        filters.locations.forEach((location: string) => {
+          params = params.append('locations', location);
+        });
+      }
+    }
+
+    // Other parameters
+    if (filters.date) {
+      params = params.set('date', filters.date);
+    }
+
+    if (filters.sort) {
+      params = params.set('sort', filters.sort);
+    }
+
+    if (filters.page) {
+      params = params.set('page', filters.page.toString());
+    }
+
+    if (filters.limit) {
+      params = params.set('limit', filters.limit.toString());
+    }
+
+    return params;
+  }
+
+  getUpcomingEvents(limit: number = 5): Observable<{ events: Event[] }> {
+    let params = new HttpParams().set('limit', limit.toString());
+    return this.http.get<{ events: Event[] }>(`/events/upcoming`, { params });
+  }
+
+  getEventsByType(
+    type: string,
+    limit: number = 10,
+  ): Observable<{ events: Event[] }> {
+    let params = new HttpParams()
+      .set('category', type)
+      .set('limit', limit.toString());
+
+    return this.http.get<{ events: Event[] }>(`/events`, {
+      params,
     });
   }
 }

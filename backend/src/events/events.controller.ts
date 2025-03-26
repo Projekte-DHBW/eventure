@@ -67,6 +67,11 @@ export class EventsController {
   })
   @Get()
   async findAll(@Query() filters: EventFiltersDto) {
+    // Ensure locations is always handled as array
+    if (filters.locations && typeof filters.locations === 'string') {
+      filters.locations = [filters.locations];
+    }
+
     const [events, total] = await this.eventsService.findAll(filters);
     return { events, total };
   }

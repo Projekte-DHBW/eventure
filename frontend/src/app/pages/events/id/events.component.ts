@@ -34,7 +34,20 @@ interface EventOccurrence {
   id: string;
   startDate: string;
   endDate?: string;
-  location?: string;
+  location?:
+    | string
+    | {
+        address: string;
+        city?: string;
+        state?: string;
+        country?: string;
+        postalCode?: string;
+        latitude?: number;
+        longitude?: number;
+      };
+  title?: string;
+  isOnline?: boolean;
+  meetingLink?: string;
 }
 
 @Component({
@@ -302,22 +315,44 @@ export class EventsComponent implements OnInit {
   formatTimeRange(occurrence: EventOccurrence): string {
     if (!occurrence.startDate) return '';
 
-    const startTime = new Date(occurrence.startDate).toLocaleTimeString(
-      'de-DE',
-      {
-        hour: '2-digit',
-        minute: '2-digit',
-      },
-    );
+    const startDate = new Date(occurrence.startDate);
 
-    if (!occurrence.endDate) return startTime;
-
-    const endTime = new Date(occurrence.endDate).toLocaleTimeString('de-DE', {
+    // Format the start time
+    const startTime = startDate.toLocaleTimeString('de-DE', {
       hour: '2-digit',
       minute: '2-digit',
     });
 
-    return `${startTime} - ${endTime}`;
+    if (!occurrence.endDate) return startTime;
+
+    const endDate = new Date(occurrence.endDate);
+
+    // Format the end time
+    const endTime = endDate.toLocaleTimeString('de-DE', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+
+    // Check if start and end dates are on the same day
+    if (
+      startDate.getFullYear() === endDate.getFullYear() &&
+      startDate.getMonth() === endDate.getMonth() &&
+      startDate.getDate() === endDate.getDate()
+    ) {
+      // Same day - show only times
+      return `${startTime} - ${endTime}`;
+    } else {
+      // Different days - show full dates and times
+      const startDateStr = startDate.toLocaleDateString('de-DE', {
+        day: '2-digit',
+        month: '2-digit',
+      });
+      const endDateStr = endDate.toLocaleDateString('de-DE', {
+        day: '2-digit',
+        month: '2-digit',
+      });
+      return `${startDateStr} ${startTime} - ${endDateStr} ${endTime}`;
+    }
   }
 
   sortOccurrences(): void {
@@ -331,6 +366,23 @@ export class EventsComponent implements OnInit {
           new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
         );
       });
+    }
+  }
+
+  getLocationDisplay(
+    location:
+      | string
+      | { address: string; city?: string; state?: string; country?: string },
+  ): string {
+    if (typeof location === 'string') {
+      return location;
+    } else {
+      // Format the address with city for object locations
+      let displayText = location.address;
+      if (location.city) {
+        displayText += `, ${location.city}`;
+      }
+      return displayText;
     }
   }
 }

@@ -30,25 +30,12 @@
             </div>
           </div>
 
-          <div class="filter-group location-filter">
+          <div class="filter-group">
             <h3>Standort</h3>
-            <div class="filter-options" [class.expanded]="showAllLocations">
-              @for (location of displayedLocations; track location) {
-              <div class="filter-chip" [class.active]="searchParams.locations?.includes(location)" (click)="
-                    searchParams.locations?.includes(location)
-                      ? removeFilter('locations', location)
-                      : applyFilter('locations', location)
-                  ">
-                {{ location }}
-              </div>
-              }
-            </div>
-            <button class="show-more-btn" (click)="toggleLocationVisibility()">
-              {{ showAllLocations ? "Weniger anzeigen" : "Mehr anzeigen" }}
-              <mat-icon>{{
-                showAllLocations ? "expand_less" : "expand_more"
-                }}</mat-icon>
-            </button>
+            <app-location-input [multiple]="true" [defaultLocations]="searchParams.locations || []"
+              (locationSelected)="onLocationAdded($event)" [defaultCities]="locations()" [appearance]="'outline'"
+              [placeholder]="'Stadt suchen...'">
+            </app-location-input>
           </div>
 
           <div class="filter-group">

@@ -489,6 +489,101 @@ mat-flat-button {
     gap: 24px;
 }
 
+/* Share card styles */
+.share-card {
+    margin-bottom: 24px;
+}
+
+.share-description {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 16px;
+}
+
+.share-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.share-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px 16px;
+}
+
+.social-share-buttons {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.whatsapp-button .mat-icon {
+    filter: invert(42%) sepia(93%) saturate(1352%) hue-rotate(87deg) brightness(119%) contrast(119%);
+}
+
+.twitter-button .mat-icon {
+    filter: invert(48%) sepia(94%) saturate(1786%) hue-rotate(177deg) brightness(100%) contrast(90%);
+}
+
+.facebook-button .mat-icon {
+    filter: invert(34%) sepia(65%) saturate(801%) hue-rotate(187deg) brightness(93%) contrast(79%);
+}
+
+
+.copied-message {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 16px;
+    padding: 8px 12px;
+    background-color: rgba(76, 175, 80, 0.1);
+    border-radius: 4px;
+    font-size: 0.9rem;
+    color: #4caf50;
+}
+
+/* Social media button overrides with higher specificity */
+.social-share-buttons .custom-share-button.mat-mdc-mini-fab {
+    --mdc-fab-container-color: white !important;
+    background-color: white !important;
+    border: 1px solid #e0e0e0 !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Override icon colors - these target the actual rendered SVG */
+.social-share-buttons .whatsapp-button .mat-icon svg path {
+    fill: #25D366 !important;
+}
+
+.social-share-buttons .twitter-button .mat-icon svg path {
+    fill: #1DA1F2 !important;
+}
+
+.social-share-buttons .facebook-button .mat-icon svg path {
+    fill: #4267B2 !important;
+}
+
+/* Button hover states */
+.social-share-buttons .custom-share-button.mat-mdc-mini-fab:hover {
+    background-color: #f5f5f5 !important;
+}
+
+/* Alternative approach for coloring SVG icons */
+::ng-deep .social-share-buttons .whatsapp-button svg {
+    fill: #25D366 !important;
+}
+
+::ng-deep .social-share-buttons .twitter-button svg {
+    fill: #1DA1F2 !important;
+}
+
+::ng-deep .social-share-buttons .facebook-button svg {
+    fill: #4267B2 !important;
+}
+
 /* Responsive design */
 @media (max-width: 900px) {
     .event-content {

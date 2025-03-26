@@ -1,5 +1,4 @@
 import { Component, OnInit, Output, EventEmitter, inject } from '@angular/core';
-//import { ActivatedRoute } from '@angular/router';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { MatCardModule } from '@angular/material/card';
@@ -27,6 +26,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { registerLocaleData } from '@angular/common';
 import localeDe from '@angular/common/locales/de';
+import { MatIconRegistry } from '@angular/material/icon';
+import { DomSanitizer } from '@angular/platform-browser';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-events',
@@ -38,6 +40,7 @@ import localeDe from '@angular/common/locales/de';
     MatButtonModule,
     MatIconModule,
     MatProgressSpinnerModule,
+    MatTooltipModule,
     RouterModule,
   ],
   templateUrl: './events.component.html',
@@ -63,12 +66,21 @@ export class EventsComponent implements OnInit {
 
   users: User[] = [];
 
+  // Add new properties for sharing
+  linkCopied = false;
+  shareTimer: any;
+
   constructor(
     private route: ActivatedRoute,
     private eventsService: EventsService,
+    private iconRegistry: MatIconRegistry,
+    private sanitizer: DomSanitizer,
   ) {
     // Register German locale
     registerLocaleData(localeDe);
+
+    // Register custom icons for social sharing
+    this.registerCustomIcons();
   }
 
   signUpForm: FormGroup = this.fb.group({
@@ -199,5 +211,76 @@ export class EventsComponent implements OnInit {
     const percentage =
       (this.event.attendeeCount / this.event.maxParticipants) * 100;
     return Math.min(percentage, 100); // Ensure it doesn't go over 100%
+  }
+
+  // Add this method to register custom icons
+  private registerCustomIcons() {
+    this.iconRegistry.addSvgIcon(
+      'facebook',
+      this.sanitizer.bypassSecurityTrustResourceUrl('/facebook.svg'),
+    );
+    this.iconRegistry.addSvgIcon(
+      'twitter',
+      this.sanitizer.bypassSecurityTrustResourceUrl('/twitter.svg'),
+    );
+    this.iconRegistry.addSvgIcon(
+      'whatsapp',
+      this.sanitizer.bypassSecurityTrustResourceUrl('/whatsapp.svg'),
+    );
+  }
+
+  // Copy event link to clipboard
+  copyEventLink(): void {
+    const currentUrl = window.location.href;
+    navigator.clipboard.writeText(currentUrl).then(() => {
+      this.linkCopied = true;
+
+      // Clear previous timer if it exists
+      if (this.shareTimer) {
+        clearTimeout(this.shareTimer);
+      }
+
+      // Hide the "copied" message after 3 seconds
+      this.shareTimer = setTimeout(() => {
+        this.linkCopied = false;
+      }, 3000);
+    });
+  }
+
+  // Share via email
+  shareViaEmail(): void {
+    const subject = encodeURIComponent(`Einladung: ${this.event.title}`);
+    const body = encodeURIComponent(
+      `Hallo,\n\nIch möchte dich zu diesem Event einladen: ${this.event.title}\n\n` +
+        `Datum: ${this.event.eventDate ? new Date(this.event.eventDate).toLocaleDateString('de-DE') : 'Nicht angegeben'}\n` +
+        `Ort: ${this.event.isOnline ? 'Online' : this.event.location || 'Nicht angegeben'}\n\n` +
+        `Hier ist der Link zum Event: ${window.location.href}\n\n` +
+        `Viele Grüße`,
+    );
+    window.location.href = `mailto:?subject=${subject}&body=${body}`;
+  }
+
+  // Share to WhatsApp
+  shareToWhatsApp(): void {
+    const text = encodeURIComponent(
+      `Schau dir dieses Event an: ${this.event.title} - ${window.location.href}`,
+    );
+    window.open(`https://wa.me/?text=${text}`, '_blank');
+  }
+
+  // Share to Twitter
+  shareToTwitter(): void {
+    const text = encodeURIComponent(
+      `${this.event.title} ${window.location.href}`,
+    );
+    window.open(`https://twitter.com/intent/tweet?text=${text}`, '_blank');
+  }
+
+  shareToFacebook(): void {
+    const url = encodeURIComponent(window.location.href);
+    window.open(
+      `https://www.facebook.com/sharer/sharer.php?u=${url}`,
+      '_blank',
+    );
   }
 }

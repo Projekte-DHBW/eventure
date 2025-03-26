@@ -133,6 +133,50 @@
         </mat-card-content>
       </mat-card>
 
+
+      <mat-card class="share-card">
+        <mat-card-header>
+          <mat-card-title>Event teilen</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <p class="share-description">Teile dieses Event mit Freunden und Kollegen</p>
+
+          <div class="share-buttons">
+            <button mat-stroked-button color="primary" (click)="copyEventLink()" class="share-button">
+              <mat-icon>content_copy</mat-icon>
+              <span>Link kopieren</span>
+            </button>
+
+            <button mat-stroked-button color="primary" (click)="shareViaEmail()" class="share-button">
+              <mat-icon>email</mat-icon>
+              <span>Per E-Mail teilen</span>
+            </button>
+
+            <div class="social-share-buttons">
+              <button mat-mini-fab class="custom-share-button whatsapp-button" (click)="shareToWhatsApp()"
+                matTooltip="Via WhatsApp teilen">
+                <mat-icon svgIcon="whatsapp"></mat-icon>
+              </button>
+
+              <button mat-mini-fab class="custom-share-button twitter-button" (click)="shareToTwitter()"
+                matTooltip="Via Twitter teilen">
+                <mat-icon svgIcon="twitter"></mat-icon>
+              </button>
+
+              <button mat-mini-fab class="custom-share-button facebook-button" (click)="shareToFacebook()"
+                matTooltip="Via Facebook teilen">
+                <mat-icon svgIcon="facebook"></mat-icon>
+              </button>
+            </div>
+          </div>
+
+          <div *ngIf="linkCopied" class="copied-message">
+            <mat-icon color="primary">check_circle</mat-icon>
+            <span>Link in Zwischenablage kopiert!</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
       <!-- Attendees card -->
       <mat-card *ngIf="isRegistered && event.attendeeCount !== undefined && event.attendeeCount > 1"
         class="attendees-card">

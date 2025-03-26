@@ -36,10 +36,17 @@
 
     <div class="event-actions">
       <button class="action-button details-button"(click)="navigateToEventDetails()">DETAILS</button>
-      <button class="action-button save-button" (click)="$event.stopPropagation()">
+      @if(isRegistered) {
+        <button class="action-button save-button-blue" (click)="$event.stopPropagation()">
+          <mat-icon>bookmark</mat-icon>
+          <span>Angemeldet</span>
+        </button>
+      } @else {
+      <button class="action-button save-button-grey" (click)="$event.stopPropagation()">
         <mat-icon>bookmark</mat-icon>
-        <span>SPEICHERN</span>
+        <span>Anmelden</span>
       </button>
+      }
     </div>
   </div>
 </div>

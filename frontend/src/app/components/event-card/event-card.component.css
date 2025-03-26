@@ -38,7 +38,7 @@
   position: absolute;
   top: 0;
   right: 0;
-  background-color: #2196f3;
+  background-color: var(--primary);
   color: white;
   padding: 0.5rem 1rem;
   font-weight: bold;
@@ -125,19 +125,37 @@
     }
   }
 
-  &.save-button {
+  &.save-button-blue {
     background-color: #f0f0f0;
-    color: #2196f3;
+    color: var(--primary);
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    cursor: default;
 
     &:hover {
       background-color: #e3f2fd;
     }
 
     mat-icon {
-      color: #2196f3;
+      color: var(--primary);
+    }
+  }
+
+  &.save-button-grey {
+    background-color: #f0f0f0;
+    color: #454545;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: default;
+
+    &:hover {
+      background-color: #e3f2fd;
+    }
+
+    mat-icon {
+      color: #454545;
     }
   }
 }

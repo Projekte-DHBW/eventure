@@ -1,756 +1,759 @@
 .events-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-height: 100dvh;
-    gap: 10px;
-    max-width: 75rem;
-    margin: 0 auto;
-    padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100dvh;
+  gap: 10px;
+  max-width: 75rem;
+  margin: 0 auto;
+  padding: 1rem;
 }
 
 .form {
-    background-color: white;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    min-height: 100dvh;
-    width: 100%;
-    gap: 10px;
-    padding: 20px;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-height: 100dvh;
+  width: 100%;
+  gap: 10px;
+  padding: 20px;
 }
 
 .badge .mat-badge-content {
-    background-color: var(--primary);
-    color: white;
+  background-color: var(--primary);
+  color: white;
 }
 
 .event-image {
-    width: 100%;
-    /* Bild nimmt die gesamte Breite der Karte ein */
-    height: auto;
-    /* Höhe wird automatisch angepasst */
-    border-radius: 8px 8px 0 0;
-    /* Abgerundete Ecken oben */
-    margin-bottom: 15px;
-    /* Abstand unter dem Bild */
+  width: 100%;
+  /* Bild nimmt die gesamte Breite der Karte ein */
+  height: auto;
+  /* Höhe wird automatisch angepasst */
+  border-radius: 8px 8px 0 0;
+  /* Abgerundete Ecken oben */
+  margin-bottom: 15px;
+  /* Abstand unter dem Bild */
 }
 
 .category-button {
-    margin-top: 0px;
-    margin-bottom: 10px;
-    background-color: var(--background);
-    color: var(--primary);
-    cursor: default;
-    /* Zeigt an, dass der Button nicht klickbar ist */
+  margin-top: 0px;
+  margin-bottom: 10px;
+  background-color: var(--background);
+  color: var(--primary);
+  cursor: default;
+  /* Zeigt an, dass der Button nicht klickbar ist */
 }
 
 .error-message {
-    color: #f44336;
-    font-size: 0.75rem;
-    margin: 0.625rem 0;
-    padding: 0.625rem;
-    background-color: rgba(244, 67, 54, 0.1);
-    border-radius: 4px;
+  color: #f44336;
+  font-size: 0.75rem;
+  margin: 0.625rem 0;
+  padding: 0.625rem;
+  background-color: rgba(244, 67, 54, 0.1);
+  border-radius: 4px;
 }
 
 .success-message {
-    color: #4caf50;
-    font-size: 0.75rem;
-    margin: 0.625rem 0;
-    padding: 0.625rem;
-    background-color: rgba(76, 175, 80, 0.1);
-    border-radius: 4px;
+  color: #4caf50;
+  font-size: 0.75rem;
+  margin: 0.625rem 0;
+  padding: 0.625rem;
+  background-color: rgba(76, 175, 80, 0.1);
+  border-radius: 4px;
 }
 
 h1 {
-    font-size: 2em;
-    margin-top: 10px;
-    margin-bottom: 10px;
-    align-self: center;
+  font-size: 2em;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  align-self: center;
 }
 
 h3 {
-    font-size: 1.5em;
-    margin-top: 15px;
-    /* Abstand über der Überschrift */
-    margin-bottom: 5px;
-    /* Abstand unter der Überschrift */
+  font-size: 1.5em;
+  margin-top: 15px;
+  /* Abstand über der Überschrift */
+  margin-bottom: 5px;
+  /* Abstand unter der Überschrift */
 }
 
 p {
-    font-size: 1.25em;
-    margin-bottom: 15px;
-    /* Abstand unter dem Text */
+  font-size: 1.25em;
+  margin-bottom: 15px;
+  /* Abstand unter dem Text */
 }
 
 .picture {
-    align-self: center;
+  align-self: center;
 }
 
 .button {
-    font-size: 14px;
-    margin-right: 10px;
-    min-width: 120px;
-    background-color: var(--primary);
+  font-size: 14px;
+  margin-right: 10px;
+  min-width: 120px;
+  background-color: var(--primary);
 }
 
-
-
 mat-flat-button {
-    background-color: var(--primary);
+  background-color: var(--primary);
 }
 
 .button-row {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
 }
 
 .button-row button {
-    margin-top: 30px;
-    background-color: var(--primary);
-    color: white;
-    cursor: pointer;
-    /* Zeigt an, dass der Button klickbar ist */
-    opacity: 1;
-    /* Volle Sichtbarkeit für den aktiven Zustand */
+  margin-top: 30px;
+  background-color: var(--primary);
+  color: white;
+  cursor: pointer;
+  /* Zeigt an, dass der Button klickbar ist */
+  opacity: 1;
+  /* Volle Sichtbarkeit für den aktiven Zustand */
 }
 
 .button-row button:disabled {
-    margin-top: 30px;
-    background-color: var(--primary);
-    color: black;
-    cursor: not-allowed;
-    /* Zeigt an, dass der Button nicht klickbar ist */
-    opacity: 0.7;
-    /* Verringert die Sichtbarkeit, um den deaktivierten Zustand anzuzeigen */
+  margin-top: 30px;
+  background-color: var(--primary);
+  color: black;
+  cursor: not-allowed;
+  /* Zeigt an, dass der Button nicht klickbar ist */
+  opacity: 0.7;
+  /* Verringert die Sichtbarkeit, um den deaktivierten Zustand anzuzeigen */
 }
-
 
 /* Responsive Anpassungen */
 @media (max-width: 600px) {
-    .form {
-        padding: 10px;
-        /* Weniger Padding auf kleineren Bildschirmen */
-        width: 90%;
-    }
+  .form {
+    padding: 10px;
+    /* Weniger Padding auf kleineren Bildschirmen */
+    width: 90%;
+  }
 
-    h1 {
-        font-size: 1.5em;
-        /* Kleinere Schriftgröße für Überschriften */
-        margin-top: 5px;
-        /* Angepasster Abstand für kleinere Bildschirme */
-    }
+  h1 {
+    font-size: 1.5em;
+    /* Kleinere Schriftgröße für Überschriften */
+    margin-top: 5px;
+    /* Angepasster Abstand für kleinere Bildschirme */
+  }
 
-    h3 {
-        font-size: 1.25em;
-    }
+  h3 {
+    font-size: 1.25em;
+  }
 
-    p {
-        font-size: 1em;
-        /* Kleinere Schriftgröße für Text */
-    }
+  p {
+    font-size: 1em;
+    /* Kleinere Schriftgröße für Text */
+  }
 
-    .button-row {
-        flex-direction: column;
-        /* Bei kleineren Bildschirmen werden die Buttons untereinander angezeigt */
-        align-items: stretch;
-        /* Buttons nehmen die volle Breite ein */
-    }
+  .button-row {
+    flex-direction: column;
+    /* Bei kleineren Bildschirmen werden die Buttons untereinander angezeigt */
+    align-items: stretch;
+    /* Buttons nehmen die volle Breite ein */
+  }
 
-    .button-row button {
-        margin-bottom: 10px;
-        /* Abstand zwischen den Buttons bei kleinerer Bildschirmgröße */
-    }
+  .button-row button {
+    margin-bottom: 10px;
+    /* Abstand zwischen den Buttons bei kleinerer Bildschirmgröße */
+  }
 }
 
 @media (max-width: 300px) {
-    .form {
-        padding: 5px;
-        /* Weniger Padding auf kleineren Bildschirmen */
-        width: 80%;
-    }
+  .form {
+    padding: 5px;
+    /* Weniger Padding auf kleineren Bildschirmen */
+    width: 80%;
+  }
 
-    h1 {
-        font-size: 1em;
-        /* Kleinere Schriftgröße für Überschriften */
-    }
+  h1 {
+    font-size: 1em;
+    /* Kleinere Schriftgröße für Überschriften */
+  }
 
-    h3 {
-        font-size: 0.75em;
-    }
+  h3 {
+    font-size: 0.75em;
+  }
 
-    p {
-        font-size: 0.5em;
-        /* Kleinere Schriftgröße für Text */
-    }
+  p {
+    font-size: 0.5em;
+    /* Kleinere Schriftgröße für Text */
+  }
 }
 
 /* Main container */
 .event-detail-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    font-family: 'Roboto', sans-serif;
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: "Roboto", sans-serif;
 }
 
 /* Hero section with standalone image */
 .event-hero {
-    position: relative;
-    margin-bottom: 24px;
-    border-radius: 0 0 16px 16px;
-    overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  position: relative;
+  margin-bottom: 24px;
+  border-radius: 0 0 16px 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .event-image-container {
-    position: relative;
-    width: 100%;
-    height: 400px;
+  position: relative;
+  width: 100%;
+  height: 400px;
 }
 
 .event-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .event-fallback-image {
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(to right, var(--primary-dark), var(--primary));
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to right, var(--primary-dark), var(--primary));
 }
 
 .event-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(to bottom,
-            rgba(0, 0, 0, 0.1) 0%,
-            rgba(0, 0, 0, 0.7) 70%,
-            rgba(0, 0, 0, 0.9) 100%);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.1) 0%,
+    rgba(0, 0, 0, 0.7) 70%,
+    rgba(0, 0, 0, 0.9) 100%
+  );
 }
 
 .event-hero-content {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    padding: 40px;
-    color: white;
-    z-index: 2;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 40px;
+  color: white;
+  z-index: 2;
 }
 
 .event-title {
-    font-size: 3rem;
-    font-weight: 700;
-    margin: 16px 0;
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+  font-size: 3rem;
+  font-weight: 700;
+  margin: 16px 0;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
 }
 
 .event-badges {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
 }
 
 .event-badge {
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .event-badge.public {
-    background-color: #4caf50;
+  background-color: #4caf50;
 }
 
 .event-badge.private {
-    background-color: #f44336;
+  background-color: #f44336;
 }
 
 .event-badge.unlisted {
-    background-color: #ff9800;
+  background-color: #ff9800;
 }
 
 .event-badge.online {
-    background-color: #2196f3;
+  background-color: var(--primary);
 }
 
 .event-badge.category {
-    background-color: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(4px);
+  background-color: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(4px);
 }
 
 .event-meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 16px;
-    margin-top: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 16px;
 }
 
 .event-meta-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1rem;
 }
 
 /* Content Layout */
 .event-content {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 24px;
-    padding: 0 16px;
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+  padding: 0 16px;
 }
 
 /* Event main content */
 .event-main {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
 .event-description-card {
-    margin-bottom: 24px;
+  margin-bottom: 24px;
 }
 
 .event-description {
-    font-size: 1.1rem;
-    line-height: 1.6;
-    white-space: pre-line;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  white-space: pre-line;
 }
 
 .event-link-card {
-    margin-bottom: 24px;
+  margin-bottom: 24px;
 }
 
 .meeting-link {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: var(--primary);
-    text-decoration: none;
-    font-weight: 500;
-    margin: 16px 0;
-    padding: 12px 16px;
-    background-color: rgba(var(--primary-rgb), 0.1);
-    border-radius: 8px;
-    transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 500;
+  margin: 16px 0;
+  padding: 12px 16px;
+  background-color: rgba(var(--primary-rgb), 0.1);
+  border-radius: 8px;
+  transition: background-color 0.2s;
 }
 
 .meeting-link:hover {
-    background-color: rgba(var(--primary-rgb), 0.2);
+  background-color: rgba(var(--primary-rgb), 0.2);
 }
 
 .meeting-notice {
-    font-size: 0.9rem;
-    color: #666;
-    margin-top: 8px;
+  font-size: 0.9rem;
+  color: #666;
+  margin-top: 8px;
 }
 
 /* Event sidebar */
 .event-sidebar {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
 .registration-card {
-    margin-bottom: 24px;
+  margin-bottom: 24px;
 }
 
 .capacity-indicator {
-    position: relative;
-    height: 8px;
-    background-color: #e0e0e0;
-    border-radius: 4px;
-    overflow: hidden;
-    margin: 16px 0;
+  position: relative;
+  height: 8px;
+  background-color: #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 16px 0;
 }
 
 .capacity-bar {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    background-color: var(--primary);
-    border-radius: 4px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background-color: var(--primary);
+  border-radius: 4px;
 }
 
 .capacity-text {
-    display: block;
-    font-size: 0.9rem;
-    margin-top: 8px;
-    color: #666;
+  display: block;
+  font-size: 0.9rem;
+  margin-top: 8px;
+  color: #666;
 }
 
 .registration-actions {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 24px;
 }
 
 .registration-button {
-    padding: 12px 16px;
-    font-size: 1rem;
+  padding: 12px 16px;
+  font-size: 1rem;
 }
 
 .cancel-button {
-    margin-top: 8px;
+  margin-top: 8px;
 }
 
 /* Event details card */
 .event-details-card {
-    margin-bottom: 24px;
+  margin-bottom: 24px;
 }
 
 .event-detail-item {
-    display: flex;
-    align-items: flex-start;
-    margin-bottom: 16px;
-    gap: 16px;
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 16px;
+  gap: 16px;
 }
 
 .event-detail-item mat-icon {
-    color: #666;
+  color: #666;
 }
 
 .detail-content {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 .detail-label {
-    font-size: 0.9rem;
-    color: #666;
-    margin-bottom: 4px;
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 4px;
 }
 
 .detail-value {
-    font-weight: 500;
+  font-weight: 500;
 }
 
 .organizer-link {
-    color: var(--primary);
-    text-decoration: none;
+  color: var(--primary);
+  text-decoration: none;
 }
 
 .organizer-link:hover {
-    text-decoration: underline;
+  text-decoration: underline;
 }
 
 /* Attendees card */
 .attendees-card {
-    margin-bottom: 24px;
+  margin-bottom: 24px;
 }
 
 .attendee-count {
-    margin: 16px 0;
-    font-size: 1rem;
+  margin: 16px 0;
+  font-size: 1rem;
 }
 
 /* Error and success messages */
 .error-message,
 .success-message {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 12px 16px;
-    border-radius: 8px;
-    margin: 16px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin: 16px 0;
 }
 
 .error-message {
-    background-color: rgba(244, 67, 54, 0.1);
-    color: #f44336;
+  background-color: rgba(244, 67, 54, 0.1);
+  color: #f44336;
 }
 
 .success-message {
-    background-color: rgba(76, 175, 80, 0.1);
-    color: #4caf50;
+  background-color: rgba(76, 175, 80, 0.1);
+  color: #4caf50;
 }
 
 /* Loading state */
 .event-loading {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 64px 16px;
-    gap: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 64px 16px;
+  gap: 24px;
 }
 
 /* Share card styles */
 .share-card {
-    margin-bottom: 24px;
+  margin-bottom: 24px;
 }
 
 .share-description {
-    font-size: 0.9rem;
-    color: #666;
-    margin-bottom: 16px;
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 16px;
 }
 
 .share-buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .share-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 16px;
 }
 
 .social-share-buttons {
-    display: flex;
-    gap: 12px;
-    margin-top: 8px;
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
 }
 
 .whatsapp-button .mat-icon {
-    filter: invert(42%) sepia(93%) saturate(1352%) hue-rotate(87deg) brightness(119%) contrast(119%);
+  filter: invert(42%) sepia(93%) saturate(1352%) hue-rotate(87deg)
+    brightness(119%) contrast(119%);
 }
 
 .twitter-button .mat-icon {
-    filter: invert(48%) sepia(94%) saturate(1786%) hue-rotate(177deg) brightness(100%) contrast(90%);
+  filter: invert(48%) sepia(94%) saturate(1786%) hue-rotate(177deg)
+    brightness(100%) contrast(90%);
 }
 
 .facebook-button .mat-icon {
-    filter: invert(34%) sepia(65%) saturate(801%) hue-rotate(187deg) brightness(93%) contrast(79%);
+  filter: invert(34%) sepia(65%) saturate(801%) hue-rotate(187deg)
+    brightness(93%) contrast(79%);
 }
 
-
 .copied-message {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-top: 16px;
-    padding: 8px 12px;
-    background-color: rgba(76, 175, 80, 0.1);
-    border-radius: 4px;
-    font-size: 0.9rem;
-    color: #4caf50;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+  padding: 8px 12px;
+  background-color: rgba(76, 175, 80, 0.1);
+  border-radius: 4px;
+  font-size: 0.9rem;
+  color: #4caf50;
 }
 
 /* Social media button overrides with higher specificity */
 .social-share-buttons .custom-share-button.mat-mdc-mini-fab {
-    --mdc-fab-container-color: white !important;
-    background-color: white !important;
-    border: 1px solid #e0e0e0 !important;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+  --mdc-fab-container-color: white !important;
+  background-color: white !important;
+  border: 1px solid #e0e0e0 !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
 }
 
 /* Override icon colors - these target the actual rendered SVG */
 .social-share-buttons .whatsapp-button .mat-icon svg path {
-    fill: #25D366 !important;
+  fill: #25d366 !important;
 }
 
 .social-share-buttons .twitter-button .mat-icon svg path {
-    fill: #1DA1F2 !important;
+  fill: #1da1f2 !important;
 }
 
 .social-share-buttons .facebook-button .mat-icon svg path {
-    fill: #4267B2 !important;
+  fill: #4267b2 !important;
 }
 
 /* Button hover states */
 .social-share-buttons .custom-share-button.mat-mdc-mini-fab:hover {
-    background-color: #f5f5f5 !important;
+  background-color: #f5f5f5 !important;
 }
 
 /* Alternative approach for coloring SVG icons */
 ::ng-deep .social-share-buttons .whatsapp-button svg {
-    fill: #25D366 !important;
+  fill: #25d366 !important;
 }
 
 ::ng-deep .social-share-buttons .twitter-button svg {
-    fill: #1DA1F2 !important;
+  fill: #1da1f2 !important;
 }
 
 ::ng-deep .social-share-buttons .facebook-button svg {
-    fill: #4267B2 !important;
+  fill: #4267b2 !important;
 }
 
 /* Responsive design */
 @media (max-width: 900px) {
-    .event-content {
-        grid-template-columns: 1fr;
-    }
+  .event-content {
+    grid-template-columns: 1fr;
+  }
 
-    .event-title {
-        font-size: 2.2rem;
-    }
+  .event-title {
+    font-size: 2.2rem;
+  }
 
-    .event-hero-content {
-        padding: 32px 24px;
-    }
+  .event-hero-content {
+    padding: 32px 24px;
+  }
 }
 
 @media (max-width: 600px) {
-    .event-title {
-        font-size: 1.8rem;
-    }
+  .event-title {
+    font-size: 1.8rem;
+  }
 
-    .event-hero {
-        min-height: 200px;
-    }
+  .event-hero {
+    min-height: 200px;
+  }
 
-    .event-hero-content {
-        padding: 24px 16px;
-    }
+  .event-hero-content {
+    padding: 24px 16px;
+  }
 
-    .event-meta {
-        flex-direction: column;
-        gap: 8px;
-    }
+  .event-meta {
+    flex-direction: column;
+    gap: 8px;
+  }
 }
 
 /* Occurrence styles */
 .event-occurrences-card {
-    margin-bottom: 24px;
+  margin-bottom: 24px;
 }
 
 .card-title-with-icon {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .occurrences-list {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 16px;
 }
 
 .occurrence-item {
-    display: flex;
-    align-items: center;
-    padding: 12px;
-    border-radius: 8px;
-    background-color: #f9f9f9;
-    transition: transform 0.2s, box-shadow 0.2s;
-    gap: 16px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+  gap: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .occurrence-item:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .occurrence-date-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-width: 80px;
-    text-align: center;
-    border-right: 1px solid #e0e0e0;
-    padding-right: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 80px;
+  text-align: center;
+  border-right: 1px solid #e0e0e0;
+  padding-right: 16px;
 }
 
 .occurrence-date {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color: var(--primary);
-    color: white;
-    border-radius: 8px;
-    padding: 8px;
-    width: 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: var(--primary);
+  color: white;
+  border-radius: 8px;
+  padding: 8px;
+  width: 60px;
 }
 
 .date-day {
-    font-size: 1.5rem;
-    font-weight: 700;
+  font-size: 1.5rem;
+  font-weight: 700;
 }
 
 .date-month {
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    font-weight: 500;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  font-weight: 500;
 }
 
 .occurrence-time {
-    margin-top: 8px;
-    font-size: 0.9rem;
-    color: #666;
-    font-weight: 500;
+  margin-top: 8px;
+  font-size: 0.9rem;
+  color: #666;
+  font-weight: 500;
 }
 
 .occurrence-details {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .occurrence-day-name {
-    font-size: 1.1rem;
-    font-weight: 500;
-    color: #333;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #333;
 }
 
 .occurrence-location {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 0.9rem;
-    color: #666;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9rem;
+  color: #666;
 }
 
 .occurrence-status {
-    display: inline-block;
-    margin-top: 6px;
-    padding: 2px 8px;
-    font-size: 0.8rem;
-    border-radius: 4px;
-    background-color: #f0f0f0;
+  display: inline-block;
+  margin-top: 6px;
+  padding: 2px 8px;
+  font-size: 0.8rem;
+  border-radius: 4px;
+  background-color: #f0f0f0;
 }
 
 .occurrence-status.upcoming {
-    background-color: rgba(33, 150, 243, 0.1);
-    color: #2196F3;
+  background-color: rgba(33, 150, 243, 0.1);
+  color: var(--primary);
 }
 
 .occurrence-status.active {
-    background-color: rgba(76, 175, 80, 0.1);
-    color: #4CAF50;
+  background-color: rgba(76, 175, 80, 0.1);
+  color: #4caf50;
 }
 
 .occurrence-status.past {
-    background-color: rgba(158, 158, 158, 0.1);
-    color: #9E9E9E;
+  background-color: rgba(158, 158, 158, 0.1);
+  color: #9e9e9e;
 }
 
 /* Responsive styles for occurrences */
 @media (max-width: 600px) {
-    .occurrence-item {
-        flex-direction: column;
-        align-items: flex-start;
-    }
+  .occurrence-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 
-    .occurrence-date-container {
-        flex-direction: row;
-        width: 100%;
-        border-right: none;
-        border-bottom: 1px solid #e0e0e0;
-        padding-right: 0;
-        padding-bottom: 8px;
-        margin-bottom: 8px;
-        gap: 16px;
-    }
+  .occurrence-date-container {
+    flex-direction: row;
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #e0e0e0;
+    padding-right: 0;
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+    gap: 16px;
+  }
 }

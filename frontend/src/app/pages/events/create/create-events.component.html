@@ -18,9 +18,14 @@
               <div class="form-row">
                 <mat-form-field appearance="outline">
                   <mat-label>Titel</mat-label>
-                  <input matInput formControlName="title" placeholder="Titel" required />
+                  <input
+                    matInput
+                    formControlName="title"
+                    placeholder="Titel"
+                    required
+                  />
                   @if (title.invalid) {
-                  <mat-error>{{ getTitleErrorMessage() }}</mat-error>
+                    <mat-error>{{ getTitleErrorMessage() }}</mat-error>
                   }
                 </mat-form-field>
 
@@ -36,21 +41,36 @@
               </div>
 
               <div class="form-row description-row">
-                <mat-form-field appearance="outline" class="form-field-full-width">
+                <mat-form-field
+                  appearance="outline"
+                  class="form-field-full-width"
+                >
                   <mat-label>Beschreibung</mat-label>
-                  <textarea matInput formControlName="description" rows="5" placeholder="Beschreibung"
-                    required></textarea>
+                  <textarea
+                    matInput
+                    formControlName="description"
+                    rows="5"
+                    placeholder="Beschreibung"
+                    required
+                  ></textarea>
                   @if (description.invalid) {
-                  <mat-error>{{ getDescriptionErrorMessage() }}</mat-error>
+                    <mat-error>{{ getDescriptionErrorMessage() }}</mat-error>
                   }
                 </mat-form-field>
 
-                <button type="button" mat-mini-fab color="primary" class="enhance-button" (click)="enhanceDescription()"
-                  [disabled]="isEnhancingDescription || !description.value" matTooltip="Beschreibung verbessern mit KI">
+                <button
+                  type="button"
+                  mat-mini-fab
+                  color="primary"
+                  class="enhance-button"
+                  (click)="enhanceDescription()"
+                  [disabled]="isEnhancingDescription || !description.value"
+                  matTooltip="Beschreibung verbessern mit KI"
+                >
                   @if (isEnhancingDescription) {
-                  <mat-icon class="spinner">sync</mat-icon>
+                    <mat-icon class="spinner">sync</mat-icon>
                   } @else {
-                  <mat-icon>auto_fix_high</mat-icon>
+                    <mat-icon>auto_fix_high</mat-icon>
                   }
                 </button>
               </div>
@@ -67,11 +87,16 @@
 
                 <mat-form-field appearance="outline">
                   <mat-label>Maximale Teilnehmerzahl (optional)</mat-label>
-                  <input matInput type="number" formControlName="maxParticipants" min="1"
-                    placeholder="Anzahl eingeben" />
+                  <input
+                    matInput
+                    type="number"
+                    formControlName="maxParticipants"
+                    min="1"
+                    placeholder="Anzahl eingeben"
+                  />
                   @if (maxParticipants.invalid) {
-                  <mat-error>{{
-                    getMaxParticipantsErrorMessage()
+                    <mat-error>{{
+                      getMaxParticipantsErrorMessage()
                     }}</mat-error>
                   }
                 </mat-form-field>
@@ -82,42 +107,86 @@
                 <div class="image-upload-container">
                   <h3>Event-Bild</h3>
 
-                  <div class="upload-area" [class.has-image]="imagePreview || coverImageUrl.value"
-                    (click)="!imagePreview && !coverImageUrl.value && fileInput.click()"
-                    (dragover)="$event.preventDefault()" (drop)="onFileDrop($event)">
-
-                    <div class="upload-placeholder" *ngIf="!imagePreview && !coverImageUrl.value">
+                  <div
+                    class="upload-area"
+                    [class.has-image]="imagePreview || coverImageUrl.value"
+                    (click)="
+                      !imagePreview && !coverImageUrl.value && fileInput.click()
+                    "
+                    (dragover)="$event.preventDefault()"
+                    (drop)="onFileDrop($event)"
+                  >
+                    <div
+                      class="upload-placeholder"
+                      *ngIf="!imagePreview && !coverImageUrl.value"
+                    >
                       <mat-icon>cloud_upload</mat-icon>
-                      <p>Klicke hier, um ein Bild hochzuladen oder ziehe eine Datei in diesen Bereich</p>
-                      <span class="upload-hint">Maximale Größe: 5MB • Formate: JPG, PNG, GIF</span>
+                      <p>
+                        Klicke hier, um ein Bild hochzuladen oder ziehe eine
+                        Datei in diesen Bereich
+                      </p>
+                      <span class="upload-hint"
+                        >Maximale Größe: 5MB • Formate: JPG, PNG, GIF</span
+                      >
                     </div>
 
-                    <div class="cover-image-preview" *ngIf="imagePreview || coverImageUrl.value">
-                      <img [src]="imagePreview || images.getImageUrl(coverImageUrl.value, category.value!)"
-                        alt="Cover-Bildvorschau" class="preview-image">
+                    <div
+                      class="cover-image-preview"
+                      *ngIf="imagePreview || coverImageUrl.value"
+                    >
+                      <img
+                        [src]="
+                          imagePreview ||
+                          images.getImageUrl(
+                            coverImageUrl.value,
+                            category.value!
+                          )
+                        "
+                        alt="Cover-Bildvorschau"
+                        class="preview-image"
+                      />
 
                       <div class="image-actions">
-                        <button type="button" mat-mini-fab color="primary" (click)="fileInput.click()"
-                          matTooltip="Bild ändern">
+                        <button
+                          type="button"
+                          mat-mini-fab
+                          color="primary"
+                          (click)="fileInput.click()"
+                          matTooltip="Bild ändern"
+                        >
                           <mat-icon>edit</mat-icon>
                         </button>
-                        <button type="button" mat-mini-fab color="warn" (click)="removeImage()"
-                          matTooltip="Bild entfernen">
+                        <button
+                          type="button"
+                          mat-mini-fab
+                          color="warn"
+                          (click)="removeImage()"
+                          matTooltip="Bild entfernen"
+                        >
                           <mat-icon>delete</mat-icon>
                         </button>
                       </div>
                     </div>
 
-                    <input type="file" #fileInput style="display: none" accept="image/*"
-                      (change)="onFileSelected($event)">
+                    <input
+                      type="file"
+                      #fileInput
+                      style="display: none"
+                      accept="image/*"
+                      (change)="onFileSelected($event)"
+                    />
                   </div>
 
-                  <mat-progress-bar *ngIf="uploadProgress > 0 && uploadProgress < 100" mode="determinate"
-                    [value]="uploadProgress">
+                  <mat-progress-bar
+                    *ngIf="uploadProgress > 0 && uploadProgress < 100"
+                    mode="determinate"
+                    [value]="uploadProgress"
+                  >
                   </mat-progress-bar>
 
                   <p class="upload-status" *ngIf="uploadProgress === 100">
-                    <mat-icon color="primary">check_circle</mat-icon> Bild erfolgreich hochgeladen
+                    <mat-icon color="primary">check_circle</mat-icon> Bild
+                    erfolgreich hochgeladen
                   </p>
                 </div>
               </div>
@@ -128,228 +197,352 @@
           <mat-tab label="Ort & Zeit">
             <div class="tab-content">
               <div class="online-event-section">
-                <mat-checkbox formControlName="isOnline">Online-Event</mat-checkbox>
+                <mat-checkbox formControlName="isOnline"
+                  >Online-Event</mat-checkbox
+                >
 
                 @if (isOnline.value) {
-                <mat-form-field appearance="outline" class="meeting-link">
-                  <mat-label>Meeting-Link</mat-label>
-                  <input matInput formControlName="meetingLink" placeholder="z.B. Zoom-Link" required />
-                  @if (eventForm.get("meetingLink")?.hasError("required")) {
-                  <mat-error>
-                    Meeting-Link ist für Online-Events erforderlich
-                  </mat-error>
-                  }
-                </mat-form-field>
+                  <mat-form-field appearance="outline" class="meeting-link">
+                    <mat-label>Meeting-Link</mat-label>
+                    <input
+                      matInput
+                      formControlName="meetingLink"
+                      placeholder="z.B. Zoom-Link"
+                      required
+                    />
+                    @if (eventForm.get("meetingLink")?.hasError("required")) {
+                      <mat-error>
+                        Meeting-Link ist für Online-Events erforderlich
+                      </mat-error>
+                    }
+                  </mat-form-field>
                 }
               </div>
 
               @if (!isOnline.value) {
-              <!-- Simple location fields (shown in basic mode) -->
-              @if (!advancedMode) {
-              <div class="form-row">
-                <mat-form-field appearance="outline">
-                  <mat-label>Ort</mat-label>
-                  <input matInput formControlName="location" placeholder="z.B. Berlin, Alexanderplatz" />
-                </mat-form-field>
+                <!-- Simple location fields (shown in basic mode) -->
+                @if (!advancedMode) {
+                  <div class="form-row">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Ort</mat-label>
+                      <input
+                        matInput
+                        formControlName="location"
+                        placeholder="z.B. Berlin, Alexanderplatz"
+                      />
+                    </mat-form-field>
 
-                <mat-form-field appearance="outline">
-                  <mat-label>Datum & Uhrzeit</mat-label>
-                  <input matInput [matDatepicker]="picker" formControlName="eventDate" />
-                  <mat-hint>TT.MM.JJJJ</mat-hint>
-                  <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                  <mat-datepicker #picker></mat-datepicker>
-                </mat-form-field>
-              </div>
-              }
-
-              <!-- Advanced occurrences section (shown in advanced mode) -->
-              @if (advancedMode) {
-              <div class="section-title">
-                <h3>Veranstaltungstermine</h3>
-                <button mat-button type="button" color="primary" (click)="addOccurrence()">
-                  <mat-icon>add</mat-icon> Termin hinzufügen
-                </button>
-              </div>
-
-              <div formArrayName="occurrences">
-                @for (
-                occurrenceForm of occurrences.controls;
-                track $index
-                ) {
-                <mat-expansion-panel class="occurrence-panel">
-                  <mat-expansion-panel-header>
-                    <mat-panel-title>
-                      Termin {{ $index + 1 }}
-                    </mat-panel-title>
-                  </mat-expansion-panel-header>
-
-                  <div [formGroupName]="$index">
-                    <div class="form-row">
-                      <mat-form-field appearance="outline">
-                        <mat-label>Startdatum & Zeit</mat-label>
-                        <input matInput [matDatepicker]="startPicker" formControlName="startDate" required />
-                        <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
-                        <mat-datepicker #startPicker></mat-datepicker>
-                      </mat-form-field>
-
-                      <mat-form-field appearance="outline">
-                        <mat-label>Enddatum & Zeit (optional)</mat-label>
-                        <input matInput [matDatepicker]="endPicker" formControlName="endDate" />
-                        <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
-                        <mat-datepicker #endPicker></mat-datepicker>
-                      </mat-form-field>
-                    </div>
-
-                    <div formGroupName="location">
-                      <h4>Veranstaltungsort</h4>
-                      <div class="form-row">
-                        <mat-form-field appearance="outline">
-                          <mat-label>Adresse</mat-label>
-                          <input matInput formControlName="address" placeholder="Straße, Hausnummer" required />
-                        </mat-form-field>
-
-                        <mat-form-field appearance="outline">
-                          <mat-label>Stadt</mat-label>
-                          <input matInput formControlName="city" placeholder="z.B. Berlin" required />
-                        </mat-form-field>
-                      </div>
-
-                      <div class="form-row">
-                        <mat-form-field appearance="outline">
-                          <mat-label>Bundesland</mat-label>
-                          <input matInput formControlName="state" placeholder="z.B. Brandenburg" required />
-                        </mat-form-field>
-
-                        <mat-form-field appearance="outline">
-                          <mat-label>Land</mat-label>
-                          <input matInput formControlName="country" placeholder="z.B. Deutschland" required />
-                        </mat-form-field>
-                      </div>
-
-                      <div class="form-row">
-                        <mat-form-field appearance="outline">
-                          <mat-label>PLZ (optional)</mat-label>
-                          <input matInput formControlName="postalCode" placeholder="z.B. 10115" />
-                        </mat-form-field>
-                      </div>
-
-                      <div class="form-row">
-                        <mat-form-field appearance="outline">
-                          <mat-label>Breitengrad (optional)</mat-label>
-                          <input matInput type="number" formControlName="latitude" placeholder="z.B. 52.5200" />
-                        </mat-form-field>
-
-                        <mat-form-field appearance="outline">
-                          <mat-label>Längengrad (optional)</mat-label>
-                          <input matInput type="number" formControlName="longitude" placeholder="z.B. 13.4050" />
-                        </mat-form-field>
-                      </div>
-                    </div>
-
-                    <div class="form-actions">
-                      <button mat-button type="button" color="warn" (click)="removeOccurrence($index)">
-                        <mat-icon>delete</mat-icon> Termin entfernen
-                      </button>
-                    </div>
+                    <mat-form-field appearance="outline">
+                      <mat-label>Datum & Uhrzeit</mat-label>
+                      <input
+                        matInput
+                        [matDatepicker]="picker"
+                        formControlName="eventDate"
+                      />
+                      <mat-hint>TT.MM.JJJJ</mat-hint>
+                      <mat-datepicker-toggle
+                        matSuffix
+                        [for]="picker"
+                      ></mat-datepicker-toggle>
+                      <mat-datepicker #picker></mat-datepicker>
+                    </mat-form-field>
                   </div>
-                </mat-expansion-panel>
                 }
-              </div>
-              }
+
+                <!-- Advanced occurrences section (shown in advanced mode) -->
+                @if (advancedMode) {
+                  <div class="section-title">
+                    <h3>Veranstaltungstermine</h3>
+                    <button
+                      mat-button
+                      type="button"
+                      color="primary"
+                      (click)="addOccurrence()"
+                    >
+                      <mat-icon>add</mat-icon> Termin hinzufügen
+                    </button>
+                  </div>
+
+                  <div formArrayName="occurrences">
+                    @for (
+                      occurrenceForm of occurrences.controls;
+                      track $index
+                    ) {
+                      <mat-expansion-panel class="occurrence-panel">
+                        <mat-expansion-panel-header>
+                          <mat-panel-title>
+                            Termin {{ $index + 1 }}
+                          </mat-panel-title>
+                        </mat-expansion-panel-header>
+
+                        <div [formGroupName]="$index">
+                          <div class="form-row">
+                            <mat-form-field appearance="outline">
+                              <mat-label>Startdatum & Zeit</mat-label>
+                              <input
+                                matInput
+                                [matDatepicker]="startPicker"
+                                formControlName="startDate"
+                                required
+                              />
+                              <mat-datepicker-toggle
+                                matSuffix
+                                [for]="startPicker"
+                              ></mat-datepicker-toggle>
+                              <mat-datepicker #startPicker></mat-datepicker>
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline">
+                              <mat-label>Enddatum & Zeit (optional)</mat-label>
+                              <input
+                                matInput
+                                [matDatepicker]="endPicker"
+                                formControlName="endDate"
+                              />
+                              <mat-datepicker-toggle
+                                matSuffix
+                                [for]="endPicker"
+                              ></mat-datepicker-toggle>
+                              <mat-datepicker #endPicker></mat-datepicker>
+                            </mat-form-field>
+                          </div>
+
+                          <div formGroupName="location">
+                            <h4>Veranstaltungsort</h4>
+                            <div class="form-row">
+                              <mat-form-field appearance="outline">
+                                <mat-label>Adresse</mat-label>
+                                <input
+                                  matInput
+                                  formControlName="address"
+                                  placeholder="Straße, Hausnummer"
+                                  required
+                                />
+                              </mat-form-field>
+
+                              <mat-form-field appearance="outline">
+                                <mat-label>Stadt</mat-label>
+                                <input
+                                  matInput
+                                  formControlName="city"
+                                  placeholder="z.B. Berlin"
+                                  required
+                                />
+                              </mat-form-field>
+                            </div>
+
+                            <div class="form-row">
+                              <mat-form-field appearance="outline">
+                                <mat-label>Bundesland</mat-label>
+                                <input
+                                  matInput
+                                  formControlName="state"
+                                  placeholder="z.B. Brandenburg"
+                                  required
+                                />
+                              </mat-form-field>
+
+                              <mat-form-field appearance="outline">
+                                <mat-label>Land</mat-label>
+                                <input
+                                  matInput
+                                  formControlName="country"
+                                  placeholder="z.B. Deutschland"
+                                  required
+                                />
+                              </mat-form-field>
+                            </div>
+
+                            <div class="form-row">
+                              <mat-form-field appearance="outline">
+                                <mat-label>PLZ (optional)</mat-label>
+                                <input
+                                  matInput
+                                  formControlName="postalCode"
+                                  placeholder="z.B. 10115"
+                                />
+                              </mat-form-field>
+                            </div>
+
+                            <div class="form-row">
+                              <mat-form-field appearance="outline">
+                                <mat-label>Breitengrad (optional)</mat-label>
+                                <input
+                                  matInput
+                                  type="number"
+                                  formControlName="latitude"
+                                  placeholder="z.B. 52.5200"
+                                />
+                              </mat-form-field>
+
+                              <mat-form-field appearance="outline">
+                                <mat-label>Längengrad (optional)</mat-label>
+                                <input
+                                  matInput
+                                  type="number"
+                                  formControlName="longitude"
+                                  placeholder="z.B. 13.4050"
+                                />
+                              </mat-form-field>
+                            </div>
+                          </div>
+
+                          <div class="form-actions">
+                            <button
+                              mat-button
+                              type="button"
+                              color="warn"
+                              (click)="removeOccurrence($index)"
+                            >
+                              <mat-icon>delete</mat-icon> Termin entfernen
+                            </button>
+                          </div>
+                        </div>
+                      </mat-expansion-panel>
+                    }
+                  </div>
+                }
               }
             </div>
           </mat-tab>
 
           <!-- Managers Tab - Only in Advanced Mode -->
           @if (advancedMode) {
-          <mat-tab label="Event-Manager">
-            <div class="tab-content">
-              <div class="section-title">
-                <h3>Event-Manager</h3>
-                <button mat-button type="button" color="primary" (click)="addManager()">
-                  <mat-icon>add</mat-icon> Manager hinzufügen
-                </button>
-              </div>
-
-              <div formArrayName="managers">
-                @for (managerForm of managers.controls; track $index) {
-                <div [formGroupName]="$index" class="manager-item">
-                  <app-user-search [searchType]="'email'" label="Manager einladen"
-                    placeholder="Email-Adresse eingeben..." (userSelected)="onManagerSelected($event, $index)">
-                  </app-user-search>
-
-                  <input type="hidden" formControlName="userId" />
-
-                  <button mat-icon-button type="button" color="warn" (click)="removeManager($index)">
-                    <mat-icon>delete</mat-icon>
+            <mat-tab label="Event-Manager">
+              <div class="tab-content">
+                <div class="section-title">
+                  <h3>Event-Manager</h3>
+                  <button
+                    mat-button
+                    type="button"
+                    color="primary"
+                    (click)="addManager()"
+                  >
+                    <mat-icon>add</mat-icon> Manager hinzufügen
                   </button>
                 </div>
-                }
+
+                <div formArrayName="managers">
+                  @for (managerForm of managers.controls; track $index) {
+                    <div [formGroupName]="$index" class="manager-item">
+                      <app-user-search
+                        [searchType]="'email'"
+                        label="Manager einladen"
+                        placeholder="Email-Adresse eingeben..."
+                        (userSelected)="onManagerSelected($event, $index)"
+                      >
+                      </app-user-search>
+
+                      <input type="hidden" formControlName="userId" />
+
+                      <button
+                        mat-icon-button
+                        type="button"
+                        color="warn"
+                        (click)="removeManager($index)"
+                      >
+                        <mat-icon>delete</mat-icon>
+                      </button>
+                    </div>
+                  }
+                </div>
               </div>
-            </div>
-          </mat-tab>
+            </mat-tab>
           }
 
           <!-- Invitations Tab - Only in Advanced Mode -->
           @if (advancedMode) {
-          <mat-tab label="Einladungen">
-            <div class="tab-content">
-              <div class="section-title">
-                <h3>Einladungen</h3>
-                <button mat-button type="button" color="primary" (click)="addInvitation()">
-                  <mat-icon>add</mat-icon> Einladung hinzufügen
-                </button>
-              </div>
-
-              <div formArrayName="invitations">
-                @for (invitationForm of invitations.controls; track $index) {
-                <div [formGroupName]="$index" class="invitation-item">
-                  <div class="form-row">
-                    <mat-form-field appearance="outline">
-                      <mat-label>E-Mail</mat-label>
-                      <input matInput formControlName="email" placeholder="beispiel@email.com" required />
-                      @if (invitationForm.get("email")?.hasError("email")) {
-                      <mat-error>
-                        Bitte gültige E-Mail-Adresse eingeben
-                      </mat-error>
-                      }
-                    </mat-form-field>
-                  </div>
-
-                  <div class="form-row">
-                    <mat-form-field appearance="outline" class="form-field-full-width">
-                      <mat-label>Nachricht (optional)</mat-label>
-                      <textarea matInput formControlName="message" rows="3"
-                        placeholder="Persönliche Nachricht..."></textarea>
-                    </mat-form-field>
-                  </div>
-
-                  <button mat-button type="button" color="warn" (click)="removeInvitation($index)">
-                    <mat-icon>delete</mat-icon> Einladung entfernen
+            <mat-tab label="Einladungen">
+              <div class="tab-content">
+                <div class="section-title">
+                  <h3>Einladungen</h3>
+                  <button
+                    mat-button
+                    type="button"
+                    color="primary"
+                    (click)="addInvitation()"
+                  >
+                    <mat-icon>add</mat-icon> Einladung hinzufügen
                   </button>
-
-                  @if ($index < invitations.length - 1) { <mat-divider></mat-divider>
-                    }
                 </div>
-                }
+
+                <div formArrayName="invitations">
+                  @for (invitationForm of invitations.controls; track $index) {
+                    <div [formGroupName]="$index" class="invitation-item">
+                      <div class="form-row">
+                        <mat-form-field appearance="outline">
+                          <mat-label>E-Mail</mat-label>
+                          <input
+                            matInput
+                            formControlName="email"
+                            placeholder="beispiel@email.com"
+                            required
+                          />
+                          @if (invitationForm.get("email")?.hasError("email")) {
+                            <mat-error>
+                              Bitte gültige E-Mail-Adresse eingeben
+                            </mat-error>
+                          }
+                        </mat-form-field>
+                      </div>
+
+                      <div class="form-row">
+                        <mat-form-field
+                          appearance="outline"
+                          class="form-field-full-width"
+                        >
+                          <mat-label>Nachricht (optional)</mat-label>
+                          <textarea
+                            matInput
+                            formControlName="message"
+                            rows="3"
+                            placeholder="Persönliche Nachricht..."
+                          ></textarea>
+                        </mat-form-field>
+                      </div>
+
+                      <button
+                        mat-button
+                        type="button"
+                        color="warn"
+                        (click)="removeInvitation($index)"
+                      >
+                        <mat-icon>delete</mat-icon> Einladung entfernen
+                      </button>
+
+                      @if ($index < invitations.length - 1) {
+                        <mat-divider></mat-divider>
+                      }
+                    </div>
+                  }
+                </div>
               </div>
-            </div>
-          </mat-tab>
+            </mat-tab>
           }
         </mat-tab-group>
 
         <div class="form-actions">
-          <button mat-button type="button" (click)="resetForm()" [disabled]="isLoading">
+          <button
+            mat-button
+            type="button"
+            (click)="resetForm()"
+            [disabled]="isLoading"
+          >
             Zurücksetzen
           </button>
-          <button mat-raised-button color="primary" type="submit" [disabled]="eventForm.invalid || isLoading">
+          <button
+            mat-raised-button
+            color="primary"
+            type="submit"
+            [disabled]="eventForm.invalid || isLoading"
+          >
             @if (isLoading) {
-            <span>
-              <mat-icon class="spinner">sync</mat-icon>
-              Wird erstellt...
-            </span>
+              <span>
+                <mat-icon class="spinner">sync</mat-icon>
+                Wird erstellt...
+              </span>
             } @else {
-            <span>Event erstellen</span>
+              <span>Event erstellen</span>
             }
           </button>
         </div>

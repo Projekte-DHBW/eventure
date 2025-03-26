@@ -70,6 +70,7 @@ export class AuthService {
       sub: user.id,
       firstName: user.firstName,
       lastName: user.lastName,
+      email: user.email,
     };
     const accessToken = this.jwtService.sign(payload, {
       expiresIn: constants.expiry,

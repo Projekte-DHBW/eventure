@@ -16,6 +16,7 @@ import { Router } from '@angular/router';
 export class EventSliderComponent {
   private eventsService = inject(EventsService);
   protected images = inject(ImageUtilsService);
+  private router = inject(Router);
 
   @ViewChild('eventSlider', { static: false }) eventSlider!: ElementRef;
 
@@ -42,6 +43,10 @@ export class EventSliderComponent {
         this.loading = false;
       },
     });
+  }
+
+  navigateToEvent(eventId: string): void {
+    this.router.navigate(['/events', eventId]);
   }
 
   scrollLeft() {

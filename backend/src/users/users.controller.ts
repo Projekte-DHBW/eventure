@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Query, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Query,
+  UseGuards,
+  Param,
+  NotFoundException,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { AuthGuard } from '../auth/auth.guard';
 import { GetUser } from '../auth/jwtData.decorator';
@@ -9,7 +18,9 @@ import {
   ApiResponse,
   ApiBearerAuth,
   ApiQuery,
+  ApiParam,
 } from '@nestjs/swagger';
+import { UserProfileDto } from './dto/user-profile.dto';
 
 @ApiTags('users')
 @Controller('users')
@@ -60,4 +71,20 @@ export class UsersController {
     );
   }
 
+  @ApiOperation({ summary: 'Get user profile by ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'User profile information',
+    type: UserProfileDto,
+  })
+  @ApiResponse({ status: 404, description: 'User not found' })
+  @ApiParam({ name: 'id', description: 'User ID' })
+  @Get(':id/profile')
+  async getUserProfile(@Param('id') id: string) {
+    const profile = await this.usersService.getUserProfile(id);
+    if (!profile) {
+      throw new NotFoundException('User not found');
+    }
+    return profile;
+  }
 }

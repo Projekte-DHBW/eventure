@@ -1,10 +1,12 @@
-import { Component, inject, Input } from '@angular/core';
+import { Component, inject, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { RouterModule, Router } from '@angular/router';
 import { Event } from '../../types/events';
 import { ImageUtilsService } from '../../services/image-utils.service';
+import { AuthService } from '../../auth/services/auth.service';
+import { EventsService } from '../../services/events.service';
 
 @Component({
   selector: 'app-event-card',
@@ -13,13 +15,20 @@ import { ImageUtilsService } from '../../services/image-utils.service';
   templateUrl: './event-card.component.html',
   styleUrl: './event-card.component.css',
 })
-export class EventCardComponent {
+export class EventCardComponent implements OnInit {
   @Input() event!: Event;
   protected images = inject(ImageUtilsService);
   private router = inject(Router);
+  private authService = inject(AuthService);
+  private eventsService = inject(EventsService);
+  isRegistered = false;
 
   ngOnInit(): void {
-    console.log(this.event);
+    this.eventsService.checkRegistration(this.authService.getUserId() ?? "0", this.event.id).subscribe(
+      (response) => {
+        this.isRegistered = response.isRegistered;
+      }
+    );
   }
 
   navigateToEventDetails(): void {

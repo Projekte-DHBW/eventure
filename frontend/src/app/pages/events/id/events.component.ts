@@ -73,7 +73,6 @@ export class EventsComponent implements OnInit {
 
   users: User[] = [];
 
-  // Add new properties for sharing
   linkCopied = false;
   shareTimer: any;
 
@@ -83,10 +82,8 @@ export class EventsComponent implements OnInit {
     private iconRegistry: MatIconRegistry,
     private sanitizer: DomSanitizer,
   ) {
-    // Register German locale
     registerLocaleData(localeDe);
 
-    // Register custom icons for social sharing
     this.registerCustomIcons();
   }
 
@@ -97,25 +94,19 @@ export class EventsComponent implements OnInit {
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
-    console.log('Extrahierte ID:', id); // Debug-Ausgabe hinzufügen
-
-    //const { userID, eventID } = this.signUpForm.value;
 
     const userID = this.authService.getUserId() as string;
     console.log('UserID: ', userID);
 
-    console.log('Form invalid:', this.signUpForm.invalid); // Debug-Ausgabe
+    console.log('Form invalid:', this.signUpForm.invalid);
 
     if (id && userID) {
-      // Überprüfen, ob eventID und userid nicht null ist
       this.signUpForm.patchValue({ eventID: id, userID: userID });
       this.eventsService.findOne(id).subscribe(
         (result) => {
-          // Hier können Sie die API-Daten anpassen, falls nötig
           this.results = [result];
-          console.log('Ergebnisse:', this.results); // Debug-Ausgabe
+          console.log('Ergebnisse:', this.results);
 
-          // Vorkommen sortieren, falls vorhanden
           this.sortOccurrences();
         },
         (error) => {
@@ -124,13 +115,9 @@ export class EventsComponent implements OnInit {
         },
       );
 
-      // Überprüfung der Registrierung
       this.eventsService.checkRegistration(userID, id).subscribe(
         (response) => {
-          //this.signUpForm.patchValue({ userID: userID });
           this.isRegistered = response.isRegistered;
-          console.log('Is Registered:', this.isRegistered); // Debug-Ausgabe
-          //this.successMessage = 'Sie sind bereits angemeldet.';
         },
         (error) => {
           this.errorMessage = 'Fehler beim Überprüfen der Registrierung';
@@ -149,14 +136,13 @@ export class EventsComponent implements OnInit {
 
     const { userID, eventID } = this.signUpForm.value;
 
-    // Benutzer zu einem Event einladen
     this.eventsService.inviteUser(userID, eventID).subscribe({
       next: () => {
         this.successMessage =
           'Sie haben sich erfolgreich für das Event angemeldet!';
-        this.isRegistered = true; // Aktualisiere den Registrierungsstatus
+        this.isRegistered = true;
         this.isLoading = false;
-        this.changeDetector.detectChanges(); // Manuelle Änderungserkennung
+        this.changeDetector.detectChanges();
       },
       error: (error) => {
         this.errorMessage = 'Fehler beim ihrer Anmeldung: ' + error.message;
@@ -178,7 +164,7 @@ export class EventsComponent implements OnInit {
     this.eventsService.deleteRegistration(userID, eventId).subscribe({
       next: () => {
         this.successMessage = 'Sie haben sich erfolgreich abgemeldet!';
-        this.isRegistered = false; // Setze den Registrierungsstatus zurück
+        this.isRegistered = false;
       },
       error: (error) => {
         this.errorMessage = 'Fehler bei der Abmeldung: ' + error.message;
@@ -189,12 +175,10 @@ export class EventsComponent implements OnInit {
     });
   }
 
-  // Helper getter for the current event
   get event(): EventsSearchResult {
     return this.results[0];
   }
 
-  // Get visibility label for display
   getVisibilityLabel(visibility: string): string {
     switch (visibility) {
       case 'public':
@@ -208,7 +192,6 @@ export class EventsComponent implements OnInit {
     }
   }
 
-  // Update the getCapacityPercentage method
   getCapacityPercentage(): number {
     if (
       !this.event ||
@@ -220,10 +203,9 @@ export class EventsComponent implements OnInit {
 
     const percentage =
       (this.event.attendeeCount / this.event.maxParticipants) * 100;
-    return Math.min(percentage, 100); // Ensure it doesn't go over 100%
+    return Math.min(percentage, 100);
   }
 
-  // Add this method to register custom icons
   private registerCustomIcons() {
     this.iconRegistry.addSvgIcon(
       'facebook',
@@ -239,25 +221,21 @@ export class EventsComponent implements OnInit {
     );
   }
 
-  // Copy event link to clipboard
   copyEventLink(): void {
     const currentUrl = window.location.href;
     navigator.clipboard.writeText(currentUrl).then(() => {
       this.linkCopied = true;
 
-      // Clear previous timer if it exists
       if (this.shareTimer) {
         clearTimeout(this.shareTimer);
       }
 
-      // Hide the "copied" message after 3 seconds
       this.shareTimer = setTimeout(() => {
         this.linkCopied = false;
       }, 3000);
     });
   }
 
-  // Share via email
   shareViaEmail(): void {
     const subject = encodeURIComponent(`Einladung: ${this.event.title}`);
     const body = encodeURIComponent(
@@ -270,7 +248,6 @@ export class EventsComponent implements OnInit {
     window.location.href = `mailto:?subject=${subject}&body=${body}`;
   }
 
-  // Share to WhatsApp
   shareToWhatsApp(): void {
     const text = encodeURIComponent(
       `Schau dir dieses Event an: ${this.event.title} - ${window.location.href}`,
@@ -278,7 +255,6 @@ export class EventsComponent implements OnInit {
     window.open(`https://wa.me/?text=${text}`, '_blank');
   }
 
-  // Share to Twitter
   shareToTwitter(): void {
     const text = encodeURIComponent(
       `${this.event.title} ${window.location.href}`,
@@ -294,7 +270,6 @@ export class EventsComponent implements OnInit {
     );
   }
 
-  // Ermittelt den Status eines Vorkommens (bevorstehend, aktiv, vergangen)
   getOccurrenceStatus(occurrence: EventOccurrence): string {
     const now = new Date();
     const startDate = new Date(occurrence.startDate);
@@ -309,7 +284,6 @@ export class EventsComponent implements OnInit {
     }
   }
 
-  // Gibt ein lesbares Label für den Status zurück
   getStatusLabel(occurrence: EventOccurrence): string {
     const status = this.getOccurrenceStatus(occurrence);
 
@@ -325,7 +299,6 @@ export class EventsComponent implements OnInit {
     }
   }
 
-  // Formatiert die Zeit in einem lesbaren Format
   formatTimeRange(occurrence: EventOccurrence): string {
     if (!occurrence.startDate) return '';
 
@@ -347,7 +320,6 @@ export class EventsComponent implements OnInit {
     return `${startTime} - ${endTime}`;
   }
 
-  // Optional: Sortiere die Vorkommen nach Datum
   sortOccurrences(): void {
     if (
       this.event &&

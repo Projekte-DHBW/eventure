@@ -79,7 +79,6 @@ export class HttpClientService {
 
     return this.http.request<T>(method, url, requestOptions).pipe(
       catchError((error) => {
-        // Handle 401 (Unauthorized) errors with token refresh if requested
         if (error.status === 401 && options.handleRefresh !== false) {
           return this.handleUnauthorizedError<T>(method, url, requestOptions);
         }
@@ -88,7 +87,6 @@ export class HttpClientService {
     );
   }
 
-  // GET methods
   public get<T>(
     endpoint: string,
     options: {
@@ -110,7 +108,6 @@ export class HttpClientService {
     return this.authenticatedRequest<T>('GET', endpoint, options);
   }
 
-  // POST methods
   public post<T>(
     endpoint: string,
     body: any,
@@ -134,7 +131,6 @@ export class HttpClientService {
     return this.authenticatedRequest<T>('POST', endpoint, { ...options, body });
   }
 
-  // PUT methods
   public put<T>(
     endpoint: string,
     body: any,
@@ -158,7 +154,6 @@ export class HttpClientService {
     return this.authenticatedRequest<T>('PUT', endpoint, { ...options, body });
   }
 
-  // PATCH methods
   public patch<T>(
     endpoint: string,
     body: any,
@@ -185,7 +180,6 @@ export class HttpClientService {
     });
   }
 
-  // DELETE methods
   public delete<T>(
     endpoint: string,
     options: {
@@ -207,12 +201,10 @@ export class HttpClientService {
     return this.authenticatedRequest<T>('DELETE', endpoint, options);
   }
 
-  // Helper methods
   private buildUrl(endpoint: string): string {
     if (endpoint.startsWith('http')) {
       return endpoint;
     }
-    // Remove leading slash if present
     const path = endpoint.startsWith('/') ? endpoint.slice(1) : endpoint;
     return `${environment.apiUrl}/${path}`;
   }
@@ -236,7 +228,6 @@ export class HttpClientService {
     //@ts-ignore
     return this.authService.refreshToken().pipe(
       switchMap((response) => {
-        // Update the auth header with new token
         const headers = new HttpHeaders(options.headers);
         const updatedHeaders = headers.set(
           'Authorization',
@@ -247,11 +238,9 @@ export class HttpClientService {
           headers: updatedHeaders,
         };
 
-        // Retry the request with the new token
         return this.http.request<T>(method, url, updatedOptions);
       }),
       catchError((error) => {
-        // If token refresh fails, log out the user
         this.authService.logout();
         return this.handleError(error);
       }),
@@ -261,10 +250,8 @@ export class HttpClientService {
   private handleError(error: any): Observable<never> {
     let errorMessage = '';
     if (error.error instanceof ErrorEvent) {
-      // Client-side error
       errorMessage = error.error.message;
     } else {
-      // Server-side error
       errorMessage = error.error?.message || 'Server error';
     }
     return throwError(() => new Error(errorMessage));

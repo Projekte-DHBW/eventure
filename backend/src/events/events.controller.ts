@@ -252,7 +252,7 @@ export class EventsController {
     @GetUser() user: User,
   ): Promise<{ success: boolean }> {
     await this.eventsService.inviteUser(user.id, eventId);
-    return { success: true }; // Rückgabe des Erfolgsstatus
+    return { success: true };
   }
 
   @UseGuards(AuthGuard)

@@ -16,7 +16,7 @@ export interface EventsSearchResult {
   eventDate?: Date;
   isOnline?: boolean;
   meetingLink?: string;
-  creator?: string; // User ID of creator
+  creator?: string;
   creatorObj?: {
     id: string;
     firstName: string;
@@ -38,7 +38,6 @@ export interface EventsSearchResult {
 export class EventsService {
   private http = inject(HttpClientService);
 
-  // Get events with filters
   getEvents(filters: any = {}): Observable<{ events: Event[]; total: number }> {
     const params: any = {};
 
@@ -49,7 +48,6 @@ export class EventsService {
     if (filters.limit) params.limit = filters.limit.toString();
     if (filters.types) params.types = filters.types;
 
-    // Für Standorte, entweder als String oder als Array
     if (filters.locations) {
       if (typeof filters.locations === 'string') {
         params.locations = filters.locations;
@@ -58,17 +56,14 @@ export class EventsService {
       }
     }
 
-    // Datum-Filter
     if (filters.date) {
       params.date = String(filters.date);
     }
 
-    // Add attending filter if provided
     if (filters.attending === true) {
       params.attending = 'true';
     }
 
-    // Spezielles Header-Flag für den HttpClient hinzufügen
     const options = {
       params,
       headers: {
@@ -76,7 +71,6 @@ export class EventsService {
       },
     };
 
-    // Rückgabetyp auf {events, total} ändern
     return this.http
       .get<{ events: Event[]; total: number }>('events', options)
       .pipe(
@@ -87,21 +81,18 @@ export class EventsService {
       );
   }
 
-  // Methode zum Einladen eines Benutzers zu einem Event
   inviteUser(
     userId: string,
     eventId: string,
   ): Observable<{ success: boolean }> {
-    const token = localStorage.getItem('accessToken'); // Holen Sie das Token aus dem Local Storage
-    console.log('Token:', token); // Überprüfen Sie, ob das Token vorhanden ist
+    const token = localStorage.getItem('accessToken');
+    console.log('Token:', token);
 
-    // Spezielle Header-Flag für den HttpClientService hinzufügen
     const headers = {
       Authorization: `Bearer ${token}`,
       Accept: 'application/json',
     };
 
-    // Verwenden Sie den injizierten HttpClientService für die Anfrage
     return this.http
       .post<{
         success: boolean;
@@ -109,18 +100,16 @@ export class EventsService {
       .pipe(
         catchError((error) => {
           console.error('Error inviting user:', error);
-          return of({ success: false }); // Fallback bei Fehler
+          return of({ success: false });
         }),
       );
   }
 
-  // Get events by category
   getEventsByCategory(category: string, limit: number = 10): Observable<any[]> {
     const params = { limit: limit.toString() };
     return this.http.get<any[]>(`events/category/${category}`, { params });
   }
 
-  // Get latest events
   getLatestEvents(limit: number = 10): Observable<Event[]> {
     const params = { limit: limit.toString() };
 
@@ -128,17 +117,14 @@ export class EventsService {
       map((response) => {
         console.log('Latest events response:', response);
 
-        // Prüfen, ob die Antwort bereits ein Array ist
         if (Array.isArray(response)) {
           return response;
         }
 
-        // Oder ob es im Format {items: Event[]} kommt
         if (response && 'items' in response) {
           return response.items || [];
         }
 
-        // Fallback
         console.warn('Unexpected format in latest events:', response);
         return [];
       }),
@@ -149,7 +135,6 @@ export class EventsService {
     );
   }
 
-  // Get popular events
   getPopularEvents(limit: number = 10): Observable<Event[]> {
     const params = { limit: limit.toString() };
     return this.http.get<any>('events/popular', { params }).pipe(
@@ -166,7 +151,6 @@ export class EventsService {
     );
   }
 
-  // Get event by ID
   getEvent(id: string): Observable<Event> {
     return this.http.authenticatedGet(`events/${id}`);
   }
@@ -174,7 +158,6 @@ export class EventsService {
   findOne(id: string): Observable<EventsSearchResult> {
     return this.http.get<EventsSearchResult>(`events/${id}`).pipe(
       map((event) => {
-        // Make sure attendeeCount is available
         return {
           ...event,
           attendeeCount: event.attendeeCount || 0,
@@ -224,10 +207,8 @@ export class EventsService {
   private handleError(error: any): Observable<never> {
     let errorMessage = '';
     if (error.error instanceof ErrorEvent) {
-      // Client-side error
       errorMessage = error.error.message;
     } else {
-      // Server-side error
       errorMessage = error.error?.message || 'Server error';
     }
     return throwError(() => new Error(errorMessage));
@@ -294,7 +275,6 @@ export class EventsService {
     return events.map((event) => this.normalizeEvent(event));
   }
 
-  // Methode zur Überprüfung, ob der Benutzer für ein Event registriert ist
   checkRegistration(
     userId: string,
     eventId: string,
@@ -309,7 +289,7 @@ export class EventsService {
       .pipe(
         catchError((error) => {
           console.error('Error checking registration:', error);
-          return of({ isRegistered: false }); // Fallback bei Fehler
+          return of({ isRegistered: false });
         }),
       );
   }

@@ -31,7 +31,6 @@ export class EventAttendee {
   @JoinColumn({ name: 'userId' })
   user: User;
 
-  // Optional - for specific occurrence attendance
   @Column({ nullable: true })
   occurrenceId?: string;
 
@@ -45,7 +44,6 @@ export class EventAttendee {
   @Column({ type: 'text', default: 'confirmed' })
   status: 'confirmed' | 'pending' | 'cancelled';
 
-  // Track if this came from an invitation
   @Column({ nullable: true })
   invitationId?: string;
 }

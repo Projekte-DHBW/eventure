@@ -17,7 +17,6 @@ import {
 import { ApiProperty } from '@nestjs/swagger';
 import { EventOccurrenceDto } from './UpdateEvent';
 
-// DTO for creating event locations
 export class EventLocationDto {
   @ApiProperty({ description: 'Street address of the event location' })
   @IsString()
@@ -60,7 +59,6 @@ export class EventLocationDto {
   longitude?: number;
 }
 
-// DTO for invitations
 export class InvitationDto {
   @ApiProperty({ description: 'Email address of the invited user' })
   @IsEmail()
@@ -76,7 +74,6 @@ export class InvitationDto {
   message?: string;
 }
 
-// Main CreateEventDto
 export class CreateEventDto {
   @ApiProperty({ description: 'Title of the event' })
   @IsString()

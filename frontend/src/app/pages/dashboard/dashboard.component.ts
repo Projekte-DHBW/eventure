@@ -72,7 +72,7 @@ export class DashboardComponent implements OnInit {
     this.eventsService.getAttendingEvents().subscribe({
       next: (events) => {
         this.attendingEvents = events || [];
-        this.sortAttendingEventsByDate(); // Sortiere statt zu kategorisieren
+        this.sortAttendingEventsByDate();
         this.loadingAttendingEvents = false;
       },
       error: (err) => {
@@ -85,7 +85,6 @@ export class DashboardComponent implements OnInit {
   sortMyEventsByDate(): void {
     // Sortiert Events nach Datum (neueste zuerst)
     this.myEvents.sort((a, b) => {
-      // Sichere Date-Konvertierung mit Fallbacks
       const dateA = a.eventDate
         ? new Date(a.eventDate)
         : a.createdAt
@@ -100,15 +99,12 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  // Neue Methode zum Sortieren aller Teilnahme-Events nach Datum
   sortAttendingEventsByDate(): void {
-    // Sortiere alle Events nach Datum (zuerst anstehende, dann vergangene)
     this.attendingEvents.sort((a, b) => {
       const now = new Date();
       const dateA = a.eventDate ? new Date(a.eventDate) : new Date(0);
       const dateB = b.eventDate ? new Date(b.eventDate) : new Date(0);
 
-      // Prüfe, ob die Events vergangen oder anstehend sind
       const isPastA = dateA < now;
       const isPastB = dateB < now;
 
@@ -128,7 +124,6 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  // Neue Hilfsmethode zur Prüfung, ob ein Event vergangen ist
   isEventPast(event: Event): boolean {
     if (!event.eventDate) return false;
 
@@ -146,7 +141,6 @@ export class DashboardComponent implements OnInit {
     this.router.navigate(['/events', eventId]);
   }
 
-  // Sicheres Formatieren von Datumsangaben
   formatDate(dateString?: string): string {
     if (!dateString) return 'Kein Datum';
 
@@ -197,7 +191,6 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  // Helper method to get the day number from a date string
   getEventDay(dateString?: string): number {
     if (!dateString) return 1;
     try {
@@ -208,7 +201,6 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  // Helper method to get the month abbreviation from a date string
   getEventMonth(dateString?: string): string {
     if (!dateString) return '';
     try {

@@ -59,7 +59,6 @@ export class UserSearchComponent implements OnInit {
         distinctUntilChanged(),
         tap(() => (this.isLoading = true)),
         switchMap((value) => {
-          // Don't search if value is an object (selected from dropdown) or too short
           if (typeof value !== 'string') {
             this.isLoading = false;
             return of([]);
@@ -105,7 +104,6 @@ export class UserSearchComponent implements OnInit {
   }
 
   onBlur(): void {
-    // Clear text input if no user is selected
     if (!this.selectedUser && typeof this.searchControl.value === 'string') {
       setTimeout(() => {
         this.searchControl.setValue('');

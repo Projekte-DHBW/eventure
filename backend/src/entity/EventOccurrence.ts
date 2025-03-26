@@ -22,7 +22,6 @@ export class EventOccurrence {
   @Column({ name: 'eventId' })
   eventId: string;
 
-  // Optional title for this specific occurrence
   @Column({ nullable: true })
   title?: string;
 
@@ -32,7 +31,6 @@ export class EventOccurrence {
   @Column({ type: 'datetime', nullable: true })
   endDate?: Date;
 
-  // Allow overriding event location for specific occurrences
   @Column({ nullable: true })
   location?: string;
 
@@ -49,7 +47,6 @@ export class EventOccurrence {
   @Column({ name: 'locationId', nullable: true })
   locationId?: string;
 
-  // Max participants for this specific occurrence (override event setting)
   @Column({ nullable: true })
   maxParticipants?: number;
 

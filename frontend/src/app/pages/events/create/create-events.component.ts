@@ -81,16 +81,13 @@ export class CreateEventsComponent implements OnInit {
   coverImageUrl = new FormControl('');
   maxParticipants = new FormControl(null, [Validators.min(1)]);
 
-  // Simple event properties
   location = new FormControl('');
   eventDate = new FormControl();
-  eventTime = new FormControl('12:00'); // Default-Wert 12:00 Uhr
+  eventTime = new FormControl('12:00');
 
-  // Online event properties
   isOnline = new FormControl(false);
   meetingLink = new FormControl('');
 
-  // File upload properties
   selectedFile: File | null = null;
   uploadProgress: number = 0;
   imagePreview: string | null = null;
@@ -99,7 +96,6 @@ export class CreateEventsComponent implements OnInit {
     this.initForm();
     this.loadUsers();
 
-    // Update meetingLink validation when isOnline changes
     this.isOnline.valueChanges.subscribe((isOnline) => {
       if (isOnline) {
         this.meetingLink.setValidators([Validators.required]);
@@ -126,7 +122,7 @@ export class CreateEventsComponent implements OnInit {
       maxParticipants: this.maxParticipants,
       location: this.location,
       eventDate: this.eventDate,
-      eventTime: this.eventTime, // Neues Formularfeld
+      eventTime: this.eventTime,
       isOnline: this.isOnline,
       meetingLink: this.meetingLink,
       occurrences: this.fb.array([]),
@@ -134,7 +130,6 @@ export class CreateEventsComponent implements OnInit {
     });
   }
 
-  // Getters for form arrays
   get occurrences(): FormArray {
     return this.eventForm.get('occurrences') as FormArray;
   }
@@ -143,7 +138,6 @@ export class CreateEventsComponent implements OnInit {
     return this.eventForm.get('invitations') as FormArray;
   }
 
-  // Methods to add items to form arrays
   addOccurrence(): void {
     const occurrenceForm = this.fb.group({
       startDate: ['', Validators.required],
@@ -222,11 +216,9 @@ export class CreateEventsComponent implements OnInit {
     const file = event.target.files[0];
     if (file && file.type.match(/image\/*/) && file.size <= 5 * 1024 * 1024) {
       this.selectedFile = file;
-      // Create a preview
       const reader = new FileReader();
       reader.onload = () => {
         this.imagePreview = reader.result as string;
-        // Auto-upload the image after selection
         this.uploadImage();
       };
       reader.readAsDataURL(file);
@@ -255,9 +247,8 @@ export class CreateEventsComponent implements OnInit {
     this.fileUploadService.uploadImage(this.selectedFile).subscribe({
       next: (response) => {
         this.uploadProgress = 100;
-        // Just store the filename or path, not the full URL
         this.eventForm.patchValue({
-          coverImageUrl: response.filename, // or response.imageUrl if you prefer the full path
+          coverImageUrl: response.filename,
         });
         this.snackBar.open('Bild erfolgreich hochgeladen', 'Schließen', {
           duration: 3000,
@@ -284,27 +275,21 @@ export class CreateEventsComponent implements OnInit {
 
       this.isLoading = true;
 
-      // Erstellen einer Kopie der Formulardaten
       const formValues = this.eventForm.value;
       const newEvent: CreateEvent = { ...formValues };
 
-      // Kombiniere Datum und Uhrzeit zu einem einzigen Zeitstempel
       if (newEvent.eventDate && newEvent.eventTime) {
         try {
           const dateObj = new Date(newEvent.eventDate);
 
-          // Zeit aus dem Zeit-String extrahieren
           const [hours, minutes] = (newEvent.eventTime as string)
             .split(':')
             .map(Number);
 
-          // Setzen der Stunden und Minuten auf das Datum
           dateObj.setHours(hours, minutes, 0, 0);
 
-          // Aktualisiere das Datum im Event-Objekt
           newEvent.eventDate = dateObj;
 
-          // Entferne das separate Zeitfeld, bevor wir die Daten ans Backend senden
           delete (newEvent as any).eventTime;
         } catch (error) {
           console.error('Fehler beim Umwandeln des Datums:', error);
@@ -316,7 +301,6 @@ export class CreateEventsComponent implements OnInit {
         }
       }
 
-      // Clean up empty arrays to avoid backend validation issues
       if (newEvent.occurrences?.length === 0) delete newEvent.occurrences;
       if (newEvent.invitations?.length === 0) delete newEvent.invitations;
 
@@ -354,10 +338,9 @@ export class CreateEventsComponent implements OnInit {
     this.eventForm.reset({
       visibility: 'public',
       isOnline: false,
-      eventTime: '12:00', // Standardzeit wieder setzen
+      eventTime: '12:00',
     });
 
-    // Clear form arrays
     while (this.occurrences.length) {
       this.occurrences.removeAt(0);
     }
@@ -376,7 +359,6 @@ export class CreateEventsComponent implements OnInit {
     });
   }
 
-  // Error message methods
   getTitleErrorMessage(): string {
     if (this.title.hasError('required')) {
       return 'Titel ist erforderlich';
@@ -398,14 +380,12 @@ export class CreateEventsComponent implements OnInit {
     return '';
   }
 
-  // Add this new method to the class
   removeImage(): void {
     this.selectedFile = null;
     this.imagePreview = null;
     this.coverImageUrl.setValue('');
   }
 
-  // Add drag and drop method
   onFileDrop(event: DragEvent): void {
     event.preventDefault();
     if (event.dataTransfer?.files.length) {

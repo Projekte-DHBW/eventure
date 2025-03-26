@@ -52,13 +52,12 @@ export class UsersService {
     currentUserId: string,
   ): Promise<{ id: string; firstName: string; lastName: string }[]> {
     if (!query || query.trim().length < 3) {
-      return []; // Require at least 3 characters for search
+      return [];
     }
 
     let users: User[];
 
     if (type === 'email') {
-      // For email: only exact matches for privacy
       users = await this.userRepository.find({
         where: {
           email: query, // Exact match only
@@ -67,11 +66,9 @@ export class UsersService {
         select: ['id', 'firstName', 'lastName'],
       });
     } else {
-      // For name search: allow partial matches
       const queryTerms = query.toLowerCase().split(' ').filter(Boolean);
 
       if (queryTerms.length === 1) {
-        // Single term - search in both first and last name
         users = await this.userRepository.find({
           where: [
             {
@@ -86,7 +83,6 @@ export class UsersService {
           select: ['id', 'firstName', 'lastName'],
         });
       } else {
-        // Multiple terms - try matching first and last name
         users = await this.userRepository.find({
           where: [
             {
@@ -130,7 +126,6 @@ export class UsersService {
     const user = await this.findOneByEmail(email);
 
     if (user) {
-      // User exists
       return {
         exists: true,
         user: {
@@ -141,7 +136,6 @@ export class UsersService {
       };
     } else {
       // User doesn't exist, send an invitation email (implementation placeholder)
-      // In a real app, you would call your email service here
       console.log(
         `Sending invitation to ${email} from user ${inviterId} for event ${eventId || 'N/A'}`,
       );
@@ -165,23 +159,19 @@ export class UsersService {
       return null;
     }
 
-    // Get current date for comparing past/future events
     const now = new Date();
 
-    // Find events the user has attended or will attend
     const attendances = await this.eventAttendeeRepository.find({
       where: { userId: id },
       relations: ['event', 'event.occurrences'],
     });
 
-    // Process into past and upcoming events
     const pastEvents: UserEventDto[] = [];
     const upcomingEvents: UserEventDto[] = [];
 
     attendances.forEach((attendance) => {
       if (!attendance.event) return;
 
-      // Determine if the event is past or upcoming based on occurrence dates
       const event = attendance.event;
       const latestOccurrence =
         event.occurrences && event.occurrences.length > 0
@@ -209,7 +199,6 @@ export class UsersService {
       }
     });
 
-    // Sort events by date
     pastEvents.sort((a, b) => b.startDate.getTime() - a.startDate.getTime());
     upcomingEvents.sort(
       (a, b) => a.startDate.getTime() - b.startDate.getTime(),
@@ -219,7 +208,6 @@ export class UsersService {
       id: user.id,
       firstName: user.firstName,
       lastName: user.lastName,
-      profilePictureUrl: undefined, // You'd need to add this field to your User entity
       joinedDate: user.createdAt,
       pastEvents,
       upcomingEvents,

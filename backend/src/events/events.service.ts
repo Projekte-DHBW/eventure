@@ -39,7 +39,6 @@ export class EventsService {
     createEventDto: CreateEventDto,
     user: User,
   ): Promise<Event> {
-    // 1. Create the base Event
     const event = this.eventRepository.create({
       title: createEventDto.title,
       description: createEventDto.description,
@@ -55,24 +54,19 @@ export class EventsService {
       meetingLink: createEventDto.meetingLink,
     });
 
-    // Save the event to get an ID
     const savedEvent = await this.eventRepository.save(event);
 
-    // 2. Process Event Occurrences if provided
     if (createEventDto.occurrences && createEventDto.occurrences.length > 0) {
       await this.createEventOccurrences(savedEvent, createEventDto.occurrences);
     }
 
-    // 4. Process Invitations if provided
     if (createEventDto.invitations && createEventDto.invitations.length > 0) {
       await this.createInvitations(savedEvent, createEventDto.invitations);
     }
 
-    // 5. Return the complete event
     return this.findOne(savedEvent.id);
   }
 
-  // Helper method to create event occurrences
   private async createEventOccurrences(
     event: Event,
     occurrences: CreateEventDto['occurrences'],
@@ -80,25 +74,20 @@ export class EventsService {
     if (!occurrences || occurrences.length === 0) return;
 
     const occurrencePromises = occurrences.map(async (occurrenceDto) => {
-      // Create location if provided
       let locationEntity: EventLocation | null = null;
       if (occurrenceDto.location) {
         locationEntity = await this.createEventLocation(occurrenceDto.location);
       }
 
-      // Fixed: Use the entity reference instead of just IDs
       const occurrence = this.eventOccurrenceRepository.create({
-        event: event, // Use entity reference instead of ID
+        event: event,
         startDate: occurrenceDto.startDate,
         endDate: occurrenceDto.endDate,
-        // Use optional chaining for locationDetails to handle null values
         ...(locationEntity ? { locationDetails: locationEntity } : {}),
       });
 
-      // Set the eventId field separately after creation
       occurrence.eventId = event.id;
 
-      // Set locationId if available
       if (locationEntity) {
         occurrence.locationId = locationEntity.id;
       }
@@ -109,7 +98,6 @@ export class EventsService {
     await Promise.all(occurrencePromises);
   }
 
-  // Helper method to create event location
   private async createEventLocation(
     locationDto: EventLocationDto,
   ): Promise<EventLocation> {
@@ -126,7 +114,6 @@ export class EventsService {
     return this.eventLocationRepository.save(location);
   }
 
-  // Helper method to create invitations
   private async createInvitations(
     event: Event,
     invitations: CreateEventDto['invitations'],
@@ -147,9 +134,7 @@ export class EventsService {
     await Promise.all(invitationPromises);
   }
 
-  // Update the findOne method to include all related entities
   async findOne(id: string): Promise<Event> {
-    // Find the event
     const event = await this.eventRepository.findOne({
       where: { id },
       relations: ['creatorObj'],
@@ -159,28 +144,23 @@ export class EventsService {
       throw new NotFoundException(`Event with ID ${id} not found`);
     }
 
-    // Find all occurrences with their locations
     const occurrences = await this.eventOccurrenceRepository.find({
       where: { event: { id } },
       relations: ['locationDetails'],
       order: { startDate: 'ASC' },
     });
-    // Find all invitations
     const invitations = await this.invitationRepository.find({
       where: { event: { id } },
     });
 
-    // Count attendees
     const attendeeCount = await this.eventAttendeeRepository.count({
       where: { eventId: id },
     });
 
-    // Extract creator name from creatorObj
     const creatorName = event.creatorObj
       ? `${event.creatorObj.firstName} ${event.creatorObj.lastName}`
       : 'Unknown';
 
-    // Attach all related entities and additional properties to the event
     const eventWithDetails = {
       ...event,
       occurrences,
@@ -207,12 +187,10 @@ export class EventsService {
         locations,
       } = filters;
 
-      // Erstellen der Basisabfrage für Events
       let query = this.eventRepository
         .createQueryBuilder('event')
         .where('event.visibility = :visibility', { visibility: 'public' });
 
-      // Falls nach Teilnahme gefiltert wird, mit Teilnehmern joinen
       if (attending && userId) {
         query = query
           .innerJoin(
@@ -223,7 +201,6 @@ export class EventsService {
           .andWhere('attendee.userId = :userId', { userId });
       }
 
-      // Textsuche (Titel, Beschreibung, Ort)
       if (search && search.trim() !== '') {
         const searchTerm = `%${search.trim()}%`;
         query.andWhere(
@@ -241,21 +218,17 @@ export class EventsService {
         );
       }
 
-      // Kategoriefilterung - unterstützt sowohl einzelne Kategorie als auch Array
       if (category) {
         query.andWhere('event.category = :category', { category });
       } else if (types && types.length > 0) {
         query.andWhere('event.category IN (:...types)', { types });
       }
 
-      // Standortfilterung
       if (locations && Array.isArray(locations) && locations.length > 0) {
         query.andWhere('event.location IN (:...locations)', { locations });
       }
 
-      // Datumfilterung
       if (date) {
-        // Join mit den Event-Vorkommen
         query = query.leftJoin('event.occurrences', 'occurrence');
 
         const now = new Date();
@@ -268,22 +241,21 @@ export class EventsService {
         let startDate: Date;
         let endDate: Date;
 
-        // Datum-Bereiche basierend auf dem Filter setzen
         switch (date) {
-          case 'today': // Heute
+          case 'today':
             startDate = today;
             endDate = new Date(today);
             endDate.setHours(23, 59, 59, 999);
             break;
 
-          case 'tomorrow': // Morgen
+          case 'tomorrow':
             startDate = new Date(today);
             startDate.setDate(startDate.getDate() + 1);
             endDate = new Date(startDate);
             endDate.setHours(23, 59, 59, 999);
             break;
 
-          case 'this_week': // Diese Woche
+          case 'this_week':
             startDate = today;
             endDate = new Date(today);
             const dayOfWeek = endDate.getDay();
@@ -292,13 +264,13 @@ export class EventsService {
             endDate.setHours(23, 59, 59, 999);
             break;
 
-          case 'this_month': // Diesen Monat
+          case 'this_month':
             startDate = today;
             endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
             endDate.setHours(23, 59, 59, 999);
             break;
 
-          case 'this_year': // Dieses Jahr
+          case 'this_year':
             startDate = today;
             endDate = new Date(today.getFullYear(), 11, 31);
             endDate.setHours(23, 59, 59, 999);
@@ -318,7 +290,6 @@ export class EventsService {
             }
         }
 
-        // Sichereren Abfrageansatz verwenden
         query.andWhere(
           new Brackets((qb) => {
             qb.where('event.eventDate BETWEEN :startDate AND :endDate', {
@@ -339,7 +310,6 @@ export class EventsService {
         );
       }
 
-      // Sortierung anwenden
       switch (sort) {
         case 'newest':
           query.orderBy('event.createdAt', 'DESC');
@@ -354,10 +324,8 @@ export class EventsService {
           query.orderBy('event.createdAt', 'DESC');
       }
 
-      // Paginierung anwenden
       query.skip((page - 1) * limit).take(limit);
 
-      // Wichtige Felder auswählen
       query.select([
         'event.id',
         'event.title',
@@ -375,17 +343,14 @@ export class EventsService {
         'event.updatedAt',
       ]);
 
-      // Abfrage eindeutig machen, um Duplikate zu vermeiden
       query.distinct(true);
 
-      // Gleiche Abfrage für die Gesamtzahl verwenden, aber count statt select
       const countQuery = query.clone();
       countQuery
         .skip(undefined)
         .take(undefined)
         .select('COUNT(DISTINCT event.id)', 'count');
 
-      // Alle Abfragen parallel ausführen für bessere Performance
       const [events, totalResult] = await Promise.all([
         query.getMany(),
         countQuery.getRawOne(),
@@ -396,14 +361,14 @@ export class EventsService {
       return [events, total];
     } catch (error) {
       console.error('Fehler beim Suchen von Events:', error);
-      return [[], 0]; // Leeres Ergebnis im Fehlerfall zurückgeben
+      return [[], 0];
     }
   }
 
   async findOneById(id: string): Promise<Event> {
     const event = await this.eventRepository.findOne({
       where: { id },
-      relations: ['occurrences'], // Stellen Sie sicher, dass occurrences geladen werden
+      relations: ['occurrences'],
     });
 
     if (!event) {
@@ -426,32 +391,21 @@ export class EventsService {
   ): Promise<Event> {
     const event = await this.findOneById(id);
 
-    // Check if the user has permission to update this event
     if (event.creator !== userId) {
       throw new UnauthorizedException(
         'You do not have permission to update this event',
       );
     }
 
-    // Extract only direct Event properties for the update
-    const { occurrences, invitations, removeOccurrences, ...directEventProps } =
+    const { occurrences, removeOccurrences, ...directEventProps } =
       updateEventDto;
 
-    // Update only the direct properties of the event
     await this.eventRepository.update(id, directEventProps);
 
-    // Handle occurrences if provided
     if (occurrences && occurrences.length > 0) {
       await this.updateEventOccurrences(event, occurrences);
     }
 
-    // Handle invitation updates if provided
-    if (invitations && invitations.length > 0) {
-      // Implement this method similar to createInvitations
-      // await this.updateInvitations(event, invitations);
-    }
-
-    // Handle occurrence removal if needed
     if (removeOccurrences && removeOccurrences.length > 0) {
       await this.eventOccurrenceRepository.delete({
         id: In(removeOccurrences),
@@ -465,7 +419,6 @@ export class EventsService {
   async remove(id: string, userId: string): Promise<void> {
     const event = await this.findOneById(id);
 
-    // Check if the user has permission to delete this event
     if (event.creator !== userId) {
       throw new UnauthorizedException(
         'You do not have permission to delete this event',
@@ -514,10 +467,9 @@ export class EventsService {
   async searchCities(query: string, limit: number = 10): Promise<string[]> {
     try {
       if (!query || query.trim().length < 2) {
-        return []; // Mindestens 2 Zeichen für die Suche erforderlich
+        return [];
       }
 
-      // Abfrage des Standortfelds direkt aus der Event-Tabelle
       const results = await this.eventRepository
         .createQueryBuilder('event')
         .where('LOWER(event.location) LIKE LOWER(:query)', {
@@ -525,11 +477,10 @@ export class EventsService {
         })
         .select('event.location', 'location')
         .distinct(true)
-        .orderBy('event.location', 'ASC') // Alphabetische Sortierung
+        .orderBy('event.location', 'ASC')
         .limit(limit)
         .getRawMany();
 
-      // Extrahieren der Standortwerte aus den Ergebnissen
       const locations = results
         .map((result) => result.location)
         .filter(
@@ -567,17 +518,10 @@ export class EventsService {
   }
 
   async isUserRegistered(userId: string, eventId: string): Promise<boolean> {
-    console.log(
-      'Überprüfe Registrierung für Benutzer:',
-      userId,
-      'und Event:',
-      eventId,
-    );
     const result = await this.invitedUserRepository.query(
       'SELECT COUNT(*) AS count FROM invited_users WHERE userId = ? AND eventId = ?',
       [userId, eventId],
     );
-    console.log('Abfrageergebnis:', result);
     return result[0].count > 0;
   }
   catch(error) {
@@ -596,7 +540,6 @@ export class EventsService {
    * Find events that a user is attending
    */
   async findAttendingEvents(userId: string): Promise<Event[]> {
-    // Verwende invitedUserRepository statt eventAttendeeRepository
     const invitedRecords = await this.invitedUserRepository.find({
       where: { user: { id: userId } },
       relations: ['event'],
@@ -606,17 +549,15 @@ export class EventsService {
       return [];
     }
 
-    // Extrahiere die Events aus den invited_users-Datensätzen
     const events = invitedRecords
-      .filter((record) => record.event) // Nur gültige Event-Einträge behalten
+      .filter((record) => record.event)
       .map((record) => record.event);
 
-    // Optional: Lade zusätzliche Event-Details
     if (events.length > 0) {
       const eventIds = events.map((event) => event.id);
       return this.eventRepository.find({
         where: { id: In(eventIds) },
-        relations: ['creatorObj'], // Weitere benötigte Relationen hinzufügen
+        relations: ['creatorObj'],
       });
     }
 
@@ -627,10 +568,12 @@ export class EventsService {
    * Add a user as an attendee to an event
    */
   async addAttendee(eventId: string, userId: string): Promise<void> {
-    // Check if the event exists
     const event = await this.findOneById(eventId);
 
-    // Check if user is already attending
+    if (!event) {
+      throw new NotFoundException(`Event with ID ${eventId} not found`);
+    }
+
     const existing = await this.eventAttendeeRepository.findOne({
       where: { eventId, userId },
     });
@@ -656,7 +599,6 @@ export class EventsService {
     });
   }
 
-  // Add this new method
   private async updateEventOccurrences(
     event: Event,
     occurrences: UpdateEventDto['occurrences'],
@@ -666,7 +608,6 @@ export class EventsService {
     const occurrencePromises = occurrences.map(async (occurrenceDto) => {
       let occurrence: EventOccurrence;
 
-      // If there's an ID, update existing occurrence
       if (occurrenceDto.id) {
         const foundOccurrence = await this.eventOccurrenceRepository.findOne({
           where: {
@@ -683,12 +624,10 @@ export class EventsService {
 
         occurrence = foundOccurrence;
 
-        // Update fields
         occurrence.startDate = occurrenceDto.startDate;
         if (occurrenceDto.endDate) occurrence.endDate = occurrenceDto.endDate;
         if (occurrenceDto.title) occurrence.title = occurrenceDto.title;
 
-        // Handle location if provided
         if (occurrenceDto.location) {
           const locationEntity = await this.createEventLocation(
             occurrenceDto.location,
@@ -697,8 +636,6 @@ export class EventsService {
           occurrence.locationId = locationEntity.id;
         }
       } else {
-        // Create a new occurrence
-        // Create location if provided
         let locationEntity: EventLocation | null = null;
         if (occurrenceDto.location) {
           locationEntity = await this.createEventLocation(
@@ -706,7 +643,6 @@ export class EventsService {
           );
         }
 
-        // Create new occurrence
         occurrence = this.eventOccurrenceRepository.create({
           event: event,
           startDate: occurrenceDto.startDate,

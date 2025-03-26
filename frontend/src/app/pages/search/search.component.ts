@@ -215,14 +215,12 @@ export class SearchComponent implements OnInit {
 
     this.eventsService.getEvents(filters).subscribe({
       next: (response) => {
-        // Direkt die Felder aus dem Response-Objekt verwenden
         this.events = response.events || [];
         this.totalEvents = response.total || 0;
         this.loading = false;
       },
       error: (err) => {
         console.error('Error fetching events:', err);
-        // Bei Fehlern leere Arrays initialisieren
         this.events = [];
         this.totalEvents = 0;
         this.loading = false;

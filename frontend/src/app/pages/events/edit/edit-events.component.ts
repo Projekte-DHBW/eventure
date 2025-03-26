@@ -137,7 +137,7 @@ export class EditEventsComponent implements OnInit {
       visibility: ['public', Validators.required],
       location: [''],
       eventDate: [null, Validators.required],
-      eventTime: ['12:00'], // Neues Formularfeld für die Uhrzeit
+      eventTime: ['12:00'],
       isOnline: [false],
       meetingLink: [''],
       coverImageUrl: [''],
@@ -145,7 +145,6 @@ export class EditEventsComponent implements OnInit {
       invitations: this.fb.array([]),
     });
 
-    // Rest der Methode bleibt unverändert
     this.eventForm.get('isOnline')?.valueChanges.subscribe((isOnline) => {
       const meetingLinkControl = this.eventForm.get('meetingLink');
       if (isOnline) {
@@ -179,8 +178,7 @@ export class EditEventsComponent implements OnInit {
   }
 
   populateForm(event: Event): void {
-    // Zeitkomponente aus eventDate extrahieren, falls vorhanden
-    let timeString = '12:00'; // Standard-Uhrzeit
+    let timeString = '12:00';
     if (event.eventDate) {
       const eventDateTime = new Date(event.eventDate);
       const hours = eventDateTime.getHours().toString().padStart(2, '0');
@@ -188,7 +186,6 @@ export class EditEventsComponent implements OnInit {
       timeString = `${hours}:${minutes}`;
     }
 
-    // Grundlegende Felder
     this.eventForm.patchValue({
       title: event.title,
       description: event.description,
@@ -196,7 +193,7 @@ export class EditEventsComponent implements OnInit {
       visibility: event.visibility,
       location: event.location,
       eventDate: event.eventDate ? new Date(event.eventDate) : null,
-      eventTime: timeString, // Extrahierte Uhrzeitkomponente setzen
+      eventTime: timeString,
       isOnline: event.isOnline || false,
       meetingLink: event.meetingLink || '',
       coverImageUrl: event.coverImageUrl || '',
@@ -264,11 +261,9 @@ export class EditEventsComponent implements OnInit {
     const file = event.target.files[0];
     if (file && file.type.match(/image\/*/) && file.size <= 5 * 1024 * 1024) {
       this.selectedFile = file;
-      // Create a preview
       const reader = new FileReader();
       reader.onload = () => {
         this.imagePreview = reader.result as string;
-        // Auto-upload the image after selection
         this.uploadImage();
       };
       reader.readAsDataURL(file);
@@ -298,15 +293,12 @@ export class EditEventsComponent implements OnInit {
       next: (response) => {
         this.uploadProgress = 100;
 
-        // Get the backend image URL format
         const imageUrl = this.images.getImageUrl(response.filename, '');
 
-        // Update form with the new image URL
         this.eventForm.patchValue({
           coverImageUrl: imageUrl,
         });
 
-        // Clear the local image preview to ensure the server image is shown
         this.imagePreview = null;
 
         this.snackBar.open('Bild erfolgreich hochgeladen', 'Schließen', {
@@ -328,7 +320,6 @@ export class EditEventsComponent implements OnInit {
     if (this.eventForm.valid) {
       this.isLoading = true;
 
-      // If there's a file to upload, do that first
       if (this.selectedFile) {
         this.uploadImage();
         return;
@@ -337,23 +328,18 @@ export class EditEventsComponent implements OnInit {
       const formValues = this.eventForm.value;
       const updateData: UpdateEvent = { ...formValues };
 
-      // Datum und Uhrzeit kombinieren, falls beide vorhanden sind
       if (updateData.eventDate && updateData.eventTime) {
         try {
           const dateObj = new Date(updateData.eventDate);
 
-          // Zeitkomponenten extrahieren
           const [hours, minutes] = (updateData.eventTime as string)
             .split(':')
             .map(Number);
 
-          // Stunden und Minuten im Date-Objekt setzen
           dateObj.setHours(hours, minutes, 0, 0);
 
-          // Datum im Event-Objekt aktualisieren
           updateData.eventDate = dateObj;
 
-          // Separates Zeitfeld entfernen, bevor es ans Backend gesendet wird
           delete (updateData as any).eventTime;
         } catch (error) {
           console.error('Fehler beim Kombinieren von Datum und Zeit:', error);
@@ -369,7 +355,6 @@ export class EditEventsComponent implements OnInit {
         }
       }
 
-      // Rest der Methode bleibt unverändert
       if (updateData.occurrences?.length === 0) delete updateData.occurrences;
       if (updateData.invitations?.length === 0) delete updateData.invitations;
 
@@ -464,14 +449,12 @@ export class EditEventsComponent implements OnInit {
     }
   }
 
-  // Add this new method to the class
   removeImage(): void {
     this.selectedFile = null;
     this.imagePreview = null;
     this.eventForm.patchValue({ coverImageUrl: '' });
   }
 
-  // Add drag and drop method
   onFileDrop(event: DragEvent): void {
     event.preventDefault();
     if (event.dataTransfer?.files.length) {

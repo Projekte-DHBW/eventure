@@ -28,7 +28,7 @@ export type CreateEvent = {
   coverImageUrl?: string;
   location?: string;
   eventDate?: Date;
-  eventTime?: string; // Hinzugefügt für das Zeitfeld im Formular
+  eventTime?: string;
   isOnline?: boolean;
   meetingLink?: string;
   occurrences?: Array<{
@@ -60,12 +60,12 @@ export interface Event {
   maxParticipants?: number;
   creator?: string;
   creatorObj?: any;
-  eventDate?: string; // ISO8601 Datumsformat als String
+  eventDate?: string;
   location?: string;
   isOnline?: boolean;
   meetingLink?: string;
-  createdAt?: string; // Hinzugefügte Eigenschaft
-  updatedAt?: string; // Hinzugefügte Eigenschaft
+  createdAt?: string;
+  updatedAt?: string;
   attendees?: any[];
 }
 
@@ -77,7 +77,7 @@ export interface UpdateEvent {
   coverImageUrl?: string;
   maxParticipants?: number;
   eventDate?: string | Date;
-  eventTime?: string; // Hinzugefügt für das Zeitfeld im Formular
+  eventTime?: string;
   location?: string;
   isOnline?: boolean;
   meetingLink?: string;

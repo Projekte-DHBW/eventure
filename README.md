@@ -104,13 +104,7 @@ Diese Anleitung beschreibt die Installation und Ausführung von Eventure sowohl 
 2. **Umgebungsvariablen konfigurieren**
    Erstellen Sie eine `.env`-Datei im Root-Verzeichnis (siehe [unten](#umgebungsvariablen-konfigurieren)).
 
-3. **Verzeichnisse für persistente Daten erstellen**
-
-   ```bash
-   mkdir -p ./data/mongodb
-   ```
-
-4. **Docker-Container erstellen und starten**
+3. **Docker-Container erstellen und starten**
 
    ```bash
    docker-compose up -d
@@ -121,7 +115,7 @@ Diese Anleitung beschreibt die Installation und Ausführung von Eventure sowohl 
    - **Frontend**: http://localhost:80
    - **Backend-API**: http://localhost:3000
 
-5. **Container-Logs anzeigen**
+4. **Container-Logs anzeigen**
    ```bash
    docker-compose logs -f
    ```

@@ -240,231 +240,133 @@ export class EventsService {
   }
 
   async findAll(filters: EventFiltersDto): Promise<[Event[], number]> {
-    const {
-      search,
-      category,
-      sort,
-      page = 1,
-      limit = 10,
-      date,
-      attending,
-      userId,
-    } = filters;
-
-    // Create base query for events
-    let query = this.eventRepository
-      .createQueryBuilder('event')
-      .where('event.visibility = :visibility', { visibility: 'public' });
-
-    // If attending filter is applied, we need to join with attendees
-    if (attending && userId) {
-      query = query
-        .innerJoin('event.attendees', 'attendee')
-        .andWhere('attendee.userId = :userId', { userId });
-    }
-
-    // Define date range variables outside both query blocks so they're in scope for both
-    let startDate: Date | undefined;
-    let endDate: Date | undefined;
-
-    // Text search
-    if (search) {
-      query.andWhere(
-        '(event.title LIKE :search OR event.description LIKE :search OR event.location LIKE :search)',
-        { search: `%${search}%` },
-      );
-    }
-
-    // Category filter
-    if (category) {
-      query.andWhere('event.category = :category', { category });
-    }
-
-    // Location filtering - FIXED
-    if (filters.locations) {
-      // Handle both string and array formats
-      let locationList: string[] = [];
-
-      if (typeof filters.locations === 'string') {
-        locationList = filters.locations
-          .split(',')
-          .map((loc) => loc.trim())
-          .filter(Boolean);
-      } else if (Array.isArray(filters.locations)) {
-        locationList = filters.locations.filter(Boolean);
-      }
-
-      if (locationList.length > 0) {
-        query.andWhere('event.location IN (:...locations)', {
-          locations: locationList,
-        });
-      }
-    }
-
-    // Date filtering - completely reworked
-    if (date) {
-      // Use a simple JOIN instead of leftJoinAndSelect
-      query = query.leftJoin('event.occurrences', 'occurrence');
-
-      const now = new Date();
-      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-
-      // Set date ranges based on filter
-      switch (date) {
-        case 'today':
-          startDate = today;
-          endDate = new Date(today);
-          endDate.setHours(23, 59, 59, 999);
-          break;
-        case 'tomorrow':
-          startDate = new Date(today);
-          startDate.setDate(startDate.getDate() + 1);
-          endDate = new Date(startDate);
-          endDate.setHours(23, 59, 59, 999);
-          break;
-        case 'this_week':
-          startDate = today;
-          endDate = new Date(today);
-          const dayOfWeek = endDate.getDay();
-          const daysUntilEndOfWeek = 6 - dayOfWeek; // 6 = Saturday (assuming Sunday is 0)
-          endDate.setDate(endDate.getDate() + daysUntilEndOfWeek);
-          endDate.setHours(23, 59, 59, 999);
-          break;
-        case 'this_month':
-          startDate = today;
-          endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-          endDate.setHours(23, 59, 59, 999);
-          break;
-        case 'this_year':
-          startDate = today;
-          endDate = new Date(today.getFullYear(), 11, 31);
-          endDate.setHours(23, 59, 59, 999);
-          break;
-        default:
-          if (/^\d{4}-\d{2}-\d{2}$/.test(date)) {
-            // Specific date in YYYY-MM-DD format
-            startDate = new Date(date);
-            endDate = new Date(date);
-            endDate.setHours(23, 59, 59, 999);
-          } else {
-            // Default to today if unrecognized format
-            startDate = today;
-            endDate = new Date(today);
-            endDate.setHours(23, 59, 59, 999);
-          }
-      }
-
-      // Log the dates for debugging
-      console.log(
-        `Date filter: ${date}, Range: ${startDate.toISOString()} to ${endDate.toISOString()}`,
-      );
-
-      // Use safer query approach
-      query.andWhere(
-        new Brackets((qb) => {
-          qb.where('event.eventDate BETWEEN :startDate AND :endDate', {
-            startDate,
-            endDate,
-          })
-            .orWhere('occurrence.startDate BETWEEN :startDate AND :endDate', {
-              startDate,
-              endDate,
-            })
-            .orWhere(
-              'occurrence.startDate <= :startDate AND occurrence.endDate >= :startDate',
-              {
-                startDate,
-              },
-            );
-        }),
-      );
-    }
-
-    // Apply sorting
-    switch (sort) {
-      case 'newest':
-        query.orderBy('event.createdAt', 'DESC');
-        break;
-      case 'popular':
-        query.orderBy('event.maxParticipants', 'DESC');
-        break;
-      case 'upcoming':
-        query.orderBy('event.eventDate', 'ASC');
-        break;
-      default:
-        query.orderBy('event.createdAt', 'DESC');
-    }
-
-    query.skip((page - 1) * limit).take(limit);
-
-    // Select necessary fields
-    query.select([
-      'event.id',
-      'event.title',
-      'event.description',
-      'event.visibility',
-      'event.category',
-      'event.coverImageUrl',
-      'event.maxParticipants',
-      'event.eventDate',
-      'event.location',
-      'event.isOnline',
-      'event.meetingLink',
-      'event.creator',
-      'event.createdAt',
-      'event.updatedAt',
-    ]);
-
-    // Make the query distinct to avoid duplicates
-    query.distinct(true);
-
-    // Get total count using a separate query
-    let totalCount = 0;
     try {
-      // Create a new count query - don't reuse the where conditions directly
-      const countQuery = this.eventRepository
+      const {
+        search,
+        types,
+        category,
+        sort = 'newest',
+        page = 1,
+        limit = 20,
+        date,
+        attending,
+        userId,
+        locations,
+      } = filters;
+
+      // Erstellen der Basisabfrage für Events
+      let query = this.eventRepository
         .createQueryBuilder('event')
-        .select('COUNT(DISTINCT event.id)', 'count')
         .where('event.visibility = :visibility', { visibility: 'public' });
 
-      // Apply the same text search if needed
-      if (search) {
-        countQuery.andWhere(
-          '(event.title LIKE :search OR event.description LIKE :search OR event.location LIKE :search)',
-          { search: `%${search}%` },
+      // Falls nach Teilnahme gefiltert wird, mit Teilnehmern joinen
+      if (attending && userId) {
+        query = query
+          .innerJoin(
+            'event_attendee',
+            'attendee',
+            'attendee.eventId = event.id',
+          )
+          .andWhere('attendee.userId = :userId', { userId });
+      }
+
+      // Textsuche (Titel, Beschreibung, Ort)
+      if (search && search.trim() !== '') {
+        const searchTerm = `%${search.trim()}%`;
+        query.andWhere(
+          new Brackets((qb) => {
+            qb.where('LOWER(event.title) LIKE LOWER(:search)', {
+              search: searchTerm,
+            })
+              .orWhere('LOWER(event.description) LIKE LOWER(:search)', {
+                search: searchTerm,
+              })
+              .orWhere('LOWER(event.location) LIKE LOWER(:search)', {
+                search: searchTerm,
+              });
+          }),
         );
       }
 
-      // Apply the same category filter if needed
+      // Kategoriefilterung - unterstützt sowohl einzelne Kategorie als auch Array
       if (category) {
-        countQuery.andWhere('event.category = :category', { category });
+        query.andWhere('event.category = :category', { category });
+      } else if (types && types.length > 0) {
+        query.andWhere('event.category IN (:...types)', { types });
       }
 
-      // Apply the same location filter if needed
-      if (filters.locations) {
-        let locationList: string[] = [];
-        if (typeof filters.locations === 'string') {
-          locationList = filters.locations
-            .split(',')
-            .map((loc) => loc.trim())
-            .filter(Boolean);
-        } else if (Array.isArray(filters.locations)) {
-          locationList = filters.locations.filter(Boolean);
-        }
-
-        if (locationList.length > 0) {
-          countQuery.andWhere('event.location IN (:...locations)', {
-            locations: locationList,
-          });
-        }
+      // Standortfilterung
+      if (locations && Array.isArray(locations) && locations.length > 0) {
+        query.andWhere('event.location IN (:...locations)', { locations });
       }
 
-      // Apply the same date filter if needed
-      if (date && startDate && endDate) {
-        countQuery.leftJoin('event.occurrences', 'occurrence');
+      // Datumfilterung
+      if (date) {
+        // Join mit den Event-Vorkommen
+        query = query.leftJoin('event.occurrences', 'occurrence');
 
-        // Apply the date filter condition
-        countQuery.andWhere(
+        const now = new Date();
+        const today = new Date(
+          now.getFullYear(),
+          now.getMonth(),
+          now.getDate(),
+        );
+
+        let startDate: Date;
+        let endDate: Date;
+
+        // Datum-Bereiche basierend auf dem Filter setzen
+        switch (date) {
+          case 'today': // Heute
+            startDate = today;
+            endDate = new Date(today);
+            endDate.setHours(23, 59, 59, 999);
+            break;
+
+          case 'tomorrow': // Morgen
+            startDate = new Date(today);
+            startDate.setDate(startDate.getDate() + 1);
+            endDate = new Date(startDate);
+            endDate.setHours(23, 59, 59, 999);
+            break;
+
+          case 'this_week': // Diese Woche
+            startDate = today;
+            endDate = new Date(today);
+            const dayOfWeek = endDate.getDay();
+            const daysUntilEndOfWeek = 6 - dayOfWeek; // 6 = Samstag (Sonntag = 0)
+            endDate.setDate(endDate.getDate() + daysUntilEndOfWeek);
+            endDate.setHours(23, 59, 59, 999);
+            break;
+
+          case 'this_month': // Diesen Monat
+            startDate = today;
+            endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+            endDate.setHours(23, 59, 59, 999);
+            break;
+
+          case 'this_year': // Dieses Jahr
+            startDate = today;
+            endDate = new Date(today.getFullYear(), 11, 31);
+            endDate.setHours(23, 59, 59, 999);
+            break;
+
+          default:
+            // Spezifisches Datum im Format YYYY-MM-DD
+            if (/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+              startDate = new Date(date);
+              endDate = new Date(date);
+              endDate.setHours(23, 59, 59, 999);
+            } else {
+              // Standardmäßig auf heute setzen, wenn das Format nicht erkannt wird
+              startDate = today;
+              endDate = new Date(today);
+              endDate.setHours(23, 59, 59, 999);
+            }
+        }
+
+        // Sichereren Abfrageansatz verwenden
+        query.andWhere(
           new Brackets((qb) => {
             qb.where('event.eventDate BETWEEN :startDate AND :endDate', {
               startDate,
@@ -475,7 +377,7 @@ export class EventsService {
                 endDate,
               })
               .orWhere(
-                'occurrence.startDate <= :startDate AND occurrence.endDate >= :startDate',
+                '(occurrence.startDate <= :startDate AND occurrence.endDate >= :startDate)',
                 {
                   startDate,
                 },
@@ -484,27 +386,65 @@ export class EventsService {
         );
       }
 
-      // Execute the count query
-      const result = await countQuery.getRawOne();
-      totalCount = parseInt(result?.count || '0', 10);
-      console.log(`Found ${totalCount} matching events`);
-    } catch (error) {
-      console.error('Error counting results:', error);
-      totalCount = 0;
-    }
+      // Sortierung anwenden
+      switch (sort) {
+        case 'newest':
+          query.orderBy('event.createdAt', 'DESC');
+          break;
+        case 'popular':
+          query.orderBy('event.maxParticipants', 'DESC');
+          break;
+        case 'upcoming':
+          query.orderBy('event.eventDate', 'ASC');
+          break;
+        default:
+          query.orderBy('event.createdAt', 'DESC');
+      }
 
-    // Get the events with simpler query
-    let events: Event[] = [];
-    try {
-      events = await query.getMany();
-      console.log(`Retrieved ${events.length} events`);
-    } catch (error) {
-      console.error('Error fetching results:', error);
-      events = [];
-    }
+      // Paginierung anwenden
+      query.skip((page - 1) * limit).take(limit);
 
-    // Return the events and count
-    return [events, totalCount];
+      // Wichtige Felder auswählen
+      query.select([
+        'event.id',
+        'event.title',
+        'event.description',
+        'event.visibility',
+        'event.category',
+        'event.coverImageUrl',
+        'event.maxParticipants',
+        'event.eventDate',
+        'event.location',
+        'event.isOnline',
+        'event.meetingLink',
+        'event.creator',
+        'event.createdAt',
+        'event.updatedAt',
+      ]);
+
+      // Abfrage eindeutig machen, um Duplikate zu vermeiden
+      query.distinct(true);
+
+      // Gleiche Abfrage für die Gesamtzahl verwenden, aber count statt select
+      const countQuery = query.clone();
+      countQuery
+        .skip(undefined)
+        .take(undefined)
+        .select('COUNT(DISTINCT event.id)', 'count');
+
+      // Alle Abfragen parallel ausführen für bessere Performance
+      const [events, totalResult] = await Promise.all([
+        query.getMany(),
+        countQuery.getRawOne(),
+      ]);
+
+      const total = parseInt(totalResult?.count || '0', 10);
+
+      return [events, total];
+    } catch (error) {
+      console.error('Fehler beim Suchen von Events:', error);
+      return [[], 0]; // Leeres Ergebnis im Fehlerfall zurückgeben
+    }
   }
 
   async findOneById(id: string): Promise<Event> {
@@ -629,26 +569,38 @@ export class EventsService {
    * @returns List of unique cities matching the query
    */
   async searchCities(query: string, limit: number = 10): Promise<string[]> {
-    // Query the location field directly from the Event table
-    const results = await this.eventRepository
-      .createQueryBuilder('event')
-      .where('LOWER(event.location) LIKE LOWER(:query)', {
-        query: `%${query}%`,
-      })
-      .select('event.location', 'location')
-      .distinct(true)
-      .limit(limit)
-      .getRawMany();
+    try {
+      if (!query || query.trim().length < 2) {
+        return []; // Mindestens 2 Zeichen für die Suche erforderlich
+      }
 
-    // Extract the location values from the results
-    const locations = results
-      .map((result) => result.location)
-      .filter(
-        (location) =>
-          location !== null && location !== undefined && location.trim() !== '',
-      );
+      // Abfrage des Standortfelds direkt aus der Event-Tabelle
+      const results = await this.eventRepository
+        .createQueryBuilder('event')
+        .where('LOWER(event.location) LIKE LOWER(:query)', {
+          query: `%${query.trim()}%`,
+        })
+        .select('event.location', 'location')
+        .distinct(true)
+        .orderBy('event.location', 'ASC') // Alphabetische Sortierung
+        .limit(limit)
+        .getRawMany();
 
-    return locations;
+      // Extrahieren der Standortwerte aus den Ergebnissen
+      const locations = results
+        .map((result) => result.location)
+        .filter(
+          (location) =>
+            location !== null &&
+            location !== undefined &&
+            location.trim() !== '',
+        );
+
+      return locations;
+    } catch (error) {
+      console.error('Fehler bei der Städtesuche:', error);
+      return [];
+    }
   }
 
   async inviteUser(userId: string, eventId: string): Promise<InvitedUsers> {

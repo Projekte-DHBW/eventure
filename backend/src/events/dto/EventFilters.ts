@@ -1,10 +1,18 @@
-import { IsEnum, IsOptional, IsString, IsBoolean } from 'class-validator';
+import {
+  IsEnum,
+  IsOptional,
+  IsString,
+  IsArray,
+  IsBoolean,
+  IsNumber,
+  ValidateIf,
+} from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Transform } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 
 export class EventFiltersDto {
   @ApiProperty({
-    description: 'Search query to filter events',
+    description: 'Suchbegriff für die Eventsuche (Titel, Beschreibung)',
     required: false,
   })
   @IsString()
@@ -12,16 +20,48 @@ export class EventFiltersDto {
   search?: string;
 
   @ApiProperty({
-    description: 'Category to filter events by',
+    description: 'Event-Kategorien zur Filterung',
     enum: ['music', 'sports', 'culture', 'other'],
     required: false,
+    isArray: true,
   })
-  @IsEnum(['music', 'sports', 'culture', 'other'])
   @IsOptional()
-  category?: 'music' | 'sports' | 'culture' | 'other';
+  @Transform(({ value }) => {
+    // Handle both string and array formats from query params
+    if (typeof value === 'string') {
+      return value.split(',');
+    }
+    return value;
+  })
+  types?: ('music' | 'sports' | 'culture' | 'other')[];
 
   @ApiProperty({
-    description: 'Sort order for events',
+    description: 'Liste von Standorten zur Filterung',
+    required: false,
+    isArray: true,
+  })
+  @IsOptional()
+  @Transform(({ value }) => {
+    // Handle both string and array formats from query params
+    if (typeof value === 'string') {
+      return value.split(',');
+    }
+    return value;
+  })
+  locations?: string[];
+
+  @ApiProperty({
+    description:
+      'Datumsbereich oder spezifisches Datum zur Filterung (today, tomorrow, this_week, this_month, this_year oder YYYY-MM-DD)',
+    required: false,
+    example: 'tomorrow, this_week, 2025-04-15',
+  })
+  @IsString()
+  @IsOptional()
+  date?: string;
+
+  @ApiProperty({
+    description: 'Sortierreihenfolge der Events',
     enum: ['newest', 'popular', 'upcoming'],
     required: false,
     default: 'newest',
@@ -31,54 +71,49 @@ export class EventFiltersDto {
   sort?: 'newest' | 'popular' | 'upcoming' = 'newest';
 
   @ApiProperty({
-    description: 'Page number for pagination',
+    description: 'Seitenzahl für die Paginierung',
     required: false,
     default: 1,
   })
   @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @Transform(({ value }) => parseInt(value) || 1)
   page?: number = 1;
 
   @ApiProperty({
-    description: 'Number of events per page',
+    description: 'Anzahl der Events pro Seite',
     required: false,
-    default: 10,
+    default: 20,
   })
   @IsOptional()
-  limit?: number = 10;
-
-  @ApiProperty({ description: 'Date to filter events by', required: false })
-  @IsOptional()
-  @IsString()
-  date?: string;
-
-  @ApiProperty({
-    description: 'Locations to filter events by',
-    required: false,
-    type: [String],
-  })
-  @IsOptional()
-  locations?: string | string[];
-
-  @ApiProperty({
-    description: 'Event types to filter by',
-    required: false,
-    type: [String],
-  })
-  @IsOptional()
-  types?: string[];
+  @Type(() => Number)
+  @IsNumber()
+  @Transform(({ value }) => parseInt(value) || 20)
+  limit?: number = 20;
 
   @ApiPropertyOptional({
-    description: 'Filter for events the user is attending',
+    description: 'Nur Events anzeigen, an denen der Benutzer teilnimmt',
+    type: Boolean,
   })
   @IsOptional()
   @IsBoolean()
-  @Transform(({ value }) => value === 'true')
+  @Transform(({ value }) => value === 'true' || value === true)
   attending?: boolean;
 
   @ApiPropertyOptional({
-    description: 'User ID for filtering attended events (internal use)',
+    description:
+      'Benutzer-ID für die Filterung nach Teilnahme (interne Verwendung)',
+  })
+  @ValidateIf((o) => o.attending === true)
+  @IsString()
+  userId?: string;
+
+  // Zusätzlicher Parameter für Typfilterung mit deutschen Übersetzungen
+  @ApiPropertyOptional({
+    description: 'Kategorie für die Filterung (Alternative zu types)',
   })
   @IsOptional()
   @IsString()
-  userId?: string;
+  category?: string;
 }

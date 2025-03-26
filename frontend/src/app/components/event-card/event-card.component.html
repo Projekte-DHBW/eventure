@@ -1,15 +1,12 @@
-<div class="event-item">
+<div class="event-item" (click)="navigateToEventDetails()" [attr.title]="'Details für: ' + event.title">
   <div class="event-image">
     @if (event.eventDate) {
-      <div class="event-month">
-        {{ getMonthAbbreviation(event.eventDate!) }}
-        {{ getDayFromDate(event.eventDate!) }}
-      </div>
+    <div class="event-month">
+      {{ getMonthAbbreviation(event.eventDate!) }}
+      {{ getDayFromDate(event.eventDate!) }}
+    </div>
     }
-    <img
-      [src]="'http://localhost:3000/uploads/' + event.coverImageUrl"
-      [alt]="event.title"
-    />
+    <img [src]="images.getImageUrl(event.coverImageUrl, event.category)" [alt]="event.title" />
   </div>
 
   <div class="event-content">
@@ -19,8 +16,8 @@
       <mat-icon>place</mat-icon>
       <span>{{
         event.location ||
-          (event.isOnline ? "Online" : "Kein Standort angegeben")
-      }}</span>
+        (event.isOnline ? "Online" : "Kein Standort angegeben")
+        }}</span>
     </div>
 
     <p class="event-description">{{ event.description }}</p>
@@ -33,13 +30,13 @@
         {{ capitalizeFirstLetter(event.visibility) }}
       </div>
       @if (event.isOnline) {
-        <div class="event-tag">Online</div>
+      <div class="event-tag">Online</div>
       }
     </div>
 
     <div class="event-actions">
-      <button class="action-button details-button">DETAILS</button>
-      <button class="action-button save-button">
+      <button class="action-button details-button" (click)="$event.stopPropagation()">DETAILS</button>
+      <button class="action-button save-button" (click)="$event.stopPropagation()">
         <mat-icon>bookmark</mat-icon>
         <span>SPEICHERN</span>
       </button>

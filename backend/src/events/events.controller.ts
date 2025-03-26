@@ -28,6 +28,7 @@ import {
   ApiQuery,
 } from '@nestjs/swagger';
 import { Event } from '../entity/Event';
+import { EventResponseDto } from './dto/EventResponse.dto';
 
 @ApiTags('events')
 @Controller('events')
@@ -156,7 +157,11 @@ export class EventsController {
   }
 
   @ApiOperation({ summary: 'Get event by ID' })
-  @ApiResponse({ status: 200, description: 'Event details', type: Event })
+  @ApiResponse({
+    status: 200,
+    description: 'Event found successfully',
+    type: EventResponseDto,
+  })
   @ApiResponse({ status: 404, description: 'Event not found' })
   @ApiParam({ name: 'id', description: 'Event ID' })
   @Get(':id')

@@ -9,11 +9,17 @@
   transition:
     transform 0.2s ease,
     box-shadow 0.2s ease;
+  cursor: pointer;
 
   &:hover {
     transform: translateY(-0.25rem);
     box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.15);
   }
+}
+
+.event-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
 }
 
 .event-image {
@@ -107,6 +113,8 @@
   font-weight: bold;
   width: 100%;
   transition: background-color 0.2s ease;
+  position: relative;
+  z-index: 2;
 
   &.details-button {
     background-color: #f0f0f0;

@@ -23,6 +23,8 @@ export class EventSliderComponent {
   events: Event[] = [];
   loading = false;
 
+  constructor() {}
+
   ngOnInit(): void {
     this.loadLatestEvents();
   }

@@ -5,7 +5,7 @@ import { Observable, throwError, map, catchError, of } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 export interface EventsSearchResult {
-  id: string; // Add this property
+  id: string;
   title: string;
   description: string;
   visibility: 'public' | 'private' | 'unlisted';
@@ -18,11 +18,12 @@ export interface EventsSearchResult {
   meetingLink?: string;
   creator?: string; // User ID of creator
   creatorObj?: {
-    // Optional creator object
     id: string;
     firstName: string;
     lastName: string;
   };
+  attendeeCount?: number;
+  creatorName?: string;
 }
 
 @Injectable({
@@ -193,9 +194,18 @@ export class EventsService {
   }
 
   findOne(id: string): Observable<EventsSearchResult> {
-    return this.http.authenticatedGet<EventsSearchResult>(`events/${id}`, {
-      params: { id },
-    });
+    return this.http.get<EventsSearchResult>(`events/${id}`).pipe(
+      map((event) => {
+        // Make sure attendeeCount is available
+        return {
+          ...event,
+          attendeeCount: event.attendeeCount || 0,
+          creatorName:
+            event.creatorName ||
+            (event.creator ? `User ${event.creator}` : 'Unknown'),
+        };
+      }),
+    );
   }
 
   createEvent(data: CreateEvent): Observable<Event> {

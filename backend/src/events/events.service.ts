@@ -287,14 +287,16 @@ export class EventsService {
 
         try {
           // Handle both string and array formats to make it more robust
-          let typesArray: string[];
+          let typesArray: string[] = [];
 
           if (Array.isArray(types)) {
-            typesArray = types;
+            typesArray = types as string[];
           } else if (typeof types === 'string') {
-            typesArray = types.includes(',') ? types.split(',') : [types];
-          } else {
-            typesArray = [];
+            // Safe type assertion and string operations
+            const typesStr = types as string;
+            typesArray = typesStr.includes(',')
+              ? typesStr.split(',')
+              : [typesStr];
           }
 
           console.log('Types array:', typesArray);
@@ -307,7 +309,7 @@ export class EventsService {
               anderes: 'other',
             };
 
-            const normalizedTypes = typesArray.map((type) => {
+            const normalizedTypes = typesArray.map((type: string) => {
               const lowerType = String(type).toLowerCase();
               return typeMapping[lowerType] || lowerType;
             });
@@ -330,8 +332,10 @@ export class EventsService {
               }),
             );
           }
-        } catch (error) {
-          console.error('Error processing types filter:', error);
+        } catch (err) {
+          // Type assertion for error object
+          const error = err as Error;
+          console.error('Error processing types filter:', error.message);
         }
       }
 

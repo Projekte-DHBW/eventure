@@ -132,7 +132,6 @@ export class AuthService implements OnDestroy {
     });
   }*/
 
-
   private setSession(authResult: LoginResponse): void {
     this.tokenService.setAccessToken(authResult.accessToken);
     this.tokenService.setRefreshToken(authResult.refreshToken);

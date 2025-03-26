@@ -1,60 +1,82 @@
 <div class="events-container">
-    <mat-card class="form" *ngFor="let event of results">
-        <img *ngIf="event.coverImageUrl" [src]="event.coverImageUrl" alt="Event Bild" class="event-image" />
-        <h1>{{ event.title }} 
-            <span *ngIf="event.isOnline" matBadge="Online-Event" class="badge"></span>
-        </h1>
-        <h3>Beschreibung: </h3>
-            <p>{{ event.description || 'Ist noch nicht vorhanden.'}}</p>
+  <mat-card class="form" *ngFor="let event of results">
+    <img
+      *ngIf="event.coverImageUrl"
+      [src]="event.coverImageUrl"
+      alt="Event Bild"
+      class="event-image"
+    />
+    <h1>
+      {{ event.title }}
+      <span *ngIf="event.isOnline" matBadge="Online-Event" class="badge"></span>
+    </h1>
+    <h3>Beschreibung:</h3>
+    <p>{{ event.description || "Ist noch nicht vorhanden." }}</p>
 
-        <h3>Kategorie: </h3>
-        <button mat-flat-button disabled class="category-button">{{ event.category || 'Keine Kategorie' }}</button>
-        
-        <h3>Datum: </h3>
-        <p>{{ event.eventDate ? (event.eventDate | date:'medium') : 'Ist noch nicht vorhanden.'}}</p>
+    <h3>Kategorie:</h3>
+    <button mat-flat-button disabled class="category-button">
+      {{ event.category || "Keine Kategorie" }}
+    </button>
 
-        <h3>Maximale Anzahl Besucher: </h3>
-        <p>{{ event.maxParticipants || 'Ist noch nicht vorhanden.'}}</p>
-        
-        <ng-container *ngIf="!event.isOnline">
-            <h3>Veranstaltungsort: </h3>
-            <p>{{ event.location || 'Ist noch nicht vorhanden.'}}</p>
-        </ng-container>
-        
-         <!-- Eventlink wird nur angezeigt, wenn event.isOnline wahr ist -->
-         <ng-container *ngIf="event.isOnline">
-            <h3>Eventlink: </h3>
-            <p>{{ event.meetingLink || 'Ist noch nicht vorhanden.'}}</p>
-        </ng-container>
-        
-        <section>
-            <div *ngIf="errorMessage" class="error-message">
-              {{ errorMessage }}
-            </div>
-            <div *ngIf="successMessage" class="success-message">
-              {{ successMessage }}
-            </div>
-            <div class="button-row">
-                <button (click)="onSubmit()"
-                  mat-flat-button
-                  color="primary"
-                  class="button"
-                  type="submit"
-                  [disabled]="signUpForm.invalid || isLoading || isRegistered"
-                >
-                {{ isLoading ? "Wird angemeldet..." : isRegistered ? "Bereits angemeldet" : "Anmelden" }}
-                </button>
+    <h3>Datum:</h3>
+    <p>
+      {{
+        event.eventDate
+          ? (event.eventDate | date: "medium")
+          : "Ist noch nicht vorhanden."
+      }}
+    </p>
 
-                <!-- Neuer Button zum Löschen der Anmeldung -->
-                <button *ngIf="isRegistered" (click)="onDeleteRegistration(event.id)"
-                mat-flat-button
-                color="primary" 
-                class="button delete-button"
-                >
-                  Abmeldung
-                </button>
-            </div>
-          </section>
-        
-    </mat-card>
+    <h3>Maximale Anzahl Besucher:</h3>
+    <p>{{ event.maxParticipants || "Ist noch nicht vorhanden." }}</p>
+
+    <ng-container *ngIf="!event.isOnline">
+      <h3>Veranstaltungsort:</h3>
+      <p>{{ event.location || "Ist noch nicht vorhanden." }}</p>
+    </ng-container>
+
+    <!-- Eventlink wird nur angezeigt, wenn event.isOnline wahr ist -->
+    <ng-container *ngIf="event.isOnline">
+      <h3>Eventlink:</h3>
+      <p>{{ event.meetingLink || "Ist noch nicht vorhanden." }}</p>
+    </ng-container>
+
+    <section>
+      <div *ngIf="errorMessage" class="error-message">
+        {{ errorMessage }}
+      </div>
+      <div *ngIf="successMessage" class="success-message">
+        {{ successMessage }}
+      </div>
+      <div class="button-row">
+        <button
+          (click)="onSubmit()"
+          mat-flat-button
+          color="primary"
+          class="button"
+          type="submit"
+          [disabled]="signUpForm.invalid || isLoading || isRegistered"
+        >
+          {{
+            isLoading
+              ? "Wird angemeldet..."
+              : isRegistered
+                ? "Bereits angemeldet"
+                : "Anmelden"
+          }}
+        </button>
+
+        <!-- Neuer Button zum Löschen der Anmeldung -->
+        <button
+          *ngIf="isRegistered"
+          (click)="onDeleteRegistration(event.id)"
+          mat-flat-button
+          color="primary"
+          class="button delete-button"
+        >
+          Abmeldung
+        </button>
+      </div>
+    </section>
+  </mat-card>
 </div>

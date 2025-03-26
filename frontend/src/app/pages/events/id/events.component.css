@@ -1,167 +1,164 @@
 .events-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-height: 100dvh;
-    gap: 10px;
-    max-width: 75rem;
-    margin: 0 auto;
-    padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100dvh;
+  gap: 10px;
+  max-width: 75rem;
+  margin: 0 auto;
+  padding: 1rem;
 }
 
 .form {
-    background-color: white;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    min-height: 100dvh;
-    width: 100%;
-    gap: 10px;
-    padding: 20px;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-height: 100dvh;
+  width: 100%;
+  gap: 10px;
+  padding: 20px;
 }
 
 .badge .mat-badge-content {
-    background-color: var(--primary); 
-    color: white; 
+  background-color: var(--primary);
+  color: white;
 }
 
 .event-image {
-    width: 100%; /* Bild nimmt die gesamte Breite der Karte ein */
-    height: auto; /* Höhe wird automatisch angepasst */
-    border-radius: 8px 8px 0 0; /* Abgerundete Ecken oben */
-    margin-bottom: 15px; /* Abstand unter dem Bild */
+  width: 100%; /* Bild nimmt die gesamte Breite der Karte ein */
+  height: auto; /* Höhe wird automatisch angepasst */
+  border-radius: 8px 8px 0 0; /* Abgerundete Ecken oben */
+  margin-bottom: 15px; /* Abstand unter dem Bild */
 }
 
 .category-button {
-    margin-top: 0px;
-    margin-bottom: 10px;
-    background-color: var(--background);
-    color: var(--primary);
-    cursor: default; /* Zeigt an, dass der Button nicht klickbar ist */
+  margin-top: 0px;
+  margin-bottom: 10px;
+  background-color: var(--background);
+  color: var(--primary);
+  cursor: default; /* Zeigt an, dass der Button nicht klickbar ist */
 }
 
 .error-message {
-    color: #f44336;
-    font-size: 0.75rem;
-    margin: 0.625rem 0;
-    padding: 0.625rem;
-    background-color: rgba(244, 67, 54, 0.1);
-    border-radius: 4px;
+  color: #f44336;
+  font-size: 0.75rem;
+  margin: 0.625rem 0;
+  padding: 0.625rem;
+  background-color: rgba(244, 67, 54, 0.1);
+  border-radius: 4px;
 }
-  
+
 .success-message {
-    color: #4caf50;
-    font-size: 0.75rem;
-    margin: 0.625rem 0;
-    padding: 0.625rem;
-    background-color: rgba(76, 175, 80, 0.1);
-    border-radius: 4px;
+  color: #4caf50;
+  font-size: 0.75rem;
+  margin: 0.625rem 0;
+  padding: 0.625rem;
+  background-color: rgba(76, 175, 80, 0.1);
+  border-radius: 4px;
 }
 
 h1 {
-    font-size: 2em;
-    margin-top: 10px;
-    margin-bottom: 10px;
-    align-self: center;
+  font-size: 2em;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  align-self: center;
 }
 
 h3 {
-    font-size: 1.5em;
-    margin-top: 15px; /* Abstand über der Überschrift */
-    margin-bottom: 5px; /* Abstand unter der Überschrift */
+  font-size: 1.5em;
+  margin-top: 15px; /* Abstand über der Überschrift */
+  margin-bottom: 5px; /* Abstand unter der Überschrift */
 }
 
 p {
-    font-size: 1.25em;
-    margin-bottom: 15px; /* Abstand unter dem Text */
+  font-size: 1.25em;
+  margin-bottom: 15px; /* Abstand unter dem Text */
 }
 
 .picture {
-    align-self: center;
+  align-self: center;
 }
 
 .button {
-    font-size: 14px;
-    margin-right: 10px;
-    min-width: 120px;
-    background-color: var(--primary);
+  font-size: 14px;
+  margin-right: 10px;
+  min-width: 120px;
+  background-color: var(--primary);
 }
 
-
-  
 mat-flat-button {
-    background-color: var(--primary);
+  background-color: var(--primary);
 }
 
 .button-row {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
 }
 
 .button-row button {
-    margin-top: 30px;
-    background-color: var(--primary);
-    color: white;
-    cursor: pointer; /* Zeigt an, dass der Button klickbar ist */
-    opacity: 1; /* Volle Sichtbarkeit für den aktiven Zustand */
+  margin-top: 30px;
+  background-color: var(--primary);
+  color: white;
+  cursor: pointer; /* Zeigt an, dass der Button klickbar ist */
+  opacity: 1; /* Volle Sichtbarkeit für den aktiven Zustand */
 }
-  
+
 .button-row button:disabled {
-    margin-top: 30px;
-    background-color: var(--primary); 
-    color:black; 
-    cursor: not-allowed; /* Zeigt an, dass der Button nicht klickbar ist */
-    opacity: 0.7; /* Verringert die Sichtbarkeit, um den deaktivierten Zustand anzuzeigen */
-  }
-  
+  margin-top: 30px;
+  background-color: var(--primary);
+  color: black;
+  cursor: not-allowed; /* Zeigt an, dass der Button nicht klickbar ist */
+  opacity: 0.7; /* Verringert die Sichtbarkeit, um den deaktivierten Zustand anzuzeigen */
+}
 
 /* Responsive Anpassungen */
 @media (max-width: 600px) {
-    .form {
-        padding: 10px; /* Weniger Padding auf kleineren Bildschirmen */
-        width: 90%;
-    }
+  .form {
+    padding: 10px; /* Weniger Padding auf kleineren Bildschirmen */
+    width: 90%;
+  }
 
-    h1 {
-        font-size: 1.5em; /* Kleinere Schriftgröße für Überschriften */
-        margin-top: 5px; /* Angepasster Abstand für kleinere Bildschirme */
-    }
+  h1 {
+    font-size: 1.5em; /* Kleinere Schriftgröße für Überschriften */
+    margin-top: 5px; /* Angepasster Abstand für kleinere Bildschirme */
+  }
 
-    h3 {
-        font-size: 1.25em;
-    }
+  h3 {
+    font-size: 1.25em;
+  }
 
-    p {
-        font-size: 1em; /* Kleinere Schriftgröße für Text */
-    }
+  p {
+    font-size: 1em; /* Kleinere Schriftgröße für Text */
+  }
 
-    .button-row {
-        flex-direction: column; /* Bei kleineren Bildschirmen werden die Buttons untereinander angezeigt */
-        align-items: stretch; /* Buttons nehmen die volle Breite ein */
-    }
-    
-    .button-row button {
-        margin-bottom: 10px; /* Abstand zwischen den Buttons bei kleinerer Bildschirmgröße */
-    }
+  .button-row {
+    flex-direction: column; /* Bei kleineren Bildschirmen werden die Buttons untereinander angezeigt */
+    align-items: stretch; /* Buttons nehmen die volle Breite ein */
+  }
+
+  .button-row button {
+    margin-bottom: 10px; /* Abstand zwischen den Buttons bei kleinerer Bildschirmgröße */
+  }
 }
 
 @media (max-width: 300px) {
-    .form {
-        padding: 5px; /* Weniger Padding auf kleineren Bildschirmen */
-        width: 80%;
-    }
+  .form {
+    padding: 5px; /* Weniger Padding auf kleineren Bildschirmen */
+    width: 80%;
+  }
 
-    h1 {
-        font-size: 1em; /* Kleinere Schriftgröße für Überschriften */
-    }
+  h1 {
+    font-size: 1em; /* Kleinere Schriftgröße für Überschriften */
+  }
 
-    h3 {
-        font-size: 0.75em;
-    }
+  h3 {
+    font-size: 0.75em;
+  }
 
-    p {
-        font-size: 0.5em; /* Kleinere Schriftgröße für Text */
-    }
+  p {
+    font-size: 0.5em; /* Kleinere Schriftgröße für Text */
+  }
 }

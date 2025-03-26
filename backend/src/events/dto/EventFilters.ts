@@ -27,7 +27,6 @@ export class EventFiltersDto {
   })
   @IsOptional()
   @Transform(({ value }) => {
-    // Handle both string and array formats from query params
     if (typeof value === 'string') {
       return value.split(',');
     }
@@ -42,7 +41,6 @@ export class EventFiltersDto {
   })
   @IsOptional()
   @Transform(({ value }) => {
-    // Handle both string and array formats from query params
     if (typeof value === 'string') {
       return value.split(',');
     }
@@ -109,7 +107,6 @@ export class EventFiltersDto {
   @IsString()
   userId?: string;
 
-  // Zusätzlicher Parameter für Typfilterung mit deutschen Übersetzungen
   @ApiPropertyOptional({
     description: 'Kategorie für die Filterung (Alternative zu types)',
   })

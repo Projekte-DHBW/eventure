@@ -119,7 +119,6 @@ export class AuthService {
 
   async logout(user: User, refreshToken?: string) {
     if (refreshToken) {
-      // Logout from specific session
       const tokens = await this.refreshTokenRepo.find({
         where: { user: { id: user.id } },
       });

@@ -12,7 +12,6 @@ export class Invitation extends BaseEntity {
   @Column()
   eventId: string;
 
-  // Optional - for registered users
   @ManyToOne(() => User, { nullable: true })
   @JoinColumn()
   invitedUser?: User;
@@ -20,7 +19,6 @@ export class Invitation extends BaseEntity {
   @Column({ nullable: true })
   invitedUserId?: string;
 
-  // For non-registered users or as alternative contact
   @Column({ nullable: true })
   email?: string;
 
@@ -36,7 +34,6 @@ export class Invitation extends BaseEntity {
   @Column({ nullable: true })
   respondedAt?: Date;
 
-  // If the invitation is for a specific occurrence rather than the whole event
   @Column({ nullable: true })
   occurrenceId?: string;
 }

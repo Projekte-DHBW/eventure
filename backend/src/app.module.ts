@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ServeStaticModule } from '@nestjs/serve-static'; // Add this import
+import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { AppService } from './app.service';
 import { Invitation } from './entity/Invitation';
@@ -29,9 +29,9 @@ import { UploadsModule } from './uploads/uploads.module';
     }),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'uploads'),
-      serveRoot: '/uploads', // This will serve files under the /uploads URL path
+      serveRoot: '/uploads',
       serveStaticOptions: {
-        index: false, // Don't serve index.html for directory requests
+        index: false,
         maxAge: 86400000, // Cache for 1 day (in milliseconds)
       },
     }),

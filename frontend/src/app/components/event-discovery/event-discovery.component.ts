@@ -56,7 +56,6 @@ export class EventDiscoveryComponent implements OnInit {
     'Kultur',
   ]);
 
-  // Keep a static list as fallback, but we'll replace with API data
   readonly locations = input(['Berlin', 'München', 'Heidenheim', 'Köln']);
 
   readonly dates = input([
@@ -81,17 +80,15 @@ export class EventDiscoveryComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Initialize city autocomplete
     this.filteredCities = this.locationControl.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
       distinctUntilChanged(),
       filter((query) => typeof query === 'string'),
-      // biome-ignore lint/suspicious/noAssignInExpressions: <explanation>
       tap(() => (this.isLoading = true)),
       switchMap((query) => {
         if (!query || query.length < 2) {
-          return of(this.locations()); // Return default locations for empty query
+          return of(this.locations());
         }
 
         return this.eventsService.searchCities(query).pipe(
@@ -99,11 +96,10 @@ export class EventDiscoveryComponent implements OnInit {
           map((response) => response.cities),
           catchError(() => {
             console.error('Error fetching cities');
-            return of(this.locations()); // Fallback to static list on error
+            return of(this.locations());
           }),
         );
       }),
-      // biome-ignore lint/suspicious/noAssignInExpressions: <explanation>
       tap(() => (this.isLoading = false)),
     );
   }
@@ -118,10 +114,8 @@ export class EventDiscoveryComponent implements OnInit {
         date?: string;
       }
 
-      // Create query parameters object
       const queryParams: QueryParams = {};
 
-      // Only add parameters that have values
       if (formValues.eventType) {
         queryParams.type = formValues.eventType;
       }
@@ -134,14 +128,12 @@ export class EventDiscoveryComponent implements OnInit {
         queryParams.date = formValues.date;
       }
 
-      // Navigate to search page with query parameters
       this.router.navigate(['/search'], {
         queryParams: queryParams,
       });
     }
   }
 
-  // Helper method for the template
   displayCity(city: string): string {
     return city ? city : '';
   }

@@ -106,7 +106,6 @@ export class AuthService implements OnDestroy {
       return throwError(() => new Error('No refresh token available'));
     }
 
-    // TODO:
     return this.http
       .post<TokenRefreshResponse>(`${this.apiUrl}/refresh-token`, {
         refreshToken,
@@ -124,14 +123,6 @@ export class AuthService implements OnDestroy {
         catchError((error) => this.handleError(error)),
       );
   }
-
-  /*signUp(userID: string, eventID: string): Observable<{ success: boolean }> {
-    return this.http.post<{ success: boolean }>(`${this.apiUrl}/${eventID}/signup`, {
-      userID,
-      eventID,
-    });
-  }*/
-
 
   private setSession(authResult: LoginResponse): void {
     this.tokenService.setAccessToken(authResult.accessToken);
@@ -152,7 +143,6 @@ export class AuthService implements OnDestroy {
     this.stopTokenCheck();
   }
 
-  // Token check methods remain mostly the same, but use TokenService
   private startTokenCheck(): void {
     this.stopTokenCheck();
     this.tokenCheckInterval = interval(this.TOKEN_CHECK_INTERVAL).subscribe(
@@ -187,7 +177,6 @@ export class AuthService implements OnDestroy {
     }
   }
 
-  // Helper methods using TokenService
   isAuthenticated(): boolean {
     return this.tokenService.hasValidAccessToken();
   }
@@ -235,10 +224,8 @@ export class AuthService implements OnDestroy {
   private handleError(error: any): Observable<never> {
     let errorMessage = '';
     if (error.error instanceof ErrorEvent) {
-      // Client-side error
       errorMessage = error.error.message;
     } else {
-      // Server-side error
       errorMessage = error.error?.message || 'Server error';
     }
     return throwError(() => new Error(errorMessage));

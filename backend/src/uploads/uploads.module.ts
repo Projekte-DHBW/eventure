@@ -13,7 +13,7 @@ import { UsersModule } from 'src/users/users.module';
   imports: [
     ConfigModule.forRoot(),
     AuthModule,
-    UsersModule, // Add this to provide UsersService
+    UsersModule,
     MulterModule.register({
       storage: diskStorage({
         destination: './uploads',

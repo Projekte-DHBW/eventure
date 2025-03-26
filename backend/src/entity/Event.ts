@@ -23,13 +23,11 @@ export class Event extends BaseEntity {
   @Column('text', { nullable: false })
   description: string;
 
-  // The relation object - exclude from responses
   @ManyToOne(() => User, { nullable: false })
   @JoinColumn({ name: 'creator' })
   @Exclude()
   creatorObj: User;
 
-  // Add an explicit column for the creator ID that will be included in responses
   @Column({ nullable: false })
   creator: string;
 
@@ -59,7 +57,6 @@ export class Event extends BaseEntity {
   @Column({ nullable: true })
   meetingLink?: string;
 
-  // Flag to indicate if the event is recurring (has multiple occurrences)
   @Column({ default: false })
   isRecurring: boolean;
 

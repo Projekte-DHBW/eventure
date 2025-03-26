@@ -41,8 +41,6 @@ export class DashboardComponent implements OnInit {
 
   myEvents: Event[] = [];
   attendingEvents: Event[] = [];
-  pastEvents: Event[] = [];
-  upcomingEvents: Event[] = [];
 
   loadingMyEvents = false;
   loadingAttendingEvents = false;
@@ -71,11 +69,10 @@ export class DashboardComponent implements OnInit {
 
   loadAttendingEvents(): void {
     this.loadingAttendingEvents = true;
-    // Verwende die spezifische Methode statt des Filters
     this.eventsService.getAttendingEvents().subscribe({
       next: (events) => {
         this.attendingEvents = events || [];
-        this.categorizeAttendingEvents();
+        this.sortAttendingEventsByDate();
         this.loadingAttendingEvents = false;
       },
       error: (err) => {
@@ -88,7 +85,6 @@ export class DashboardComponent implements OnInit {
   sortMyEventsByDate(): void {
     // Sortiert Events nach Datum (neueste zuerst)
     this.myEvents.sort((a, b) => {
-      // Sichere Date-Konvertierung mit Fallbacks
       const dateA = a.eventDate
         ? new Date(a.eventDate)
         : a.createdAt
@@ -103,35 +99,38 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  categorizeAttendingEvents(): void {
+  sortAttendingEventsByDate(): void {
+    this.attendingEvents.sort((a, b) => {
+      const now = new Date();
+      const dateA = a.eventDate ? new Date(a.eventDate) : new Date(0);
+      const dateB = b.eventDate ? new Date(b.eventDate) : new Date(0);
+
+      const isPastA = dateA < now;
+      const isPastB = dateB < now;
+
+      if (isPastA && !isPastB) {
+        // A ist vergangen, B nicht -> B kommt zuerst
+        return 1;
+      } else if (!isPastA && isPastB) {
+        // A ist nicht vergangen, B ist vergangen -> A kommt zuerst
+        return -1;
+      } else if (!isPastA && !isPastB) {
+        // Beide sind anstehend -> nach Datum sortieren (aufsteigend)
+        return dateA.getTime() - dateB.getTime();
+      } else {
+        // Beide sind vergangen -> nach Datum sortieren (absteigend)
+        return dateB.getTime() - dateA.getTime();
+      }
+    });
+  }
+
+  isEventPast(event: Event): boolean {
+    if (!event.eventDate) return false;
+
+    const eventDate = new Date(event.eventDate);
     const now = new Date();
 
-    this.pastEvents = this.attendingEvents.filter((event) => {
-      // Sichere Prüfung auf gültiges Datum
-      if (!event.eventDate) return false;
-      const eventDate = new Date(event.eventDate);
-      return eventDate < now;
-    });
-
-    this.upcomingEvents = this.attendingEvents.filter((event) => {
-      // Sichere Prüfung auf gültiges Datum
-      if (!event.eventDate) return true; // Events ohne Datum gelten als zukünftig
-      const eventDate = new Date(event.eventDate);
-      return eventDate >= now;
-    });
-
-    // Sortieren nach Datum
-    this.pastEvents.sort((a, b) => {
-      const dateA = a.eventDate ? new Date(a.eventDate) : new Date(0);
-      const dateB = b.eventDate ? new Date(b.eventDate) : new Date(0);
-      return dateB.getTime() - dateA.getTime();
-    });
-
-    this.upcomingEvents.sort((a, b) => {
-      const dateA = a.eventDate ? new Date(a.eventDate) : new Date(0);
-      const dateB = b.eventDate ? new Date(b.eventDate) : new Date(0);
-      return dateA.getTime() - dateB.getTime();
-    });
+    return eventDate < now;
   }
 
   createNewEvent(): void {
@@ -142,7 +141,6 @@ export class DashboardComponent implements OnInit {
     this.router.navigate(['/events', eventId]);
   }
 
-  // Sicheres Formatieren von Datumsangaben
   formatDate(dateString?: string): string {
     if (!dateString) return 'Kein Datum';
 
@@ -193,7 +191,6 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  // Helper method to get the day number from a date string
   getEventDay(dateString?: string): number {
     if (!dateString) return 1;
     try {
@@ -204,7 +201,6 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  // Helper method to get the month abbreviation from a date string
   getEventMonth(dateString?: string): string {
     if (!dateString) return '';
     try {

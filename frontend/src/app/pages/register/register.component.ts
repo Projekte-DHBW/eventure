@@ -56,7 +56,6 @@ export class RegisterComponent {
 
     const { firstName, lastName, email, password } = this.registerForm.value;
 
-    // TODO: on register soll es login rest call machen um die JWT auth daten zu kriegen anstelle von auf login zu leiten
     this.authService.register(firstName, lastName, email, password).subscribe({
       next: () => {
         this.successMessage =

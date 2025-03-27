@@ -1,93 +1,93 @@
 .location-input-container {
-    width: 100%;
+  width: 100%;
 }
 
 .location-field {
-    width: 100%;
+  width: 100%;
 }
 
 .loading-indicator {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .loading-indicator mat-icon {
-    -webkit-animation: rotate 1s linear infinite;
-    animation: rotate 1s linear infinite;
+  -webkit-animation: rotate 1s linear infinite;
+  animation: rotate 1s linear infinite;
 }
 
 .selected-locations-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 12px;
-    min-height: 32px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+  min-height: 32px;
 }
 
 .location-chip {
-    display: flex;
-    align-items: center;
-    background-color: #edf3ff;
-    border-radius: 16px;
-    padding: 4px 12px;
-    font-size: 14px;
-    transition: all 0.2s ease;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  background-color: #edf3ff;
+  border-radius: 16px;
+  padding: 4px 12px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .location-chip:hover {
-    background-color: #dbe7ff;
+  background-color: #dbe7ff;
 }
 
 .remove-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    margin-left: 4px;
-    padding: 0;
-    color: #5577cc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  margin-left: 4px;
+  padding: 0;
+  color: #5577cc;
 }
 
 .remove-button:hover {
-    color: #3355aa;
+  color: #3355aa;
 }
 
 .remove-button:disabled {
-    color: #aaaaaa;
-    cursor: not-allowed;
+  color: #aaaaaa;
+  cursor: not-allowed;
 }
 
 .remove-button mat-icon {
-    font-size: 16px;
-    height: 16px;
-    width: 16px;
-    line-height: 16px;
+  font-size: 16px;
+  height: 16px;
+  width: 16px;
+  line-height: 16px;
 }
 
 @-webkit-keyframes rotate {
-    from {
-        -webkit-transform: rotate(0deg);
-        transform: rotate(0deg);
-    }
+  from {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
 
-    to {
-        -webkit-transform: rotate(360deg);
-        transform: rotate(360deg);
-    }
+  to {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes rotate {
-    from {
-        -webkit-transform: rotate(0deg);
-        transform: rotate(0deg);
-    }
+  from {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
 
-    to {
-        -webkit-transform: rotate(360deg);
-        transform: rotate(360deg);
-    }
+  to {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
 }

@@ -5,8 +5,13 @@
 
       <div class="search-input-container">
         <mat-form-field appearance="outline">
-          <input matInput [formControl]="searchInput" type="text" placeholder="Events suchen..."
-            (keyup.enter)="onSearch()" />
+          <input
+            matInput
+            [formControl]="searchInput"
+            type="text"
+            placeholder="Events suchen..."
+            (keyup.enter)="onSearch()"
+          />
           <button mat-icon-button matSuffix (click)="onSearch()">
             <mat-icon>search</mat-icon>
           </button>
@@ -19,22 +24,31 @@
             <h3>Event-Typ</h3>
             <div class="filter-options">
               @for (type of types(); track type) {
-              <div class="filter-chip" [class.active]="searchParams.types?.includes(type)" (click)="
+                <div
+                  class="filter-chip"
+                  [class.active]="searchParams.types?.includes(type)"
+                  (click)="
                     searchParams.types?.includes(type)
                       ? removeFilter('types', type)
                       : applyFilter('types', type)
-                  ">
-                {{ type }}
-              </div>
+                  "
+                >
+                  {{ type }}
+                </div>
               }
             </div>
           </div>
 
           <div class="filter-group">
             <h3>Standort</h3>
-            <app-location-input [multiple]="true" [defaultLocations]="searchParams.locations || []"
-              (locationSelected)="onLocationAdded($event)" [defaultCities]="locations()" [appearance]="'outline'"
-              [placeholder]="'Stadt suchen...'">
+            <app-location-input
+              [multiple]="true"
+              [defaultLocations]="searchParams.locations || []"
+              (locationSelected)="onLocationAdded($event)"
+              [defaultCities]="locations()"
+              [appearance]="'outline'"
+              [placeholder]="'Stadt suchen...'"
+            >
             </app-location-input>
           </div>
 
@@ -42,13 +56,18 @@
             <h3>Zeitraum</h3>
             <div class="filter-options">
               @for (date of dates(); track date) {
-              <div class="filter-chip" [class.active]="searchParams.date === date" (click)="
+                <div
+                  class="filter-chip"
+                  [class.active]="searchParams.date === date"
+                  (click)="
                     searchParams.date === date
                       ? removeFilter('date')
                       : applyFilter('date', date)
-                  " [style.color]="searchParams.date === date ? 'white' : ''">
-                {{ date }}
-              </div>
+                  "
+                  [style.color]="searchParams.date === date ? 'white' : ''"
+                >
+                  {{ date }}
+                </div>
               }
             </div>
           </div>
@@ -57,57 +76,74 @@
             <div class="date-picker-container">
               <mat-form-field>
                 <mat-label>Wähle ein Datum</mat-label>
-                <input matInput [matDatepicker]="picker" [formControl]="specificDateControl"
-                  (dateChange)="onSpecificDateSelected($event)" aria-label="Choose a specific date" />
-                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                <mat-datepicker #picker aria-label="Specific date"></mat-datepicker>
+                <input
+                  matInput
+                  [matDatepicker]="picker"
+                  [formControl]="specificDateControl"
+                  (dateChange)="onSpecificDateSelected($event)"
+                  aria-label="Choose a specific date"
+                />
+                <mat-datepicker-toggle
+                  matSuffix
+                  [for]="picker"
+                ></mat-datepicker-toggle>
+                <mat-datepicker
+                  #picker
+                  aria-label="Specific date"
+                ></mat-datepicker>
               </mat-form-field>
             </div>
           </div>
         </div>
 
         @if (hasSearchParams) {
-        <div class="active-filters">
-          <h3>Aktive Filter</h3>
-          <div class="active-filter-chips">
-            @if (searchParams.types?.length) {
-            @for (type of searchParams.types; track type) {
-            <mat-chip class="active-chip" (removed)="removeFilter('types', type)">
-              {{ type }}
-              <button matChipRemove>
-                <mat-icon>cancel</mat-icon>
-              </button>
-            </mat-chip>
-            }
-            }
+          <div class="active-filters">
+            <h3>Aktive Filter</h3>
+            <div class="active-filter-chips">
+              @if (searchParams.types?.length) {
+                @for (type of searchParams.types; track type) {
+                  <mat-chip
+                    class="active-chip"
+                    (removed)="removeFilter('types', type)"
+                  >
+                    {{ type }}
+                    <button matChipRemove>
+                      <mat-icon>cancel</mat-icon>
+                    </button>
+                  </mat-chip>
+                }
+              }
 
-            @if (searchParams.locations?.length) {
-            @for (location of searchParams.locations; track location) {
-            <mat-chip class="active-chip" (removed)="removeFilter('locations', location)">
-              {{ location }}
-              <button matChipRemove>
-                <mat-icon>cancel</mat-icon>
-              </button>
-            </mat-chip>
-            }
-            }
+              @if (searchParams.locations?.length) {
+                @for (location of searchParams.locations; track location) {
+                  <mat-chip
+                    class="active-chip"
+                    (removed)="removeFilter('locations', location)"
+                  >
+                    {{ location }}
+                    <button matChipRemove>
+                      <mat-icon>cancel</mat-icon>
+                    </button>
+                  </mat-chip>
+                }
+              }
 
-            @if (searchParams.date) {
-            <mat-chip class="active-chip" (removed)="removeFilter('date')">
-              {{ searchParams.date }}
-              <button matChipRemove>
-                <mat-icon>cancel</mat-icon>
-              </button>
-            </mat-chip>
-            }
+              @if (searchParams.date) {
+                <mat-chip class="active-chip" (removed)="removeFilter('date')">
+                  {{ searchParams.date }}
+                  <button matChipRemove>
+                    <mat-icon>cancel</mat-icon>
+                  </button>
+                </mat-chip>
+              }
 
-            @if (hasSearchParams) {
-            <button mat-button color="warn" (click)="clearAllFilters()">
-              Alle Filter löschen
-            </button>
-            }
+              @if (hasSearchParams) {
+                <button mat-button color="warn" (click)="clearAllFilters()">
+                  Alle Filter löschen
+                </button>
+              }
+            </div>
           </div>
-        </div>
         }
       </div>
     </div>
@@ -116,31 +152,31 @@
 
     <div class="search-results-container">
       @if (loading) {
-      <div class="loading-indicator">
-        <mat-spinner diameter="50"></mat-spinner>
-        <p>Suche nach Events...</p>
-      </div>
+        <div class="loading-indicator">
+          <mat-spinner diameter="50"></mat-spinner>
+          <p>Suche nach Events...</p>
+        </div>
       } @else {
-      <h2 class="results-title">{{ totalEvents }} Events gefunden</h2>
+        <h2 class="results-title">{{ totalEvents }} Events gefunden</h2>
 
-      @if (events && events.length > 0) {
-      <div class="results-list">
-        @for (event of events; track event.id) {
-        <app-event-card [event]="event"></app-event-card>
+        @if (events && events.length > 0) {
+          <div class="results-list">
+            @for (event of events; track event.id) {
+              <app-event-card [event]="event"></app-event-card>
+            }
+          </div>
+        } @else {
+          <div class="no-results">
+            <mat-icon>sentiment_dissatisfied</mat-icon>
+            <h3>Keine Events gefunden</h3>
+            <p>
+              Versuche es mit anderen Suchkriterien oder entferne einige Filter.
+            </p>
+            <button mat-raised-button color="primary" [routerLink]="['/']">
+              Zurück zur Startseite
+            </button>
+          </div>
         }
-      </div>
-      } @else {
-      <div class="no-results">
-        <mat-icon>sentiment_dissatisfied</mat-icon>
-        <h3>Keine Events gefunden</h3>
-        <p>
-          Versuche es mit anderen Suchkriterien oder entferne einige Filter.
-        </p>
-        <button mat-raised-button color="primary" [routerLink]="['/']">
-          Zurück zur Startseite
-        </button>
-      </div>
-      }
       }
     </div>
   </div>

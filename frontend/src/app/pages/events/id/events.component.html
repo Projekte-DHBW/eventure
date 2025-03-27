@@ -3,29 +3,44 @@
   <div class="event-hero">
     <!-- Standalone image with full overlay -->
     <div class="event-image-container">
-      <img *ngIf="event.coverImageUrl" [src]="images.getImageUrl(event.coverImageUrl, event.category)"
-        alt="{{ event.title }}" class="event-image">
+      <img
+        *ngIf="event.coverImageUrl"
+        [src]="images.getImageUrl(event.coverImageUrl, event.category)"
+        alt="{{ event.title }}"
+        class="event-image"
+      />
       <div class="event-fallback-image" *ngIf="!event.coverImageUrl"></div>
       <div class="event-overlay"></div>
     </div>
 
     <div class="event-hero-content">
       <div class="event-badges">
-        <span class="event-badge" [ngClass]="event.visibility">{{ getVisibilityLabel(event.visibility) }}</span>
-        <span class="event-badge online" *ngIf="event.isOnline">Online Event</span>
-        <span class="event-badge category">{{ event.category | titlecase }}</span>
+        <span class="event-badge" [ngClass]="event.visibility">{{
+          getVisibilityLabel(event.visibility)
+        }}</span>
+        <span class="event-badge online" *ngIf="event.isOnline"
+          >Online Event</span
+        >
+        <span class="event-badge category">{{
+          event.category | titlecase
+        }}</span>
       </div>
       <h1 class="event-title">{{ event.title }}</h1>
       <div class="event-meta">
         <div class="event-meta-item" *ngIf="event.eventDate">
           <mat-icon>event</mat-icon>
-          <span>{{ event.eventDate | date:'EEEE, d. MMMM y, HH:mm':'':'de' }}</span>
+          <span>{{
+            event.eventDate | date: "EEEE, d. MMMM y, HH:mm" : "" : "de"
+          }}</span>
         </div>
         <div class="event-meta-item" *ngIf="!event.isOnline && event.location">
           <mat-icon>place</mat-icon>
           <span>{{ event.location }}</span>
         </div>
-        <div class="event-meta-item" *ngIf="event.isOnline && event.meetingLink">
+        <div
+          class="event-meta-item"
+          *ngIf="event.isOnline && event.meetingLink"
+        >
           <mat-icon>videocam</mat-icon>
           <span>Online Meeting</span>
         </div>
@@ -41,12 +56,17 @@
           <mat-card-title>Über dieses Event</mat-card-title>
         </mat-card-header>
         <mat-card-content>
-          <p class="event-description">{{ event.description || 'Keine Beschreibung vorhanden.' }}</p>
+          <p class="event-description">
+            {{ event.description || "Keine Beschreibung vorhanden." }}
+          </p>
         </mat-card-content>
       </mat-card>
 
       <!-- Neue Komponente für Event-Vorkommen -->
-      <mat-card *ngIf="event.occurrences && event.occurrences.length > 0" class="event-occurrences-card">
+      <mat-card
+        *ngIf="event.occurrences && event.occurrences.length > 0"
+        class="event-occurrences-card"
+      >
         <mat-card-header>
           <mat-card-title>
             <div class="card-title-with-icon">
@@ -58,11 +78,18 @@
         <mat-card-content>
           <!-- Updated occurrences section in event-occurrences-card -->
           <div class="occurrences-list">
-            <div *ngFor="let occurrence of event.occurrences" class="occurrence-item">
+            <div
+              *ngFor="let occurrence of event.occurrences"
+              class="occurrence-item"
+            >
               <div class="occurrence-date-container">
                 <div class="occurrence-date">
-                  <span class="date-day">{{ occurrence.startDate | date:'dd':'':'de' }}</span>
-                  <span class="date-month">{{ occurrence.startDate | date:'MMM':'':'de' }}</span>
+                  <span class="date-day">{{
+                    occurrence.startDate | date: "dd" : "" : "de"
+                  }}</span>
+                  <span class="date-month">{{
+                    occurrence.startDate | date: "MMM" : "" : "de"
+                  }}</span>
                 </div>
                 <div class="occurrence-time">
                   {{ formatTimeRange(occurrence) }}
@@ -70,15 +97,18 @@
               </div>
               <div class="occurrence-details">
                 <div class="occurrence-day-name">
-                  {{ occurrence.startDate | date:'EEEE, d. MMMM y':'':'de' }}
+                  {{
+                    occurrence.startDate | date: "EEEE, d. MMMM y" : "" : "de"
+                  }}
                 </div>
                 <div class="occurrence-location" *ngIf="occurrence.location">
                   <mat-icon>place</mat-icon>
-                  <span>{{
-                    getLocationDisplay(occurrence.location)
-                    }}</span>
+                  <span>{{ getLocationDisplay(occurrence.location) }}</span>
                 </div>
-                <div class="occurrence-status" [ngClass]="getOccurrenceStatus(occurrence)">
+                <div
+                  class="occurrence-status"
+                  [ngClass]="getOccurrenceStatus(occurrence)"
+                >
                   {{ getStatusLabel(occurrence) }}
                 </div>
               </div>
@@ -87,7 +117,10 @@
         </mat-card-content>
       </mat-card>
 
-      <mat-card *ngIf="event.isOnline && event.meetingLink" class="event-link-card">
+      <mat-card
+        *ngIf="event.isOnline && event.meetingLink"
+        class="event-link-card"
+      >
         <mat-card-header>
           <mat-card-title>Meeting Link</mat-card-title>
         </mat-card-header>
@@ -108,9 +141,13 @@
         </mat-card-header>
         <mat-card-content>
           <div class="capacity-indicator" *ngIf="event.maxParticipants">
-            <div class="capacity-bar" [style.width.%]="getCapacityPercentage()"></div>
+            <div
+              class="capacity-bar"
+              [style.width.%]="getCapacityPercentage()"
+            ></div>
             <span class="capacity-text">
-              {{ event.attendeeCount || 0 }} / {{ event.maxParticipants || 'Unbegrenzt' }}
+              {{ event.attendeeCount || 0 }} /
+              {{ event.maxParticipants || "Unbegrenzt" }}
             </span>
           </div>
 
@@ -124,14 +161,33 @@
           </div>
 
           <div class="registration-actions">
-            <button (click)="onSubmit()" mat-raised-button color="primary" class="registration-button"
-              [disabled]="signUpForm.invalid || isLoading || isRegistered">
-              <mat-icon>{{ isRegistered ? 'how_to_reg' : 'person_add' }}</mat-icon>
-              {{ isLoading ? "Wird bearbeitet..." : isRegistered ? "Angemeldet" : "Teilnehmen" }}
+            <button
+              (click)="onSubmit()"
+              mat-raised-button
+              color="primary"
+              class="registration-button"
+              [disabled]="signUpForm.invalid || isLoading || isRegistered"
+            >
+              <mat-icon>{{
+                isRegistered ? "how_to_reg" : "person_add"
+              }}</mat-icon>
+              {{
+                isLoading
+                  ? "Wird bearbeitet..."
+                  : isRegistered
+                    ? "Angemeldet"
+                    : "Teilnehmen"
+              }}
             </button>
 
-            <button *ngIf="isRegistered" (click)="onDeleteRegistration(event.id)" mat-stroked-button color="warn"
-              class="cancel-button" [disabled]="isLoading">
+            <button
+              *ngIf="isRegistered"
+              (click)="onDeleteRegistration(event.id)"
+              mat-stroked-button
+              color="warn"
+              class="cancel-button"
+              [disabled]="isLoading"
+            >
               <mat-icon>cancel</mat-icon>
               Abmelden
             </button>
@@ -149,8 +205,11 @@
             <mat-icon>people</mat-icon>
             <div class="detail-content">
               <span class="detail-label">Kapazität</span>
-              <span class="detail-value">{{ event.maxParticipants ? event.maxParticipants + ' Personen' : 'Unbegrenzt'
-                }}</span>
+              <span class="detail-value">{{
+                event.maxParticipants
+                  ? event.maxParticipants + " Personen"
+                  : "Unbegrenzt"
+              }}</span>
             </div>
           </div>
 
@@ -158,8 +217,11 @@
             <mat-icon>person</mat-icon>
             <div class="detail-content">
               <span class="detail-label">Veranstalter</span>
-              <a [routerLink]="['/profile', event.creator]" class="detail-value organizer-link">
-                {{ event.creatorName || 'Veranstalter anzeigen' }}
+              <a
+                [routerLink]="['/profile', event.creator]"
+                class="detail-value organizer-link"
+              >
+                {{ event.creatorName || "Veranstalter anzeigen" }}
               </a>
             </div>
           </div>
@@ -168,44 +230,72 @@
             <mat-icon>visibility</mat-icon>
             <div class="detail-content">
               <span class="detail-label">Sichtbarkeit</span>
-              <span class="detail-value">{{ getVisibilityLabel(event.visibility) }}</span>
+              <span class="detail-value">{{
+                getVisibilityLabel(event.visibility)
+              }}</span>
             </div>
           </div>
         </mat-card-content>
       </mat-card>
-
 
       <mat-card class="share-card">
         <mat-card-header>
           <mat-card-title>Event teilen</mat-card-title>
         </mat-card-header>
         <mat-card-content>
-          <p class="share-description">Teile dieses Event mit Freunden und Kollegen</p>
+          <p class="share-description">
+            Teile dieses Event mit Freunden und Kollegen
+          </p>
 
           <div class="share-buttons">
-            <button mat-stroked-button color="primary" (click)="copyEventLink()" class="share-button">
+            <button
+              mat-stroked-button
+              color="primary"
+              (click)="copyEventLink()"
+              class="share-button"
+            >
               <mat-icon>content_copy</mat-icon>
               <span>Link kopieren</span>
             </button>
 
-            <button mat-stroked-button color="primary" (click)="shareViaEmail()" class="share-button">
+            <button
+              mat-stroked-button
+              color="primary"
+              (click)="shareViaEmail()"
+              class="share-button"
+            >
               <mat-icon>email</mat-icon>
               <span>Per E-Mail teilen</span>
             </button>
 
             <div class="social-share-buttons">
-              <button mat-mini-fab class="custom-share-button whatsapp-button" (click)="shareToWhatsApp()"
-                title="Share via WhatsApp" matTooltip="Via WhatsApp teilen">
+              <button
+                mat-mini-fab
+                class="custom-share-button whatsapp-button"
+                (click)="shareToWhatsApp()"
+                title="Share via WhatsApp"
+                matTooltip="Via WhatsApp teilen"
+              >
                 <mat-icon svgIcon="whatsapp"></mat-icon>
               </button>
 
-              <button mat-mini-fab class="custom-share-button twitter-button" (click)="shareToTwitter()"
-                title="Share via Twitter" matTooltip="Via Twitter teilen">
+              <button
+                mat-mini-fab
+                class="custom-share-button twitter-button"
+                (click)="shareToTwitter()"
+                title="Share via Twitter"
+                matTooltip="Via Twitter teilen"
+              >
                 <mat-icon svgIcon="twitter"></mat-icon>
               </button>
 
-              <button mat-mini-fab class="custom-share-button facebook-button" (click)="shareToFacebook()"
-                title="Share via Facebook" matTooltip="Via Facebook teilen">
+              <button
+                mat-mini-fab
+                class="custom-share-button facebook-button"
+                (click)="shareToFacebook()"
+                title="Share via Facebook"
+                matTooltip="Via Facebook teilen"
+              >
                 <mat-icon svgIcon="facebook"></mat-icon>
               </button>
             </div>
@@ -219,13 +309,21 @@
       </mat-card>
 
       <!-- Attendees card -->
-      <mat-card *ngIf="isRegistered && event.attendeeCount !== undefined && event.attendeeCount > 1"
-        class="attendees-card">
+      <mat-card
+        *ngIf="
+          isRegistered &&
+          event.attendeeCount !== undefined &&
+          event.attendeeCount > 1
+        "
+        class="attendees-card"
+      >
         <mat-card-header>
           <mat-card-title>Andere Teilnehmer</mat-card-title>
         </mat-card-header>
         <mat-card-content>
-          <p class="attendee-count">{{ (event.attendeeCount || 1) - 1 }} weitere Personen nehmen teil</p>
+          <p class="attendee-count">
+            {{ (event.attendeeCount || 1) - 1 }} weitere Personen nehmen teil
+          </p>
         </mat-card-content>
       </mat-card>
     </div>

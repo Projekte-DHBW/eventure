@@ -18,7 +18,7 @@
         <mat-form-field appearance="outline">
           <mat-select formControlName="eventType" placeholder="Wähle Event Typ">
             @for (type of types(); track $index) {
-            <mat-option [value]="type">{{ type }}</mat-option>
+              <mat-option [value]="type">{{ type }}</mat-option>
             }
           </mat-select>
           <div matSuffix class="dropdown-icon">
@@ -29,20 +29,25 @@
 
       <div class="search-field">
         <label>Standort</label>
-        <app-location-input formControlName="location" [placeholder]="'Stadt eingeben...'" [appearance]="'outline'"
-          [multiple]="false" (locationSelected)="onLocationSelected($event)" [defaultCities]="[
-            'Berlin',
-            'Hamburg',
-            'München',
-          ]"></app-location-input>
+        <app-location-input
+          formControlName="location"
+          [placeholder]="'Stadt eingeben...'"
+          [appearance]="'outline'"
+          [multiple]="false"
+          (locationSelected)="onLocationSelected($event)"
+          [defaultCities]="['Berlin', 'Hamburg', 'München']"
+        ></app-location-input>
       </div>
 
       <div class="search-field">
         <label>Wann</label>
         <mat-form-field appearance="outline">
-          <mat-select formControlName="date" placeholder="Wann möchtest du was erleben?">
+          <mat-select
+            formControlName="date"
+            placeholder="Wann möchtest du was erleben?"
+          >
             @for (date of dates; track $index) {
-            <mat-option [value]="date.toLowerCase()">{{ date }}</mat-option>
+              <mat-option [value]="date.toLowerCase()">{{ date }}</mat-option>
             }
           </mat-select>
           <div matSuffix class="dropdown-icon">

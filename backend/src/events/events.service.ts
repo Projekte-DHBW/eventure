@@ -706,7 +706,7 @@ export class EventsService {
         })
         .slice(0, limit);
 
-      return { cities: citiesArray }; // Fix the object structure
+      return citiesArray;
     } catch (error) {
       console.error('Error searching cities:', error);
       return { cities: [] };

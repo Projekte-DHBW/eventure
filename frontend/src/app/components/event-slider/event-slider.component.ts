@@ -1,4 +1,11 @@
-import { Component, ViewChild, ElementRef, inject, AfterViewInit, ChangeDetectorRef } from '@angular/core';
+import {
+  Component,
+  ViewChild,
+  ElementRef,
+  inject,
+  AfterViewInit,
+  ChangeDetectorRef,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { EventsService } from '../../services/events.service';
 import { Event } from '../../types/events';
@@ -59,13 +66,19 @@ export class EventSliderComponent implements AfterViewInit {
 
   scrollLeft(): void {
     if (this.eventSlider?.nativeElement) {
-      this.eventSlider.nativeElement.scrollBy({ left: -300, behavior: 'smooth' });
+      this.eventSlider.nativeElement.scrollBy({
+        left: -300,
+        behavior: 'smooth',
+      });
     }
   }
 
   scrollRight(): void {
     if (this.eventSlider?.nativeElement) {
-      this.eventSlider.nativeElement.scrollBy({ left: 300, behavior: 'smooth' });
+      this.eventSlider.nativeElement.scrollBy({
+        left: 300,
+        behavior: 'smooth',
+      });
     }
   }
 }

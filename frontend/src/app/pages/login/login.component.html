@@ -5,38 +5,53 @@
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
         <mat-form-field class="full-width">
           <mat-label>E-Mail</mat-label>
-          <input matInput formControlName="email" type="email" placeholder="Email" />
+          <input
+            matInput
+            formControlName="email"
+            type="email"
+            placeholder="Email"
+          />
           @if (
-          loginForm.get("email")?.invalid &&
-          (loginForm.get("email")?.dirty || loginForm.get("email")?.touched)
+            loginForm.get("email")?.invalid &&
+            (loginForm.get("email")?.dirty || loginForm.get("email")?.touched)
           ) {
-          <mat-error>
-            Bitte geben Sie eine gültige E-Mail-Adresse ein
-          </mat-error>
+            <mat-error>
+              Bitte geben Sie eine gültige E-Mail-Adresse ein
+            </mat-error>
           }
         </mat-form-field>
 
         <mat-form-field class="full-width">
           <mat-label>Passwort</mat-label>
-          <input matInput formControlName="password" type="password" placeholder="Passwort" />
+          <input
+            matInput
+            formControlName="password"
+            type="password"
+            placeholder="Passwort"
+          />
           @if (
-          loginForm.get("password")?.invalid &&
-          (loginForm.get("password")?.dirty ||
-          loginForm.get("password")?.touched)
+            loginForm.get("password")?.invalid &&
+            (loginForm.get("password")?.dirty ||
+              loginForm.get("password")?.touched)
           ) {
-          <mat-error> Passwort wird benötigt </mat-error>
+            <mat-error> Passwort wird benötigt </mat-error>
           }
         </mat-form-field>
 
         <section>
           @if (errorMessage) {
-          <div class="error-message">
-            {{ errorMessage }}
-          </div>
+            <div class="error-message">
+              {{ errorMessage }}
+            </div>
           }
           <div class="login-button-row">
-            <button mat-flat-button color="primary" class="full-width" type="submit"
-              [disabled]="loginForm.invalid || isLoading">
+            <button
+              mat-flat-button
+              color="primary"
+              class="full-width"
+              type="submit"
+              [disabled]="loginForm.invalid || isLoading"
+            >
               {{ isLoading ? "Wird angemeldet..." : "Login" }}
             </button>
           </div>

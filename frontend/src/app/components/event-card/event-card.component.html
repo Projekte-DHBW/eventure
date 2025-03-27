@@ -1,12 +1,19 @@
-<div class="event-item" (click)="navigateToEventDetails()" [attr.title]="'Details für: ' + event.title">
+<div
+  class="event-item"
+  (click)="navigateToEventDetails()"
+  [attr.title]="'Details für: ' + event.title"
+>
   <div class="event-image">
     @if (event.eventDate) {
-    <div class="event-month">
-      {{ getMonthAbbreviation(event.eventDate!) }}
-      {{ getDayFromDate(event.eventDate!) }}
-    </div>
+      <div class="event-month">
+        {{ getMonthAbbreviation(event.eventDate!) }}
+        {{ getDayFromDate(event.eventDate!) }}
+      </div>
     }
-    <img [src]="images.getImageUrl(event.coverImageUrl, event.category)" [alt]="event.title" />
+    <img
+      [src]="images.getImageUrl(event.coverImageUrl, event.category)"
+      [alt]="event.title"
+    />
   </div>
 
   <div class="event-content">
@@ -16,8 +23,8 @@
       <mat-icon>place</mat-icon>
       <span>{{
         event.location ||
-        (event.isOnline ? "Online" : "Kein Standort angegeben")
-        }}</span>
+          (event.isOnline ? "Online" : "Kein Standort angegeben")
+      }}</span>
     </div>
 
     <p class="event-description">{{ event.description }}</p>
@@ -30,22 +37,33 @@
         {{ capitalizeFirstLetter(event.visibility) }}
       </div>
       @if (event.isOnline) {
-      <div class="event-tag">Online</div>
+        <div class="event-tag">Online</div>
       }
     </div>
 
     <div class="event-actions">
-      <button class="action-button details-button"(click)="navigateToEventDetails()">DETAILS</button>
-      @if(isRegistered) {
-        <button class="action-button save-button-blue" (click)="$event.stopPropagation()">
+      <button
+        class="action-button details-button"
+        (click)="navigateToEventDetails()"
+      >
+        DETAILS
+      </button>
+      @if (isRegistered) {
+        <button
+          class="action-button save-button-blue"
+          (click)="$event.stopPropagation()"
+        >
           <mat-icon>bookmark</mat-icon>
           <span>Angemeldet</span>
         </button>
       } @else {
-      <button class="action-button save-button-grey" (click)="$event.stopPropagation()">
-        <mat-icon>bookmark</mat-icon>
-        <span>Anmelden</span>
-      </button>
+        <button
+          class="action-button save-button-grey"
+          (click)="$event.stopPropagation()"
+        >
+          <mat-icon>bookmark</mat-icon>
+          <span>Anmelden</span>
+        </button>
       }
     </div>
   </div>

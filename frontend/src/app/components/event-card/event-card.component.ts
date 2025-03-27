@@ -24,11 +24,11 @@ export class EventCardComponent implements OnInit {
   isRegistered = false;
 
   ngOnInit(): void {
-    this.eventsService.checkRegistration(this.authService.getUserId() ?? "0", this.event.id).subscribe(
-      (response) => {
+    this.eventsService
+      .checkRegistration(this.authService.getUserId() ?? '0', this.event.id)
+      .subscribe((response) => {
         this.isRegistered = response.isRegistered;
-      }
-    );
+      });
   }
 
   navigateToEventDetails(): void {

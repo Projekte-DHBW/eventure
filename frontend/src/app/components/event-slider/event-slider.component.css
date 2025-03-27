@@ -39,7 +39,9 @@
   text-align: left;
   flex-shrink: 0;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .event-icon {
@@ -99,7 +101,9 @@
   cursor: pointer;
   font-size: 1.5rem;
   border-radius: 50%;
-  transition: background 0.3s, opacity 0.3s;
+  transition:
+    background 0.3s,
+    opacity 0.3s;
   opacity: 1;
   z-index: 10;
   display: flex;

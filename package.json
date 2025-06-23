@@ -19,6 +19,6 @@
   },
   "homepage": "https://github.com/Projekte-DHBW/eventure#readme",
   "devDependencies": {
-    "concurrently": "^9.1.2"
+    "concurrently": "^9.2.0"
   }
 }
